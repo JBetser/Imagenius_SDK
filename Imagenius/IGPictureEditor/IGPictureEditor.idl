@@ -1,0 +1,796 @@
+// IGPictureEditor.idl : IDL source for IGPictureEditor
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (IGPictureEditor.tlb) and marshalling code.
+
+#include "olectl.h"
+import "ocidl.idl";
+
+[
+	object,
+	uuid(DF9A05EC-8289-4AA5-9A5F-BD24A33C563C),
+	dual,
+	nonextensible,
+	helpstring("IIGFrame Interface"),
+	pointer_default(unique)
+]
+interface IIGFrame : IDispatch{
+	[id(1), helpstring("Create a single frame from memory handle")] 
+	HRESULT CreateFrameFromHandle([in]OLE_HANDLE hWnd, [in]LPRECT prc, [in]OLE_HANDLE hMem, [in, defaultvalue(0)]IDispatch *pDispLayerManager, [in, defaultvalue(0)]IDispatch *pDispPropertyManager);
+
+	[id(2), helpstring("Create a single frame from a path")] 
+	HRESULT CreateFrame([in]OLE_HANDLE hWnd, [in]LPRECT prc, [in]BSTR bstrPath, [in, defaultvalue(0)]IDispatch *pDispLayerManager, [in, defaultvalue(0)]IDispatch *pDispPropertyManager, [in,defaultvalue(0)]VARIANT_BOOL bAutoRotate);
+
+	[id(3), helpstring("Create a new empty frame")] 
+	HRESULT CreateNewFrame([in]OLE_HANDLE hWnd, [in]LPRECT prc, [in]LONG nWidth, [in]LONG nHeight, [in]LONG nColorMode, [in]LONG nBackgroundMode, [in, defaultvalue(0)]IDispatch *pDispLayerManager, [in, defaultvalue(0)]IDispatch *pDispPropertyManager);
+
+	[id(4), helpstring("Destroy the frame")] 
+	HRESULT DestroyFrame();
+
+	[id(5), helpstring("Move frame to its last computed position")] 
+	HRESULT UpdatePosition();
+
+	[id(6), helpstring("Add layer at position nPos. If nPos == -1 layer is added to the last position.")] 
+	HRESULT AddLayer([in, defaultvalue(-1)]LONG nPos);
+
+	[id(7), helpstring("Remove layer at position nPos")] 
+	HRESULT RemoveLayer([in]LONG nPos);
+
+	[id(8), helpstring("Move layer from position nPosFrom to position nPosDest")] 
+	HRESULT MoveLayer([in]LONG nPosFrom, [in]LONG nPosDest);
+
+	[id(9), helpstring("Associates a toolbox to that frame")] 
+	HRESULT SetToolBox([in]IDispatch *pDispToolbox);
+
+	[id(10), helpstring("Manages the image region selector tool")] 
+	HRESULT ManageSelection([in]LONG nSelectionActionId, [in]VARIANT *safeArrayParams);
+
+	[id(11), helpstring("Converts frame coordinates into pixel coordinates")] 
+	HRESULT ConvertCoordFrameToPixel ([in,out]LONG *p_nPosX, [in,out]LONG *p_nPosY);
+
+	[id(12), helpstring("Apply the specified image processing to the current layer")] 
+	HRESULT ProcessImage ([in]LONG nImageProcessingId, [in]OLE_HANDLE hParams);
+
+	[id(101), propget, helpstring("get the minimize state")]
+	HRESULT isMinimized ([out,retval]VARIANT_BOOL *p_bMinimized);
+
+	[id(101), propput, helpstring("set the the minimize state")]
+	HRESULT isMinimized ([in]VARIANT_BOOL bMinimized);
+
+	[id(102), propget, helpstring("get the maximize state")]
+	HRESULT isMaximized ([out,retval]VARIANT_BOOL *p_bMaximized);
+
+	[id(102), propput, helpstring("set the the maximize state")]
+	HRESULT isMaximized ([in]VARIANT_BOOL bMaximized);
+
+	[id(103), propput, helpstring("set the the visible state")]
+	HRESULT isVisible ([in]VARIANT_BOOL bVisible);
+};
+
+[
+	object,
+	uuid(252A54F9-3639-4F24-8E06-D66546ACE93F),
+	dual,
+	nonextensible,
+	helpstring("IIGMultiFrame Interface"),
+	pointer_default(unique)
+]
+interface IIGMultiFrame : IDispatch{
+	[id(1), helpstring("Creates the multi frame panel")] 
+	HRESULT CreateFrame([in]OLE_HANDLE hWnd, [in]LPRECT rc, [in, defaultvalue(0)]IDispatch *pDispLayerManager, [in, defaultvalue(0)]IDispatch *pDispWorkspace, [in, defaultvalue(0)]IDispatch *pDispToolbox, [in, defaultvalue(0)]IDispatch *pDispPropertyManager);
+
+	[id(2), helpstring("Destroy the frame")] 
+	HRESULT DestroyFrame();
+
+	[id(3), helpstring("Adds an image from a path")] 
+	HRESULT AddImage ([in]BSTR bstrImagePath, [in, defaultvalue(0)]VARIANT_BOOL bAutoRotate);
+
+	[id(4), helpstring("Adds an image from a path")] 
+	HRESULT AddImageFromHandle ([in]OLE_HANDLE hMem);
+
+	[id(5), helpstring("Change frame position and size")] 
+	HRESULT Move ([in]LPRECT p_rc);
+
+	[id(6), helpstring("Remove the specified frame")] 
+	HRESULT RemoveFrame ([in]LONG nFrameId);
+
+	[id(7), helpstring("Draw the specified frame to the specified context")] 
+	HRESULT DrawFrame([in]LONG IdxBitmap, [in]OLE_HANDLE hDC, [in]UINT_PTR pRect);
+
+	[id(8), helpstring("Get the multiframe panel IDropTarget object")] 
+	HRESULT GetDropTarget (IDropTarget **ppDropTarget);
+
+	[id(9), helpstring("Create a new frame.")] 
+	HRESULT AddNewImage ([in]LONG nWidth, [in]LONG nHeight, [in]LONG nColorMode, [in]LONG nBackgroundMode);
+
+	[id(101), propget, helpstring("get the minimize state of specified frame")]
+	HRESULT isMinimized ([in]OLE_HANDLE hPtrFrame, [out,retval]VARIANT_BOOL *p_bMinimized);
+
+	[id(101), propput, helpstring("set the the minimize state of specified frame")]
+	HRESULT isMinimized ([in]OLE_HANDLE hPtrFrame, [in]VARIANT_BOOL bMinimized);
+
+	[id(102), propget, helpstring("get the maximize state of specified frame")]
+	HRESULT isMaximized ([in]OLE_HANDLE hPtrFrame, [out,retval]VARIANT_BOOL *p_bMaximized);
+
+	[id(102), propput, helpstring("set the the maximize state of specified frame")]
+	HRESULT isMaximized ([in]OLE_HANDLE hPtrFrame, [in]VARIANT_BOOL bMaximized);
+
+	[id(103), propget, helpstring("get the id of the specified frame")]
+	HRESULT frameId ([in]OLE_HANDLE hPtrFrame, [out,retval]LONG *p_nFrameId);
+};
+[
+	object,
+	uuid(21AF46D9-60E7-4F44-B609-27D363DA7C7D),
+	dual,
+	nonextensible,
+	helpstring("IIGMenuBar Interface"),
+	pointer_default(unique)
+]
+interface IIGMenuBar : IDispatch{
+	[id(1), helpstring("Creates the menu bar frame")] 
+	HRESULT CreateFrame([in]OLE_HANDLE hWnd, [in]LPRECT rc, [in]BSTR xmlConfig, [in, defaultvalue (-1)]LONG idxButton, [in, defaultvalue (0)]LONG nRefPosX, [in, defaultvalue (0)]LONG nRefPosY, [in, defaultvalue (0)]VARIANT_BOOL bVertical, [in, defaultvalue(-1)] LONG idxSubMenu);
+
+	[id(2), helpstring("Destroy the frame")] 
+	HRESULT DestroyFrame();
+
+	[id(3), helpstring("move the menu bar according the reference point at creation")]
+	HRESULT ShowPopup([in]LONG nNewRefPosX, [in]LONG nNewRefPosY);
+
+	[id(4), helpstring("select button")]
+	HRESULT Select([in]LONG idxButtonClick);
+
+	[id(5), helpstring("unselect button")]
+	HRESULT UnSelect([in]LONG idxButtonClick);
+
+	[id(6), helpstring("enable button")]
+	HRESULT EnableButton([in]LONG idxButtonClick);
+
+	[id(7), helpstring("disable button")]
+	HRESULT DisableButton([in]LONG idxButtonClick);
+
+	[id(8), helpstring("Change menubar position and size")] 
+	HRESULT Move ([in]LPRECT p_rc);
+
+	[id(9), helpstring("Add a drop target object to the communication controller")] 
+	HRESULT AddDropTarget (IDropTarget *pDropTarget);
+
+	[id(101), propget, helpstring("get the submenu index of the current menu")]
+	HRESULT IdxSubMenu([out,retval]LONG *p_idxSubMenu);
+
+	[id(102), propget, helpstring("get the index of button owner")]
+	HRESULT IdxButton([out,retval]LONG *p_idxButton);
+
+	[id(103), propput, helpstring("set the menu font")]
+	HRESULT Font([in]OLE_HANDLE hFont);
+};
+
+[
+	object,
+	uuid(6B1D4D23-D8BD-4095-B344-FA1373949B1A),
+	dual,
+	nonextensible,
+	helpstring("IIGMenuBarDropButton Interface"),
+	pointer_default(unique)
+]
+interface IIGMenuBarDropButton : IDispatch{
+	[id(1), helpstring("Creates a menu bar drop button. idxSubMenu is the number of the current submenu in the parent menu.")] 
+	HRESULT CreateFrame([in]OLE_HANDLE hWnd, [in]LPRECT rc, [in]BSTR xmlConfig, [in]VARIANT_BOOL bIsMainMenu, [in]LONG idxButton, [in, defaultvalue(-1)]LONG idxSubMenu);
+
+	[id(2), helpstring("Destroy the frame")] 
+	HRESULT DestroyFrame();	
+
+	[id(3), helpstring("select button")]
+	HRESULT Select();
+
+	[id(4), helpstring("unselect button")]
+	HRESULT UnSelect();
+
+	[id(5), helpstring("enable button")]
+	HRESULT Enable();
+
+	[id(6), helpstring("disable button")]
+	HRESULT Disable();
+
+	[id(101), propget, helpstring("get the submenu index of the current button")]
+	HRESULT IdxSubMenu([out,retval]LONG *p_idxSubMenu);
+
+	[id(102), propget, helpstring("get the index of the button click event")]
+	HRESULT IdxButtonClick([out,retval]LONG *p_idxButtonClick);
+
+	[id(103), propput, helpstring("set the button font")]
+	HRESULT Font([in]OLE_HANDLE hFont);
+};
+
+[
+	object,
+	uuid(46CC152B-E803-46B6-99A0-FE1771AC31D3),
+	dual,
+	nonextensible,
+	helpstring("IIGLibraryMenuButton Interface"),
+	pointer_default(unique)
+]
+interface IIGLibraryMenuButton : IDispatch{
+	[id(1), helpstring("Creates library menu button")] 
+	HRESULT CreateFrame([in]OLE_HANDLE hWnd, [in]LPRECT rc);
+
+	[id(2), helpstring("Destroy the frame")] 
+	HRESULT DestroyFrame();	
+};
+
+[
+	object,
+	uuid(FFEC1F6B-7F30-4B86-BB65-0EFF6AA43AB3),
+	dual,
+	nonextensible,
+	helpstring("IIGImageLibrary Interface"),
+	pointer_default(unique)
+]
+interface IIGImageLibrary : IDispatch{
+	[id(1), helpstring("Instanciate a library manager")] 
+	HRESULT CreateFrame([in]OLE_HANDLE hWnd, [in]LPRECT p_rc);
+
+	[id(2), helpstring("Destroy the library manager")] 
+	HRESULT DestroyFrame();
+
+	[id(3), helpstring("Show the library manager window. nId is the id to send back when closing the lib manager (with nId = -1 no id is sent)")] 
+	HRESULT ShowFrame ([in]LPRECT prc, [in, defaultvalue(-1)]LONG nId);
+
+	[id(4), propput, helpstring("set the font")]
+	HRESULT Font([in]OLE_HANDLE hFont);
+};
+
+[
+	object,
+	uuid(052C51EB-7B92-43CF-9223-303B783F5E2C),
+	dual,
+	nonextensible,
+	helpstring("IIGDockPanel Interface"),
+	pointer_default(unique)
+]
+interface IIGDockPanel : IDispatch{
+	[id(1), helpstring("Creates a dockpanel. nSide specifies on which side of the frame hWnd the control is docked")] 
+	HRESULT CreateFrame([in]OLE_HANDLE hWnd, [in]LPRECT p_rc, [in]LONG nSide, [in, defaultvalue(100)]LONG nDockSize, [in, defaultvalue(0)]LONG nStyle);
+
+	[id(2), helpstring("Destroy the dockpanel")] 
+	HRESULT DestroyFrame();
+
+	[id(3), helpstring("Update the dockpanel attached frame position and size")] 
+	HRESULT Move ([in]LPRECT p_rc);
+
+	[id(4), helpstring("Set the dockpanel title string")] 
+	HRESULT SetString ([in]BSTR bstrName);
+
+	[id(5), helpstring("Get the dockpanel popup window handle")] 
+	HRESULT GetHWND ([out] OLE_HANDLE *p_hWnd);
+
+	[id(6), helpstring("Get the dockpanel popup window client rect")] 
+	HRESULT GetClientRECT ([out]LPRECT p_rc);
+	
+	[id(7), helpstring("Register a control in the dock panel. if NULL all panel children are registered.")] 
+	HRESULT RegisterControls ([in]OLE_HANDLE hWnd);
+
+	[id(8), helpstring("Unregister a control in the dock panel")] 
+	HRESULT UnRegisterControls ([in]OLE_HANDLE hWnd);
+
+	[id(9), helpstring("Redraw all registered controls")] 
+	HRESULT RedrawControls ();
+
+	[id(10), helpstring("Add a drop target object to the communication controller")] 
+	HRESULT AddDropTarget (IDropTarget *pDropTarget);
+};
+
+[
+	object,
+	uuid(E1A1F103-92BB-4C44-802F-BBF9312DAF31),
+	dual,
+	nonextensible,
+	helpstring("IIGWorkspace Interface"),
+	pointer_default(unique)
+]
+interface IIGWorkspace : IDispatch{
+	[id(1), helpstring("Creates a workspace control on the subclass of p_rc part of hWnd.")] 
+	HRESULT CreateFrame ([in]IDispatch *pDispWindowOwner, [in]IDispatch *pDispMultiFrame);
+
+	[id(2), helpstring("Destroy the workspace control")] 
+	HRESULT DestroyFrame();
+
+	[id(3), helpstring("Move the workspace control")] 
+	HRESULT Move (LPRECT p_rc);
+	
+	[id(4), helpstring("Add a new frame and load specified image. Creates an empty frame if NULL.")] 
+	HRESULT AddFrame ([in,defaultvalue(0)]BSTR bstrImagePath, [in,defaultvalue(0)]VARIANT_BOOL bAbsolutePath, [in,defaultvalue(0)]VARIANT_BOOL bAutoRotate);
+
+	[id(5), helpstring("Add a new frame from a specified memory handle (supports DIB format)")] 
+	HRESULT AddFrameFromHandle ([in]OLE_HANDLE hMem);
+
+	[id(6), helpstring("Remove a frame")] 
+	HRESULT RemoveFrame ([in]LONG nFrameId);
+
+	[id(7), helpstring("Save a frame. It opens the save file dialog box if path not null.")] 
+	HRESULT SaveFrame ([in]LONG nFrameId, [in,defaultvalue(0)]VARIANT_BOOL bSilent, [in,defaultvalue(0)]BSTR bstrImagePath, [in,defaultvalue(0)]VARIANT_BOOL bCloseAfterSave);
+
+	[id(8), helpstring("Get selected frame.")] 
+	HRESULT GetActiveFrame ([in]OLE_HANDLE *p_hFrame);
+
+	[id(9), helpstring("Create a new frame.")] 
+	HRESULT CreateNewFrame ([in]LONG nWidth, [in]LONG nHeight, [in]LONG nColorMode, [in]LONG nBackgroundMode);
+
+	[id(10), helpstring("Connect a specific user to the workspace")] 
+	HRESULT ConnectUser ([in]BSTR bstrUserLogin, [in, defaultvalue(0)]BSTR bstrGuid, [out, defaultvalue(0)]LONG *p_nNbFrames);
+
+	[id(11), helpstring("Disconnect the user. Eventually save all opened documents")] 
+	HRESULT DisconnectUser([in, defaultvalue(-1)]VARIANT_BOOL bSaveAllToTemp);
+
+	[id(12), helpstring("Get the specified frame property according to the specified type")] 
+	HRESULT GetFrameProperty ([in]LONG nFrameId, [in]BSTR bstrPropId, [in,out]VARIANT *pPropVal);
+	
+	[id(13), helpstring("Set the specified property to the specified frame")] 
+	HRESULT SetFrameProperty ([in]LONG nFrameId, [in]BSTR bstrPropId, [in]VARIANT *pPropVal);
+
+	[id(14), helpstring("After a set of properties, this method updates the frame regarding to the changes")] 
+	HRESULT UpdateFrame ([in]LONG nFrameId);
+
+	[id(15), helpstring("Get the specified property according to the specified type")] 
+	HRESULT GetProperty ([in]BSTR bstrPropId, [in,out]VARIANT *pPropVal);
+
+	[id(16), helpstring("Set the specified property to the specified frame")] 
+	HRESULT SetProperty ([in]BSTR bstrPropId, [in]VARIANT *pPropVal);
+
+	[id(17), helpstring("Get every properties and values, format: P1_V1,P2_V2,...")] 
+	HRESULT GetPropertiesAndValues ([out]BSTR *p_bstrPropId);
+
+	[id(18), helpstring("After a set of properties, this method updates the workspace properties regarding to the changes")] 
+	HRESULT Update ();
+
+	[id(19), helpstring("Copy the selection to the clipboard")] 
+	HRESULT Copy ([in]BSTR bstrImageGuid);
+
+	[id(20), helpstring("Cut the selection to the clipboard")] 
+	HRESULT Cut ([in]BSTR bstrImageGuid);
+
+	[id(21), helpstring("Paste the selection in a new layer")] 
+	HRESULT Paste ([in]BSTR bstrImageGuid);
+
+	[id(22), helpstring("Get the frame guids separated by a coma")] 
+	HRESULT  GetFrameIds ([in,out]BSTR *p_bstrIds);
+
+	[id(23), helpstring("Get the active frame guid")] 
+	HRESULT  GetActiveFrameId ([in,out]BSTR *p_bstrIds);
+
+	[id(24), helpstring("Get the frame names separated by a coma")] 
+	HRESULT  GetFrameNames ([in,out]BSTR *p_bstrNames);
+
+	[id(25), helpstring("Get the frame number of layers separated by a coma")] 
+	HRESULT  GetFrameNbLayers ([in,out]BSTR *p_bstrNbLayers);
+
+	[id(26), helpstring("Get each layer visibility separated by an underscore for each frame separated by a coma")] 
+	HRESULT  GetFrameLayerVisibility ([in,out]BSTR *p_bstrLayerVisibility);
+
+	[id(27), helpstring("Get the frame properties separated by a coma")] 
+	HRESULT  GetFrameProperties ([in,out]BSTR *p_bstrFrameProperties);
+
+	[id(28), helpstring("Get the frame history step ids separated by a coma")] 
+	HRESULT  GetFrameStepIds ([in,out]BSTR *p_bstrFrameStepIds);
+};
+[
+	object,
+	uuid(2EDC0F94-0772-41B3-97B5-363000DBF494),
+	dual,
+	nonextensible,
+	helpstring("IIGLayerManager Interface"),
+	pointer_default(unique)
+]
+interface IIGLayerManager : IDispatch{
+	[id(1), helpstring("Creates a workspace control on the subclass of p_rc part of hWnd.")] 
+	HRESULT CreateFrame ([in]IDispatch *pDispWindowOwner);
+
+	[id(2), helpstring("Destroy the workspace control")] 
+	HRESULT DestroyFrame();
+
+	[id(3), helpstring("Move the workspace control")] 
+	HRESULT Move ([in]LPRECT p_rc);
+
+	[id(4), helpstring("Set the working layer")] 
+	HRESULT SetWorking ([in]LONG nId);
+
+	[id(5), helpstring("Reset and populate the layer list box")] 
+	HRESULT PopulateListBox ();
+};
+[
+	object,
+	uuid(6866D3DC-9E1A-4C28-A7BA-06FF52B6DA7F),
+	dual,
+	nonextensible,
+	helpstring("IIGSimpleButton Interface"),
+	pointer_default(unique)
+]
+interface IIGSimpleButton : IDispatch{
+	[id(1), helpstring("Creates a simple button. It can own one/two visible states and display strings, or icons")] 
+	HRESULT  CreateFrame ([in]OLE_HANDLE hParent, [in]SHORT nButtonId, [in]LONG nCode, [in]LPRECT p_rc, [in]BSTR bstrResIconNormal, [in]BSTR bstrResIconPushed, [in]VARIANT_BOOL bDoubleState);
+	[id(2), helpstring("Destroy the button")] 
+	HRESULT  DestroyFrame ();
+	[id(3), helpstring("Move button")] 
+	HRESULT  Move (LPRECT p_rc);
+	[id(4), helpstring("Redraw button")] 
+	HRESULT  Redraw ([in,defaultvalue(-1)]VARIANT_BOOL bForce);
+	[id(5), helpstring("Set the background color")] 
+	HRESULT  SetBackground (LONG cBackground);
+	[id(6), helpstring("Get window handle")] 
+	HRESULT GetHWND ([out] OLE_HANDLE *p_hWnd);
+	[id(101), propput, helpstring("set the button push state")]
+	HRESULT Pushed([in]VARIANT_BOOL bPushed);
+	[id(101), propget, helpstring("get the button push state")]
+	HRESULT Pushed([out,retval]VARIANT_BOOL *p_bPushed);
+};
+
+[
+	object,
+	uuid(B822CA32-D89B-47FA-ACF2-988389F8AF9E),
+	dual,
+	nonextensible,
+	helpstring("IIGScrollbar Interface"),
+	pointer_default(unique)
+]
+interface IIGScrollbar : IDispatch{
+	[id(1), helpstring("Creates a scroll bar")] 
+	HRESULT  CreateFrame ([in]OLE_HANDLE hWnd, [in,defaultvalue(0)]VARIANT_BOOL bHoriz);
+	[id(2), helpstring("Destroy the button")] 
+	HRESULT  DestroyFrame ();
+};
+
+[
+	object,
+	uuid(F70E29C1-72F8-4D25-810D-C5EFD7818BBE),
+	dual,
+	nonextensible,
+	helpstring("IIGHistoryManager Interface"),
+	pointer_default(unique)
+]
+interface IIGHistoryManager : IDispatch{
+	[id(1), helpstring("Creates a history list box")] 
+	HRESULT  CreateFrame ([in]OLE_HANDLE hParent, [in,defaultvalue(0)]IDispatch *pDispDockPanel);
+	[id(2), helpstring("Destroy the history list box")] 
+	HRESULT  DestroyFrame();
+};
+
+[
+	object,
+	uuid(E061C834-3DEB-462B-902F-24593A88799C),
+	dual,
+	nonextensible,
+	helpstring("IIGToolBox Interface"),
+	pointer_default(unique)
+]
+interface IIGToolBox : IDispatch{
+	[id(1), helpstring("Creates the toolbox")] 
+	HRESULT Create (OLE_HANDLE hOwner, LPRECT p_rc);
+	[id(2), helpstring("Destroys the toolbox")] 
+	HRESULT Destroy();	
+	[id(101), propput, helpstring("set the button push state")]
+	HRESULT SelectedToolId([in]LONG nToolId);
+	[id(101), propget, helpstring("get the button push state")]
+	HRESULT SelectedToolId([out,retval]LONG *p_nToolId);
+	[id(102), propput, helpstring("set the frame to be subclassed and processed by the selected tool")] 
+	HRESULT Frame ([in]IDispatch *pDispFrame);
+	[id(102), propget, helpstring("get the frame currently processed by the selected tool")] 
+	HRESULT Frame ([out,retval]IDispatch **pDispFrame);
+}
+[
+	object,
+	uuid(A24EB55A-84ED-4D68-9638-17CD58ED8ED1),
+	dual,
+	nonextensible,
+	helpstring("IIGMainWindow Interface"),
+	pointer_default(unique)
+]
+interface IIGMainWindow : IDispatch{
+	[id(1), helpstring("Instanciate the IG main window")] 
+	HRESULT CreateFrame ([in]OLE_HANDLE hWnd, [in,defaultvalue(0)]VARIANT_BOOL bIsServer, [in,defaultvalue(0)]BSTR bstrServerIP, [in,defaultvalue(0)]BSTR bstrOutputPath);
+
+	[id(2), helpstring("Destroy the IG main window")] 
+	HRESULT DestroyFrame();
+
+	[id(3), helpstring("Listen to IG XML requests on specified TCP/IP port")] 
+	HRESULT Connect ([in]SHORT nInputPortId, [in]BSTR bstrServerIp, [in, defaultvalue(0)]OLE_HANDLE hWndStatus);
+
+	[id(4), helpstring("Show/Hide the ancestor desktop HWND that owns the main window")] 
+	HRESULT ShowOwner ([in]BOOL bVisible);
+
+	[id(5), helpstring("Get specific IG singleton manager interface.")] 
+	HRESULT GetIGInterface ([in]REFIID iid, [out]OLE_HANDLE *p_hObject);
+};
+[
+	object,
+	uuid(8DD8ADB6-DD9F-405E-B82A-B691740A54FA),
+	dual,
+	nonextensible,
+	helpstring("IIGPropertyManager Interface"),
+	pointer_default(unique)
+]
+interface IIGPropertyManager : IDispatch{
+	[id(1), helpstring("Instanciate the property manager window")] 
+	HRESULT CreateFrame ([in]OLE_HANDLE hWnd, [in,defaultvalue(0)]IDispatch *pDispDockPanel);
+
+	[id(2), helpstring("Destroy the property manager window")] 
+	HRESULT DestroyFrame();
+};
+[
+	object,
+	uuid(08F352B0-0D73-40F0-B848-C6A056CD3BB2),
+	dual,
+	nonextensible,
+	helpstring("IIGSocket Interface"),
+	pointer_default(unique)
+]
+interface IIGSocket : IDispatch{
+	[id(1), helpstring("Open a socket on specified server & ports using specified HWND")] 
+	HRESULT CreateConnection([in]OLE_HANDLE hWndApp, [in]SHORT nInputPortId, [in]BSTR bstrServerIp);
+
+	[id(2), helpstring("Close the socket")] 
+	HRESULT DestroyConnection();
+};
+[
+	uuid(D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8),
+	version(1.0),
+	helpstring("IGPictureEditor 1.0 Type Library")
+]
+library IGPictureEditorLib
+{
+	[
+		uuid(1D7AD6A3-482B-47FB-89C3-B5AAF14B428E),
+		helpstring("_IMainWindowEvents Interface")
+	]
+	dispinterface _IMainWindowEvents
+	{
+		properties:
+		methods:
+	};
+	[
+		uuid(91E7B5FC-0BF6-4F35-8186-EF0104A479E1),
+		control,
+		licensed,
+		helpstring("MainWindow Class")
+	]
+	coclass MainWindow
+	{
+		[default] interface IDispatch;
+		[default, source] dispinterface _IMainWindowEvents;
+	};
+	[
+		uuid(B126F24F-C92E-4F99-A4D9-7E224F4E9E7B),
+		helpstring("_IIGFrameEvents Interface")
+	]
+	dispinterface _IIGFrameEvents
+	{
+		properties:
+		methods:
+	};
+	[
+		uuid(73090B4B-ABB2-4656-BC83-7D9F714E99C8),
+		control,
+		helpstring("IGFrameControl Class")
+	]
+	coclass IGFrameControl
+	{
+		[default] interface IIGFrame;
+		[default, source] dispinterface _IIGFrameEvents;
+	};
+	[
+		uuid(2F3202D4-EE48-44BE-B9AC-D0A070826479),
+		helpstring("_IIGMultiFrameEvents Interface")
+	]
+	dispinterface _IIGMultiFrameEvents
+	{
+		properties:
+		methods:
+	};
+	[
+		uuid(C06A446A-A4C0-4D97-8A0A-A128CE852CC3),
+		control,
+		helpstring("IGMultiFrame Class")
+	]
+	coclass IGMultiFrame
+	{
+		[default] interface IIGMultiFrame;
+		[default, source] dispinterface _IIGMultiFrameEvents;
+	};
+	[
+		uuid(03C242A1-B601-40D4-9AAD-139771524F54),
+		helpstring("_IIGMenuBarEvents Interface")
+	]
+	dispinterface _IIGMenuBarEvents
+	{
+		properties:
+		methods:
+	};
+	[
+		uuid(E53E76E2-ABF8-4748-8B12-5890166EBC3E),
+		control,
+		helpstring("IGMenuBar Class")
+	]
+	coclass IGMenuBar
+	{
+		[default] interface IIGMenuBar;
+		[default, source] dispinterface _IIGMenuBarEvents;
+	};
+	[
+		uuid(BBE74F2F-D803-473E-8D69-EC0C2CE00CE5),
+		helpstring("_IIGMenuBarDropButtonEvents Interface")
+	]
+	dispinterface _IIGMenuBarDropButtonEvents
+	{
+		properties:
+		methods:
+	};
+	[
+		uuid(BAE17D3F-8CB4-4B0C-A2C6-650B534F5367),
+		control,
+		helpstring("IGMenuBarDropButton Class")
+	]
+	coclass IGMenuBarDropButton
+	{
+		[default] interface IIGMenuBarDropButton;
+		[default, source] dispinterface _IIGMenuBarDropButtonEvents;
+	};
+	[
+		uuid(42CFF718-C1D7-4162-8950-BADC1AEEF87B),
+		control,
+		helpstring("IGLibraryMenuButton Class")
+	]
+	coclass IGLibraryMenuButton
+	{
+		[default] interface IIGLibraryMenuButton;
+	};
+	[
+		uuid(6771CB5B-CFF8-42DA-836E-BA94E7FE2F2C),
+		helpstring("_IIGImageLibraryEvents Interface")
+	]
+	dispinterface _IIGImageLibraryEvents
+	{
+		properties:
+		methods:
+		[id(1), helpstring("Notify the client that an image has to be opened")]
+		void OnOpenImage([in]BSTR bstrImagePath);
+	};
+	[
+		uuid(01A323CA-7FCC-4AF1-86A9-38F17A92BCA5),
+		control,
+		helpstring("IGImageLibrary Class")
+	]
+	coclass IGImageLibrary
+	{
+		[default] interface IIGImageLibrary;
+		[default, source] dispinterface _IIGImageLibraryEvents;
+	};
+	[
+		uuid(931738C4-FB98-4c62-8E5A-D0924099654F),
+		helpstring("_IIGDockPanelEvents Interface")
+	]
+	dispinterface _IIGDockPanelEvents
+	{
+		properties:
+		methods:
+		[id(1), helpstring("Notify the client that the panel is opening")]
+		void OnPanelOpening();
+		[id(2), helpstring("Notify the client that the panel is opened")]
+		void OnPanelOpened();
+		[id(3), helpstring("Notify the client that the panel is closing")]
+		void OnPanelClosing();
+		[id(4), helpstring("Notify the client that the panel is closed")]
+		void OnPanelClosed();
+	};
+	[
+		uuid(F1B854B3-C4D6-4FAC-8114-1B6789B54758),
+		control,
+		helpstring("IGDockPanel Class")
+	]
+	coclass IGDockPanel
+	{
+		[default] interface IIGDockPanel;
+		[default, source] dispinterface _IIGDockPanelEvents;
+	};
+	[
+		uuid(BBD00962-6F98-45C4-8BB1-3AB742F2F3A5),
+		helpstring("_IIGWorkspaceEvents Interface")
+	]
+	dispinterface _IIGWorkspaceEvents
+	{
+		properties:
+		methods:
+	};
+	[
+		uuid(008C3FE6-C81C-4D05-9F9D-0F3E0ADB672C),
+		helpstring("IGWorkspace Class")
+	]
+	coclass IGWorkspace
+	{
+		[default] interface IIGWorkspace;
+		[default, source] dispinterface _IIGWorkspaceEvents;
+	};
+	[
+		uuid(D42A7974-A9FA-4400-A267-ED450997166D),
+		helpstring("_IIGLayerManagerEvents Interface")
+	]
+	dispinterface _IIGLayerManagerEvents
+	{
+		properties:
+		methods:
+	};
+	[
+		uuid(8E8BAC98-FAB9-4434-B40B-5B0CD1162C0C),
+		helpstring("IGLayerManager Class")
+	]
+	coclass IGLayerManager
+	{
+		[default] interface IIGLayerManager;
+		[default, source] dispinterface _IIGLayerManagerEvents;
+	};
+	[
+		uuid(2C692EC6-97F7-45B2-8F7D-DA597552223F),
+		helpstring("IGPropertyManager Class")
+	]
+	coclass IGPropertyManager
+	{
+		[default] interface IIGPropertyManager;
+	};
+	[
+		uuid(020BBAD4-52E8-44A2-9231-B4CD7858CE7B),
+		helpstring("IGFramePropertyManager Class")
+	]
+	coclass IGFramePropertyManager
+	{
+		[default] interface IIGPropertyManager;
+	};
+	[
+		uuid(F9E65B70-C1E5-4058-B587-9BA98BC59C83),
+		control,
+		helpstring("IGSimpleButton Class")
+	]
+	coclass IGSimpleButton
+	{
+		[default] interface IIGSimpleButton;
+	};
+	[
+		uuid(D252C9E8-0B65-41FC-9689-CC61CE096853),
+		control,
+		helpstring("IGScrollbar Class")
+	]
+	coclass IGScrollbar
+	{
+		[default] interface IIGScrollbar;
+	};
+	[
+		uuid(9B8BD9F2-10F5-40E2-B33F-3AC8F5E3AD9B),
+		control,
+		helpstring("IGHistoryManager Class")
+	]
+	coclass IGHistoryManager
+	{
+		[default] interface IIGHistoryManager;
+	};
+	[
+		uuid(44C6FEE5-826A-419C-AE60-1A7FC7F08E0C),
+		helpstring("IGToolBox Class")
+	]
+	coclass IGToolBox
+	{
+		[default] interface IIGToolBox;
+	};
+	[
+		uuid(DF95F65E-E9E9-4B63-893D-D484C77CE09E),
+		helpstring("IGMainWindow Class")
+	]
+	coclass IGMainWindow
+	{
+		[default] interface IIGMainWindow;
+	};
+	[
+		uuid(18B387CD-5517-4173-A28E-12CE04FC71CD),
+		helpstring("IGSocket Class")
+	]
+	coclass IGSocket
+	{
+		[default] interface IIGSocket;
+	};
+};

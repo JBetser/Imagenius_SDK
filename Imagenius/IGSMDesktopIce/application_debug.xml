@@ -1,0 +1,32 @@
+<!--
+ **********************************************************************
+
+ Copyright (c) 2003-2012 ZeroC, Inc. All rights reserved.
+
+ This copy of Ice is licensed to you under the terms described in the
+ ICE_LICENSE file included in this distribution.
+
+ **********************************************************************
+-->
+
+<icegrid>
+
+  <application name="IGServerControllerApp">
+
+    <node name="node1">
+
+      <server id="IGServerControllerServer" exe="C:\Imagenius\Testing\IGSMDesktop\IGSMDesktopIce.exe" activation="on-demand">
+        <adapter name="IGServerControllerIce" endpoints="tcp -h 127.0.0.1">
+          <object identity="serverController" type="::IGServerController::IGServerControllerIce" property="Identity"/>
+        </adapter>
+
+        <property name="IceMX.Metrics.Debug.GroupBy" value="id"/>
+        <property name="IceMX.Metrics.Debug.Disabled" value="1"/>
+        <property name="IceMX.Metrics.ByParent.GroupBy" value="parent"/>
+        <property name="IceMX.Metrics.ByParent.Disabled" value="1"/>
+      </server>
+    </node>
+
+  </application>
+
+</icegrid>

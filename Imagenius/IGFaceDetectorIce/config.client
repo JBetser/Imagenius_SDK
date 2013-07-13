@@ -1,0 +1,22 @@
+#
+# The client reads this property to create the reference to the
+# "faceDetectorService" object in the server.
+#
+IGFaceDetectorIce.Proxy0=ProxyIGFaceDetectorIceBox0
+IGFaceDetectorIce.Proxy1=ProxyIGFaceDetectorIceBox1
+IGFaceDetectorIce.Proxy2=ProxyIGFaceDetectorIceBox2
+IGFaceDetectorIce.Proxy3=ProxyIGFaceDetectorIceBox3
+IGFaceDetectorIce.Proxy4=ProxyIGFaceDetectorIceBox4
+IGFaceDetectorIce.Proxy5=ProxyIGFaceDetectorIceBox5
+IGFaceDetectorIce.Proxy6=ProxyIGFaceDetectorIceBox6
+IGFaceDetectorIce.Proxy7=ProxyIGFaceDetectorIceBox7
+IGFaceDetectorIce.Proxy8=ProxyIGFaceDetectorIceBox8
+IGFaceDetectorIce.Proxy9=ProxyIGFaceDetectorIceBox9
+IGFaceDetectorIce.Proxy10=ProxyIGFaceDetectorIceBox10
+IGFaceDetectorIce.Proxy11=ProxyIGFaceDetectorIceBox11
+IGFaceDetectorIce.Proxy12=ProxyIGFaceDetectorIceBox12
+
+#
+# The IceGrid locator proxy.
+#
+Ice.Default.Locator=IGFaceDetectorIceGrid/Locator:default -h localhost -p 4061

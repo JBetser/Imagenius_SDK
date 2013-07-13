@@ -1,0 +1,33 @@
+HKCR
+{
+	IGPictureEditor.IGFramePropertyManager.1 = s 'IGFramePropertyManager Class'
+	{
+		CLSID = s '{020BBAD4-52E8-44A2-9231-B4CD7858CE7B}'
+	}
+	IGPictureEditor.IGFramePropertyManager = s 'IGFramePropertyManager Class'
+	{
+		CLSID = s '{020BBAD4-52E8-44A2-9231-B4CD7858CE7B}'
+		CurVer = s 'IGPictureEditor.IGFramePropertyManager.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {020BBAD4-52E8-44A2-9231-B4CD7858CE7B} = s 'IGFramePropertyManager Class'
+		{
+			ProgID = s 'IGPictureEditor.IGFramePropertyManager.1'
+			VersionIndependentProgID = s 'IGPictureEditor.IGFramePropertyManager'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			ForceRemove 'Control'
+			ForceRemove 'ToolboxBitmap32' = s '%MODULE%, 107'
+			'MiscStatus' = s '0'
+			{
+			    '1' = s '%OLEMISC%'
+			}
+			'TypeLib' = s '{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}'
+			'Version' = s '1.0'
+		}
+	}
+}

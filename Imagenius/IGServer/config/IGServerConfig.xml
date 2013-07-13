@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Common>
+  <ServerUserPath>\\192.168.1.25\Shared\Imagenius\IGData\UserAccounts</ServerUserPath>
+  <LogPath>\\192.168.1.25\Shared\Imagenius\IGData\Logs</LogPath>
+  <LogLevel>0</LogLevel>
+</Common>

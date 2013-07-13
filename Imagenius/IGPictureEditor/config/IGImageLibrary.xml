@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menubarconfig transparent = "1">
+  <button name = "Add" click ="101" >
+  </button>
+  <button name = "Open" click ="102" >
+  </button>
+  <button name = "Remove" click ="103" >
+  </button>
+  <button name = "Default" click ="104" >
+  </button>
+  <button name = "Close" click ="105" >
+  </button>
+</menubarconfig>

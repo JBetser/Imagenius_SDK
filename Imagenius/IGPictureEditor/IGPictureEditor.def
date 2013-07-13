@@ -1,0 +1,10 @@
+; IGPictureEditor.def : Declares the module parameters.
+
+LIBRARY      "IGPictureEditor.DLL"
+
+EXPORTS
+	DllCanUnloadNow		PRIVATE
+	DllGetClassObject	PRIVATE
+	DllRegisterServer	PRIVATE
+	DllUnregisterServer	PRIVATE
+	DllInstall		PRIVATE

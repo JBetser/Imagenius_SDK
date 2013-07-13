@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Common>
+  <ServerUserPath>C:\Imagenius\Testing\IGServer\IGServerApplication\UserAccounts</ServerUserPath>
+  <LogPath>C:\Imagenius\Testing\IGServer\IGServerApplication\Logs</LogPath>
+  <LogLevel>5</LogLevel>
+</Common>

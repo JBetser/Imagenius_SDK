@@ -1,0 +1,16 @@
+# Configuration file (03/29/13 12:56:41.074)
+
+# Server configuration
+Ice.Admin.ServerId=IGServerControllerServer
+Ice.Admin.Endpoints=tcp -h localhost
+Ice.ProgramName=IGServerControllerServer
+# Object adapter IGServerControllerIce
+IGServerControllerIce.Endpoints=tcp -h 192.168.1.25
+IGServerControllerIce.AdapterId=IGServerControllerServer.IGServerControllerIce
+# Server descriptor properties
+Identity=serverController
+IceMX.Metrics.Debug.GroupBy=id
+IceMX.Metrics.Debug.Disabled=1
+IceMX.Metrics.ByParent.GroupBy=parent
+IceMX.Metrics.ByParent.Disabled=1
+Ice.Default.Locator=IGServerControllerIceGrid/Locator:default -h 127.0.0.1 -p 4062

@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="IGColor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGHyperLink.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGScrollBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGSplashWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGTabBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Horz.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGColor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGHyperLink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGMemDC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGScrollBar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGSplashWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGTabBar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGTrace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vert.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{d3e6efa6-279d-47d7-befd-1fa21f1df1d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{a286fa45-d311-43b5-bb32-7cb5309b1c87}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

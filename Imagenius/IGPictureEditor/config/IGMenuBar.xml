@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menubarconfig buttonsize = "100">
+  <button name = "Library" click = "200">
+  </button>
+  <button name = "Tools">
+    <button name = "Resize" click = "210"></button>
+    <button name = "Rotate" click = "211" separator = "1"></button>
+    <button name = "Histogram">
+      <button name = "Equalize" click = "220"></button>
+    </button>
+    <button name = "Filter" separator = "1">
+      <button name = "Erode" click = "230"></button>
+      <button name = "Dilate" click = "231"></button>
+      <button name = "Blur" click = "232"></button>
+      <button name = "Gaussian" click = "233"></button>
+      <button name = "Gradient" click = "234"></button>
+      <button name = "Laplacian" click = "235"></button>
+    </button>
+    <button name = "Brightness" click = "212"></button>
+    <button name = "Contrast" click = "213"></button>
+    <button name = "Color" click = "214" separator = "1"></button>
+    <button name = "Red eye" click = "215"></button>
+  </button>
+  <button name = "Options" click = "201">
+  </button>
+  <button name = "Account" click = "202">
+  </button>
+</menubarconfig>

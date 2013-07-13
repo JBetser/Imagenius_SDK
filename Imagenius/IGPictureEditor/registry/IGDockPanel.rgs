@@ -1,0 +1,34 @@
+HKCR
+{
+	IGPictureEditor.IGDockPanel.1 = s 'IGDockPanel Class'
+	{
+		CLSID = s '{F1B854B3-C4D6-4FAC-8114-1B6789B54758}'
+	}
+	IGPictureEditor.IGDockPanel = s 'IGDockPanel Class'
+	{
+		CLSID = s '{F1B854B3-C4D6-4FAC-8114-1B6789B54758}'
+		CurVer = s 'IGPictureEditor.IGDockPanel.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {F1B854B3-C4D6-4FAC-8114-1B6789B54758} = s 'IGDockPanel Class'
+		{
+			ProgID = s 'IGPictureEditor.IGDockPanel.1'
+			VersionIndependentProgID = s 'IGPictureEditor.IGDockPanel'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			val AppID = s '%APPID%'
+			ForceRemove 'Control'
+			ForceRemove 'ToolboxBitmap32' = s '%MODULE%, 127'
+			'MiscStatus' = s '0'
+			{
+			    '1' = s '%OLEMISC%'
+			}
+			'TypeLib' = s '{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}'
+			'Version' = s '1.0'
+		}
+	}
+}

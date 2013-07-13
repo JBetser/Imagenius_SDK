@@ -1,0 +1,33 @@
+HKCR
+{
+	IGPictureEditor.IGScrollar.1 = s 'IGScrollar Class'
+	{
+		CLSID = s '{D252C9E8-0B65-41FC-9689-CC61CE096853}'
+	}
+	IGPictureEditor.IGScrollar = s 'IGScrollar Class'
+	{
+		CLSID = s '{D252C9E8-0B65-41FC-9689-CC61CE096853}'
+		CurVer = s 'IGPictureEditor.IGScrollar.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {D252C9E8-0B65-41FC-9689-CC61CE096853} = s 'IGScrollar Class'
+		{
+			ProgID = s 'IGPictureEditor.IGScrollar.1'
+			VersionIndependentProgID = s 'IGPictureEditor.IGScrollar'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			ForceRemove 'Control'
+			ForceRemove 'ToolboxBitmap32' = s '%MODULE%, 1013'
+			'MiscStatus' = s '0'
+			{
+			    '1' = s '%OLEMISC%'
+			}
+			'TypeLib' = s '{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}'
+			'Version' = s '1.0'
+		}
+	}
+}

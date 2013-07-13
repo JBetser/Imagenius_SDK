@@ -1,0 +1,26 @@
+HKCR
+{
+	IGPictureEditor.IGToolBox.1 = s 'IGToolBox Class'
+	{
+		CLSID = s '{44C6FEE5-826A-419C-AE60-1A7FC7F08E0C}'
+	}
+	IGPictureEditor.IGToolBox = s 'IGToolBox Class'
+	{
+		CLSID = s '{44C6FEE5-826A-419C-AE60-1A7FC7F08E0C}'
+		CurVer = s 'IGPictureEditor.IGToolBox.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {44C6FEE5-826A-419C-AE60-1A7FC7F08E0C} = s 'IGToolBox Class'
+		{
+			ProgID = s 'IGPictureEditor.IGToolBox.1'
+			VersionIndependentProgID = s 'IGPictureEditor.IGToolBox'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			'TypeLib' = s '{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}'
+		}
+	}
+}

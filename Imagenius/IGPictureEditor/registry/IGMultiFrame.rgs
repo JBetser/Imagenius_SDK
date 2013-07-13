@@ -1,0 +1,34 @@
+HKCR
+{
+	IGPictureEditor.IGMultiFrame.1 = s 'IGMultiFrame Class'
+	{
+		CLSID = s '{C06A446A-A4C0-4D97-8A0A-A128CE852CC3}'
+	}
+	IGPictureEditor.IGMultiFrame = s 'IGMultiFrame Class'
+	{
+		CLSID = s '{C06A446A-A4C0-4D97-8A0A-A128CE852CC3}'
+		CurVer = s 'IGPictureEditor.IGMultiFrame.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {C06A446A-A4C0-4D97-8A0A-A128CE852CC3} = s 'IGMultiFrame Class'
+		{
+			ProgID = s 'IGPictureEditor.IGMultiFrame.1'
+			VersionIndependentProgID = s 'IGPictureEditor.IGMultiFrame'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			val AppID = s '%APPID%'
+			ForceRemove 'Control'
+			ForceRemove 'ToolboxBitmap32' = s '%MODULE%, 109'
+			'MiscStatus' = s '0'
+			{
+			    '1' = s '%OLEMISC%'
+			}
+			'TypeLib' = s '{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}'
+			'Version' = s '1.0'
+		}
+	}
+}

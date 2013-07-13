@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <assemblyIdentity name="IGPictureEditor.dll" type="win32" version="1.0.0.1" processorArchitecture="x86"></assemblyIdentity>
+  <description>Imagenius Picture Editor ActiveX</description>
+  <file name="IGPictureEditor.dll" hashalg="SHA1">
+    <comClass clsid="{91E7B5FC-0BF6-4F35-8186-EF0104A479E1}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="MainWindow Class"></comClass>
+    <comClass clsid="{73090B4B-ABB2-4656-BC83-7D9F714E99C8}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="IGFrameControl Class"></comClass>
+    <comClass clsid="{C06A446A-A4C0-4D97-8A0A-A128CE852CC3}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="IGMultiFrame Class"></comClass>
+    <comClass clsid="{E53E76E2-ABF8-4748-8B12-5890166EBC3E}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="IGMenuBar Class"></comClass>
+    <comClass clsid="{BAE17D3F-8CB4-4B0C-A2C6-650B534F5367}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="IGMenuBarDropButton Class"></comClass>
+    <comClass clsid="{42CFF718-C1D7-4162-8950-BADC1AEEF87B}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="IGLibraryMenuButton Class"></comClass>
+    <comClass clsid="{01A323CA-7FCC-4AF1-86A9-38F17A92BCA5}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="IGImageLibrary Class"></comClass>
+    <comClass clsid="{F1B854B3-C4D6-4FAC-8114-1B6789B54758}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="IGDockPanel Class"></comClass>
+    <comClass clsid="{008C3FE6-C81C-4D05-9F9D-0F3E0ADB672C}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="IGWorkspace Class"></comClass>
+    <comClass clsid="{8E8BAC98-FAB9-4434-B40B-5B0CD1162C0C}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="IGLayerManager Class"></comClass>
+    <comClass clsid="{2C692EC6-97F7-45B2-8F7D-DA597552223F}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="IGPropertyManager Class"></comClass>
+    <comClass clsid="{020BBAD4-52E8-44A2-9231-B4CD7858CE7B}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="IGFramePropertyManager Class"></comClass>
+    <comClass clsid="{F9E65B70-C1E5-4058-B587-9BA98BC59C83}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="IGSimpleButton Class"></comClass>
+    <comClass clsid="{D252C9E8-0B65-41FC-9689-CC61CE096853}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="IGScrollbar Class"></comClass>
+    <comClass clsid="{9B8BD9F2-10F5-40E2-B33F-3AC8F5E3AD9B}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="IGHistoryManager Class"></comClass>
+    <comClass clsid="{44C6FEE5-826A-419C-AE60-1A7FC7F08E0C}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="IGToolBox Class"></comClass>
+    <comClass clsid="{DF95F65E-E9E9-4B63-893D-D484C77CE09E}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="IGMainWindow Class"></comClass>
+    <comClass clsid="{18B387CD-5517-4173-A28E-12CE04FC71CD}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" description="IGSocket Class"></comClass>
+    <typelib tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" version="1.0" helpdir="" flags="HASDISKIMAGE"></typelib>
+  </file>
+  <comInterfaceExternalProxyStub name="IMainWindow" iid="{9F2FDBAF-D116-4B74-A517-2B7AF2ACA869}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IIGFrame" iid="{DF9A05EC-8289-4AA5-9A5F-BD24A33C563C}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IIGMultiFrame" iid="{252A54F9-3639-4F24-8E06-D66546ACE93F}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IDropTarget" iid="{00000122-0000-0000-C000-000000000046}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00000122-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IDataObject" iid="{0000010E-0000-0000-C000-000000000046}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{0000010E-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IEnumFORMATETC" iid="{00000103-0000-0000-C000-000000000046}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00000103-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IAdviseSink" iid="{0000010F-0000-0000-C000-000000000046}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{0000010F-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IMoniker" iid="{0000000F-0000-0000-C000-000000000046}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{0000000F-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IPersistStream" iid="{00000109-0000-0000-C000-000000000046}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00000109-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IPersist" iid="{0000010C-0000-0000-C000-000000000046}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{0000010C-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IStream" iid="{0000000C-0000-0000-C000-000000000046}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{0000000C-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="ISequentialStream" iid="{0C733A30-2A1C-11CE-ADE5-00AA0044773D}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{0C733A30-2A1C-11CE-ADE5-00AA0044773D}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IBindCtx" iid="{0000000E-0000-0000-C000-000000000046}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{0000000E-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IRunningObjectTable" iid="{00000010-0000-0000-C000-000000000046}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00000010-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IEnumMoniker" iid="{00000102-0000-0000-C000-000000000046}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00000102-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IEnumString" iid="{00000101-0000-0000-C000-000000000046}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00000101-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IEnumSTATDATA" iid="{00000105-0000-0000-C000-000000000046}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00000105-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IIGMenuBar" iid="{21AF46D9-60E7-4F44-B609-27D363DA7C7D}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IIGMenuBarDropButton" iid="{6B1D4D23-D8BD-4095-B344-FA1373949B1A}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IIGLibraryMenuButton" iid="{46CC152B-E803-46B6-99A0-FE1771AC31D3}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IIGImageLibrary" iid="{FFEC1F6B-7F30-4B86-BB65-0EFF6AA43AB3}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IIGDockPanel" iid="{052C51EB-7B92-43CF-9223-303B783F5E2C}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IIGWorkspace" iid="{E1A1F103-92BB-4C44-802F-BBF9312DAF31}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IIGLayerManager" iid="{2EDC0F94-0772-41B3-97B5-363000DBF494}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IIGSimpleButton" iid="{6866D3DC-9E1A-4C28-A7BA-06FF52B6DA7F}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IIGScrollbar" iid="{B822CA32-D89B-47FA-ACF2-988389F8AF9E}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IIGHistoryManager" iid="{F70E29C1-72F8-4D25-810D-C5EFD7818BBE}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IIGToolBox" iid="{E061C834-3DEB-462B-902F-24593A88799C}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IIGMainWindow" iid="{A24EB55A-84ED-4D68-9638-17CD58ED8ED1}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+  <comInterfaceExternalProxyStub name="IIGSocket" iid="{08F352B0-0D73-40F0-B848-C6A056CD3BB2}" tlbid="{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+</assembly>

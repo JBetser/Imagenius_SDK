@@ -1,0 +1,48 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="IGSMDesktopIce.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="IP_LOCAL" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">127.0.0.1</Value>
+    </Setting>
+    <Setting Name="DRIVE_INPUT" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">I:</Value>
+    </Setting>
+    <Setting Name="DRIVE_OUTPUT" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">O:</Value>
+    </Setting>
+    <Setting Name="DRIVE_SHARED" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">S:</Value>
+    </Setting>
+    <Setting Name="DRIVE_APPLI" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">C:</Value>
+    </Setting>
+    <Setting Name="USER_NAME" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Administrator</Value>
+    </Setting>
+    <Setting Name="USER_DOMAIN" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Imagenius</Value>
+    </Setting>
+    <Setting Name="SERVERMGR_PORT_INPUT" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
+    <Setting Name="SERVERMGR_NBSERVERS" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="SERVERMGR_IPSHARE" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">127.0.0.1</Value>
+    </Setting>
+    <Setting Name="SERVERMGR_IPWEBSERVER" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">127.0.0.1</Value>
+    </Setting>
+    <Setting Name="USER_PASSWORD" Type="System.String" Scope="Application">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DO_MOUNT" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Yes</Value>
+    </Setting>
+    <Setting Name="SDK_PATH" Type="System.String" Scope="Application">
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
+</SettingsFile>

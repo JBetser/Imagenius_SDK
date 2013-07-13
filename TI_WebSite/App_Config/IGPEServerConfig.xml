@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServerConfig>
+  <ServerMap>
+    <Server name="localhost" port="4062">127.0.0.1</Server>
+  </ServerMap>
+</ServerConfig>

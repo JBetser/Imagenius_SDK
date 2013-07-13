@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menubarconfig transparent = "1">
+  <button name = "Begin" click ="301" icon ="219">
+  </button>
+  <button name = "PageLeft" click ="302" icon ="222">
+  </button>
+  <button name = "Left" click ="303" icon="221">
+  </button>
+  <button name = "Right" click ="304" icon="218">
+  </button>
+  <button name = "PageRight" click ="305" icon="223">
+  </button>
+  <button name = "End" click ="306" icon ="220">
+  </button>
+</menubarconfig>

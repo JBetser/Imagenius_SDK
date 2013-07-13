@@ -1,0 +1,315 @@
+inline BYTE* CxImage::GetPixelColor24(const POINT& pt)
+{
+	return info.pImage + pt.y*info.dwEffWidth + pt.x*3;
+}
+
+#define PT_ADD(XY_COORD)\
+	pt.##XY_COORD##++;\
+	*pNeighbours++ = pt;
+
+#define PT_ADD_2(XY_COORD)\
+	pt.##XY_COORD##+=2;\
+	*pNeighbours++ = pt;
+
+#define PT_REM(XY_COORD)\
+	pt.##XY_COORD##--;\
+	*pNeighbours++ = pt;
+
+#define PT_ADD_X_ONCE\
+	pt.x++;\
+	if (!*(++pbIsDone))\
+	{	*pNeighbours++ = pt;\
+		*pbIsDone = true;}
+
+#define PT_ADD_Y_ONCE\
+	pt.y++;\
+	pbIsDone+=head.biWidth;\
+	if (!*pbIsDone)\
+	{	*pNeighbours++ = pt;\
+		*pbIsDone = true;}
+
+#define PT_ADD_2X_ONCE\
+	pt.x+=2;\
+	pbIsDone+=2;\
+	if (!*pbIsDone)\
+	{	*pNeighbours++ = pt;\
+		*pbIsDone = true;}
+
+#define PT_ADD_2Y_ONCE\
+	pt.y+=2;\
+	pbIsDone+=2*head.biWidth;\
+	if (!*pbIsDone)\
+	{	*pNeighbours++ = pt;\
+		*pbIsDone = true;}
+
+#define PT_REM_X_ONCE\
+	pt.x--;\
+	if (!*(--pbIsDone))\
+	{	*pNeighbours++ = pt;\
+		*pbIsDone = true;}
+
+#define PT_REM_Y_ONCE\
+	pt.y--;\
+	pbIsDone-=head.biWidth;\
+	if (!*pbIsDone)\
+	{	*pNeighbours++ = pt;\
+		*pbIsDone = true;}
+
+inline void CxImage::GetPixelNeighbours(POINT pt, POINT *pNeighbours, int& nNbNeighbours)
+{
+	POINT *pTabNeighbours = pNeighbours;
+	// inspect all around pt
+	if (pt.x > 0) {
+		PT_REM(x)
+		if (pt.y > 0) {			
+			PT_REM(y) PT_ADD(x)
+			if (pt.x < head.biWidth - 1) {
+				PT_ADD(x) PT_ADD(y)
+				if (pt.y < head.biHeight - 1) {
+					PT_ADD(y) PT_REM(x) PT_REM(x)	// all neighbours							=>	8 neighbours
+				}									// (else : missing top)						=>	5 neighbours
+			}
+			else {				
+				if (pt.y < head.biHeight - 2) {
+					PT_ADD_2(y) PT_REM(x)			// missing right							=>	5 neighbours
+				}									// (else : missing top + right)				=>	3 neighbours
+			}
+		}
+		else {
+			if (pt.x < head.biWidth - 2) {
+				PT_ADD_2(x)
+				if (pt.y < head.biHeight - 1) {
+					PT_ADD(y) PT_REM(x) PT_REM(x)	// missing bottom							=>	5 neighbours
+				}									// (else : missing top + bottom)			=>	2 neighbours
+			}
+			else {
+				if (pt.y < head.biHeight - 1) {
+					PT_ADD(y) PT_ADD(x)				// missing bottom + right					=>	3 neighbours
+				}									// (else : missing top + bottom + right)	=>	1 neighbour
+			}
+		}
+	}
+	else
+	{
+		if (pt.y > 0) {
+			PT_REM(y)
+			if (pt.x < head.biWidth - 1) {
+				PT_ADD(x) PT_ADD(y)
+				if (pt.y < head.biHeight - 1) {
+					PT_ADD(y) PT_REM(x)				// missing left							=>	5 neighbours
+				}									// (else : missing top + left)			=>	3 neighbours
+			}
+			else {
+				if (pt.y < head.biHeight - 2){
+					PT_ADD_2(y)						// missing left	+ right					=>	2 neighbours
+				}									// (else : missing top + left + right)	=>	1 neighbour
+			}
+		}
+		else
+		{
+			if (pt.x < head.biWidth - 1) {
+				PT_ADD(x)
+				if (pt.y < head.biHeight - 1) {
+					PT_ADD(y) PT_REM(x)				// missing bottom + left				=>	3 neighbours
+				}									// (else : missing top + bottom + left)	=>	1 neighbour
+			}
+			else {
+				if (pt.y < head.biHeight - 1) {
+					PT_ADD(y)						// missing bottom + left + right		=>	1 neighbour
+				}
+			}
+		}
+	}
+	nNbNeighbours = (pNeighbours - pTabNeighbours);
+}
+	
+inline void CxImage::GetPixelNeighbours(POINT pt, POINT *pNeighbours, bool *pbIsDone, int& nNbNeighbours)
+{
+	POINT *pTabNeighbours = pNeighbours;
+	// inspect all around pt
+	if (pt.x > 0) {
+		PT_REM_X_ONCE
+		if (pt.y > 0) {			
+			PT_REM_Y_ONCE PT_ADD_X_ONCE
+			if (pt.x < head.biWidth - 1) {
+				PT_ADD_X_ONCE PT_ADD_Y_ONCE
+				if (pt.y < head.biHeight - 1) {
+					PT_ADD_Y_ONCE PT_REM_X_ONCE PT_REM_X_ONCE	// all neighbours							=>	8 neighbours
+				}									// (else : missing top)						=>	5 neighbours
+			}
+			else {				
+				if (pt.y < head.biHeight - 2) {
+					PT_ADD_2Y_ONCE PT_REM_X_ONCE			// missing right							=>	5 neighbours
+				}									// (else : missing top + right)				=>	3 neighbours
+			}
+		}
+		else {
+			if (pt.x < head.biWidth - 2) {
+				PT_ADD_2X_ONCE
+				if (pt.y < head.biHeight - 1) {
+					PT_ADD_Y_ONCE PT_REM_X_ONCE PT_REM_X_ONCE	// missing bottom							=>	5 neighbours
+				}									// (else : missing top + bottom)			=>	2 neighbours
+			}
+			else {
+				if (pt.y < head.biHeight - 1) {
+					PT_ADD_Y_ONCE PT_ADD_X_ONCE				// missing bottom + right					=>	3 neighbours
+				}									// (else : missing top + bottom + right)	=>	1 neighbour
+			}
+		}
+	}
+	else
+	{
+		if (pt.y > 0) {
+			PT_REM_Y_ONCE
+			if (pt.x < head.biWidth - 1) {
+				PT_ADD_X_ONCE PT_ADD_Y_ONCE
+				if (pt.y < head.biHeight - 1) {
+					PT_ADD_Y_ONCE PT_REM_X_ONCE				// missing left							=>	5 neighbours
+				}									// (else : missing top + left)			=>	3 neighbours
+			}
+			else {
+				if (pt.y < head.biHeight - 2){
+					PT_ADD_2Y_ONCE						// missing left	+ right					=>	2 neighbours
+				}									// (else : missing top + left + right)	=>	1 neighbour
+			}
+		}
+		else
+		{
+			if (pt.x < head.biWidth - 1) {
+				PT_ADD_X_ONCE
+				if (pt.y < head.biHeight - 1) {
+					PT_ADD_Y_ONCE PT_REM_X_ONCE				// missing bottom + left				=>	3 neighbours
+				}									// (else : missing top + bottom + left)	=>	1 neighbour
+			}
+			else {
+				if (pt.y < head.biHeight - 1) {
+					PT_ADD_Y_ONCE						// missing bottom + left + right		=>	1 neighbour
+				}
+			}
+		}
+	}
+	nNbNeighbours = (pNeighbours - pTabNeighbours);
+}
+
+/**
+ * Checks if the coordinates are inside the selection.
+ * "blind" version assumes that (x,y) is inside to the image.
+ */
+inline bool CxImage::BlindSelectionIsInside(long x, long y)
+{
+#ifdef _DEBUG
+	if (!IsInside(x,y))
+  #if CXIMAGE_SUPPORT_EXCEPTION_HANDLING
+		throw 0;
+  #else
+		return 0;
+  #endif
+#endif
+	if (pSelection==NULL) return true;
+	return pSelection[x+y*head.biWidth]!=0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/**
+ * This is (a bit) faster version of GetPixelColor. 
+ * It tests bounds only in debug mode (_DEBUG defined).
+ * 
+ * It is an error to request out-of-borders pixel with this method. 
+ * In DEBUG mode an exception will be thrown, and data will be violated in non-DEBUG mode. 
+ * \author ***bd*** 2.2004
+ */
+RGBQUAD CxImage::BlindGetPixelColor(const long x,const long y, bool bGetAlpha)
+{
+  RGBQUAD rgb;
+#ifdef _DEBUG
+	if ((pDib==NULL) || !IsInside(x,y))
+  #if CXIMAGE_SUPPORT_EXCEPTION_HANDLING
+		throw 0;
+  #else
+		{rgb.rgbReserved = 0; return rgb;}
+  #endif
+#endif
+
+	if (head.biClrUsed){
+		rgb = GetPaletteColor(BlindGetPixelIndex(x,y));
+	} else {
+		BYTE* iDst  = info.pImage + y*info.dwEffWidth + x*3;
+		rgb.rgbBlue = *iDst++;
+		rgb.rgbGreen= *iDst++;
+		rgb.rgbRed  = *iDst;
+		rgb.rgbReserved = 0; //needed for images without alpha layer
+	}
+#if CXIMAGE_SUPPORT_ALPHA
+	if (pAlpha && bGetAlpha) rgb.rgbReserved = BlindAlphaGet(x,y);
+#else
+	rgb.rgbReserved = 0;
+#endif //CXIMAGE_SUPPORT_ALPHA
+	return rgb;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void CxImage::BlindSetPixelColor(long x,long y,RGBQUAD c, bool bSetAlpha)
+{
+#ifdef _DEBUG
+	if ((pDib==NULL)||(x<0)||(y<0)||
+		(x>=head.biWidth)||(y>=head.biHeight))
+  #if CXIMAGE_SUPPORT_EXCEPTION_HANDLING
+		throw 0;
+  #else
+		return;
+  #endif
+#endif
+	if (head.biClrUsed)
+		BlindSetPixelIndex(x,y,GetNearestIndex(c));
+	else {
+		BYTE* iDst = info.pImage + y*info.dwEffWidth + x*3;
+		*iDst++ = c.rgbBlue;
+		*iDst++ = c.rgbGreen;
+		*iDst   = c.rgbRed;
+	}
+#if CXIMAGE_SUPPORT_ALPHA
+	if (bSetAlpha) AlphaSet(x,y,c.rgbReserved);
+#endif //CXIMAGE_SUPPORT_ALPHA
+}
+////////////////////////////////////////////////////////////////////////////////
+/**
+ * Get alpha value without boundscheck (a bit faster). Pixel must be inside the image.
+ *
+ * \author ***bd*** 2.2004
+ */
+BYTE CxImage::BlindAlphaGet(const long x,const long y)
+{
+#ifdef _DEBUG
+	if (!IsInside(x,y) || (pAlpha==0))
+  #if CXIMAGE_SUPPORT_EXCEPTION_HANDLING
+		throw 0;
+  #else
+		return 0;
+  #endif
+#endif
+	return pAlpha[x+y*head.biWidth];
+}
+////////////////////////////////////////////////////////////////////////////////
+/**
+ * Sets the alpha level for the whole image.
+ * \param level : from 0 (transparent) to 255 (opaque)
+ */
+void CxImage::AlphaSet(BYTE level)
+{
+	if (pAlpha)	memset(pAlpha,level,head.biWidth * head.biHeight);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/**
+ * Checks if the coordinates are inside the image
+ * \return true if x and y are both inside the image
+ */
+bool CxImage::IsInside(long x, long y)
+{
+  return (0<=y && y<head.biHeight && 0<=x && x<head.biWidth);
+}
+
+bool CxImage::IsInsideSel(long x, long y)
+{
+  return (info.rSelectionBox.bottom<=y && y<=info.rSelectionBox.top && info.rSelectionBox.left<=x && x<=info.rSelectionBox.right);
+}

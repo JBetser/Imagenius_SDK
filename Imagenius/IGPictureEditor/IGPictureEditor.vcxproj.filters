@@ -1,0 +1,609 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="format\FBitmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="format\FText.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="format\FDib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="format\FIGFrame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="format\FIGLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="format\FIGSelection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="format\Format.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="format\FormatComm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGAnswer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="communicable\IGCommunicable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="communicable\IGDataObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGDockPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGLayerManager_Item.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGFrameControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGFramePropertyManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGHistoryManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGImageLibrary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGImageLibrary_AddPictures.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGLayerManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGMainWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGWorkspace_ButtonPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGMainWindow_init.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGMainWindow_tools.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGMenuBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGMenuBarDropButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGMultiFrame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGPictureEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGPictureEditor_i.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGPropertyManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGRequest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGRequest_Process.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGRequest_Process_SimpleThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGSimpleButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGSocket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="toolbox\IGTool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="toolbox\IGToolBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="toolbox\IGToolCutterSquare.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="toolbox\IGToolPencil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="toolbox\IGToolRubber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IGWorkspace.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="_IIGDockPanelEvents_CP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="_IMainWindowEvents_CP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="_IIGFrameEvents_CP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="_IIGImageLibraryEvents_CP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="_IIGLayerManagerEvents_CP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="_IIGMenuBarDropButtonEvents_CP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="_IIGMenuBarEvents_CP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="_IIGMultiFrameEvents_CP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="_IIGWorkspaceEvents_CP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="commandids.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dllmain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="format\FDib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="format\FIGFrame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="format\FIGLayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="format\FIGSelection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="format\Format.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="format\FormatComm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="format\FText.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGAnswer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="communicable\IGCommunicable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="communicable\IGDataObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGDockPanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGFrameControl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGFramePropertyManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGHistoryManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGImageLibrary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGImageLibrary_AddPictures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGLayerManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGMenuBar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGMainWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGMenuBarDropButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGMultiFrame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGPictureEditor_i.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGPropertyManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGRequest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGRequest_simple.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGSimpleButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGSocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="toolbox\IGTool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="toolbox\IGToolBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGWorkspace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IGLibrary\IGControls\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\IGLibrary\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\IGLibrary\IGControls\IGControls.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="..\IGLibrary\IGLibrary.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="IGPictureEditor.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="images\AddLayer.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\End.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\Arrow.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\cursors\ArrowDown.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\cursors\ArrowDownLeft.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\cursors\ArrowDownRight.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\cursors\ArrowLeft.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\cursors\ArrowRight.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\cursors\ArrowUp.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\cursors\ArrowUpLeft.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\cursors\ArrowUpRight.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="fonts\athena_u.TTF">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\images\average_eyes_bw.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\images\average_eyes_bw_60.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\images\average_eyes_bw_70.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\images\average_eyes_bw_80.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\Begin.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\Close.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="fonts\Cursif.TTF">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\cursors\Cutter.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\cursors\CutterMinus.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\cursors\CutterPlus.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\Down.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\IGControls\images\HorizontalScrollBarChannel.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\IGControls\images\HorizontalScrollBarThumbNoColor.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\IGControls\images\HorizontalScrollBarLeftArrow.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\IGControls\images\HorizontalScrollBarRightArrow.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\IGControls\images\HorizontalScrollBarThumb.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="config\IGDeepZoomConfig.xml">
+      <Filter>Config Files</Filter>
+    </None>
+    <None Include="config\IGFrameHistory.xml">
+      <Filter>Config Files</Filter>
+    </None>
+    <None Include="config\IGImageLibrary.xml">
+      <Filter>Config Files</Filter>
+    </None>
+    <None Include="config\IGImageLibraryScroll.xml">
+      <Filter>Config Files</Filter>
+    </None>
+    <None Include="registry\IGDockPanel.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry\IGFrame.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry\IGFrameControl.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry\IGFramePropertyManager.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry\IGHistoryManager.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry\IGImageLibrary.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry\IGLayerManager.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry\IGMainWindow.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry\IGMenuBar.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry\IGMenuBarDropButton.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry\IGMultiFrame.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry\IGPictureEditor.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry\IGPropertyManager.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry\IGSimpleButton.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="IGSimpleButton.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry\IGSocket.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry\IGToolBox.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry\IGWorkspace.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry\MainWindow.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\IGLogo.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="config\IGMenuBar.xml">
+      <Filter>Config Files</Filter>
+    </None>
+    <None Include="config\IGPictureEditorConfig.xml">
+      <Filter>Config Files</Filter>
+    </None>
+    <None Include="images\IGMultiFrame.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\IGControls\images\IGProgress.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="IGPictureEditor.def">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\Invisible.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\Visible.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\Left.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\Maximize.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\MergeLayers.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\Minimize.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\NewFrame.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\PageLeft.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\PageRight.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\Pencil.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="registry.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\RemoveLayer.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\Right.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\rubber.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\Save.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\SaveAs.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\SelectorSquare.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\Start.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\images\StepAddLayer.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\StepAddLayer.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\images\StepChangeSelection.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\images\StepMergeLayers.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\images\StepMoveLayer.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\images\StepRemoveLayer.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\images\StepStart.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\Tool.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\UnMaximize.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\Up.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\Upload.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\IGControls\images\VerticalScrollBarChannel.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\IGControls\images\VerticalScrollBarDownArrow.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\IGControls\images\VerticalScrollBarThumb.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\IGControls\images\VerticalScrollBarThumbNoColor.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\IGLibrary\IGControls\images\VerticalScrollBarUpArrow.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\blood1.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\blood2.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\blood3.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\blood4.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\pox1.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\pox2.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\tears1.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\tears2.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\tears3.png">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{a5460868-cff7-416b-b4f5-219828838b84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{24210844-387e-4538-a5bc-5aa08b3e65d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{9b630526-8d02-4c1b-a841-1423182efb28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Config Files">
+      <UniqueIdentifier>{3843d82a-cec0-4628-aa8b-fb695d2bdc8c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="IGPictureEditor.idl">
+      <Filter>Resource Files</Filter>
+    </Midl>
+  </ItemGroup>
+</Project>

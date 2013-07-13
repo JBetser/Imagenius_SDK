@@ -1,0 +1,530 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ServerDebug|Win32">
+      <Configuration>ServerDebug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ServerRelease|Win32">
+      <Configuration>ServerRelease</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Template|Win32">
+      <Configuration>Template</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8DF87A6D-35F4-4EE5-B239-96E7A673D706}</ProjectGuid>
+    <RootNamespace>IGPictureEditor</RootNamespace>
+    <Keyword>AtlProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ServerRelease|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfAtl>Static</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ServerDebug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfAtl>Static</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfAtl>Static</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfAtl>Static</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ServerRelease|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\FullOptimisation.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ServerDebug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\FullOptimisation.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='ServerDebug|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ServerDebug|Win32'">$(Configuration)\</IntDir>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ServerDebug|Win32'">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ServerDebug|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='ServerRelease|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='ServerRelease|Win32'">$(Configuration)\</IntDir>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='ServerRelease|Win32'">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='ServerRelease|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='ServerDebug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='ServerDebug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='ServerDebug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='ServerRelease|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='ServerRelease|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='ServerRelease|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Template|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Template|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)IGPictureEditor.tlb</TypeLibraryName>
+      <HeaderFileName>IGPictureEditor_i.h</HeaderFileName>
+      <DllDataFileName>
+      </DllDataFileName>
+      <InterfaceIdentifierFileName>IGPictureEditor_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>IGPictureEditor_p.c</ProxyFileName>
+      <ValidateAllParameters>true</ValidateAllParameters>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>./;../IGLibrary/;../IGLibrary/FaceDetection;../IGLibrary/IGControls/;../IGLibrary/IGSmartProcessing/;format;communicable;../IGLibrary/CxImage600/CxImage/;toolbox/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <RegisterOutput>false</RegisterOutput>
+      <AdditionalDependencies>$(SolutionDir)\$(Configuration)\cximage.lib;$(SolutionDir)\$(Configuration)\IGFaceDetectorIceClient.lib;rpcrt4.lib;$(SolutionDir)\$(Configuration)\tiff.lib;$(SolutionDir)\$(Configuration)\IGLibrary.lib;$(SolutionDir)\$(Configuration)\IGControls.lib;$(SolutionDir)\$(Configuration)\FaceDetection.lib;$(SolutionDir)\$(Configuration)\IGSmartProcessing.lib;msxml2.lib;comctl32.lib;Comdlg32.lib;shell32.lib;gdiplus.lib;Msimg32.lib;Ws2_32.lib;Iphlpapi.lib;comsvcs.lib</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>.\IGPictureEditor.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)IGPictureEditor.tlb</TypeLibraryName>
+      <HeaderFileName>IGPictureEditor_i.h</HeaderFileName>
+      <DllDataFileName>
+      </DllDataFileName>
+      <InterfaceIdentifierFileName>IGPictureEditor_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>IGPictureEditor_p.c</ProxyFileName>
+      <ValidateAllParameters>true</ValidateAllParameters>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>./;../IGLibrary/;../IGLibrary/FaceDetection;../IGLibrary/IGControls/;../IGLibrary/IGSmartProcessing/;format;communicable;../IGLibrary/CxImage600/CxImage/;toolbox/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <RegisterOutput>false</RegisterOutput>
+      <AdditionalDependencies>$(SolutionDir)\$(Configuration)\cximage.lib;$(SolutionDir)\$(Configuration)\IGFaceDetectorIceClient.lib;rpcrt4.lib;$(SolutionDir)\$(Configuration)\tiff.lib;$(SolutionDir)\$(Configuration)\IGLibrary.lib;$(SolutionDir)\$(Configuration)\IGControls.lib;$(SolutionDir)\$(Configuration)\FaceDetection.lib;$(SolutionDir)\$(Configuration)\IGSmartProcessing.lib;msxml2.lib;comctl32.lib;Comdlg32.lib;shell32.lib;gdiplus.lib;Msimg32.lib;Ws2_32.lib;Iphlpapi.lib;comsvcs.lib</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>.\IGPictureEditor.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ServerDebug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)IGPictureEditor.tlb</TypeLibraryName>
+      <HeaderFileName>IGPictureEditor_i.h</HeaderFileName>
+      <DllDataFileName>
+      </DllDataFileName>
+      <InterfaceIdentifierFileName>IGPictureEditor_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>IGPictureEditor_p.c</ProxyFileName>
+      <ValidateAllParameters>true</ValidateAllParameters>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>./;../IGLibrary/;../IGLibrary/FaceDetection;../IGLibrary/IGControls/;../IGLibrary/IGSmartProcessing/;format;communicable;../IGLibrary/CxImage600/CxImage/;toolbox/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_USRDLL;_CRT_SECURE_NO_WARNINGS;IGPICTUREEDITOR_SERVER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <RegisterOutput>false</RegisterOutput>
+      <AdditionalDependencies>$(SolutionDir)\$(Configuration)\cximage.lib;rpcrt4.lib;$(SolutionDir)\$(Configuration)\IGLibrary.lib;$(SolutionDir)\$(Configuration)\IGControls.lib;$(SolutionDir)\$(Configuration)\IGSmartProcessing.lib;msxml2.lib;comctl32.lib;Comdlg32.lib;shell32.lib;gdiplus.lib;Msimg32.lib;Ws2_32.lib;Iphlpapi.lib;comsvcs.lib;dbghelp.lib</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>.\IGPictureEditor.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ServerRelease|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)IGPictureEditor.tlb</TypeLibraryName>
+      <HeaderFileName>IGPictureEditor_i.h</HeaderFileName>
+      <DllDataFileName>
+      </DllDataFileName>
+      <InterfaceIdentifierFileName>IGPictureEditor_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>IGPictureEditor_p.c</ProxyFileName>
+      <ValidateAllParameters>true</ValidateAllParameters>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>./;../IGLibrary/;../IGLibrary/FaceDetection;../IGLibrary/IGControls/;../IGLibrary/IGSmartProcessing/;format;communicable;../IGLibrary/CxImage600/CxImage/;toolbox/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_USRDLL;_CRT_SECURE_NO_WARNINGS;IGPICTUREEDITOR_SERVER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <RegisterOutput>false</RegisterOutput>
+      <AdditionalDependencies>$(SolutionDir)\$(Configuration)\cximage.lib;$(SolutionDir)\$(Configuration)\IGFaceDetectorIceClient.lib;rpcrt4.lib;$(SolutionDir)\$(Configuration)\IGLibrary.lib;$(SolutionDir)\$(Configuration)\IGControls.lib;$(SolutionDir)\$(Configuration)\IGSmartProcessing.lib;msxml2.lib;comctl32.lib;Comdlg32.lib;shell32.lib;gdiplus.lib;Msimg32.lib;Ws2_32.lib;Iphlpapi.lib;comsvcs.lib;dbghelp.lib</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>.\IGPictureEditor.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
+    <Link>
+      <RegisterOutput>false</RegisterOutput>
+      <AdditionalDependencies>$(SolutionDir)\$(Configuration)\cximage.lib;$(SolutionDir)\$(Configuration)\IGFaceDetectorIceClient.lib;rpcrt4.lib;$(SolutionDir)\$(Configuration)\tiff.lib;$(SolutionDir)\$(Configuration)\IGLibrary.lib;$(SolutionDir)\$(Configuration)\IGControls.lib;$(SolutionDir)\$(Configuration)\FaceDetection.lib;msxml2.lib;comctl32.lib;Comdlg32.lib;shell32.lib;gdiplus.lib;Msimg32.lib;Ws2_32.lib;Iphlpapi.lib;comsvcs.lib</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>./;../IGLibrary/;../IGLibrary/FaceDetection;../IGLibrary/IGControls/;../IGLibrary/IGSmartProcessing/;format;communicable;../IGLibrary/CxImage600/CxImage/;toolbox/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ServerDebug|Win32'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='ServerDebug|Win32'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ServerRelease|Win32'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='ServerRelease|Win32'">false</CompileAsManaged>
+    </ClCompile>
+    <ClCompile Include="IGAnswer.cpp" />
+    <ClCompile Include="IGDockPanel.cpp" />
+    <ClCompile Include="IGFrameControl.cpp" />
+    <ClCompile Include="IGFramePropertyManager.cpp" />
+    <ClCompile Include="IGHistoryManager.cpp" />
+    <ClCompile Include="IGImageLibrary.cpp" />
+    <ClCompile Include="IGImageLibrary_AddPictures.cpp" />
+    <ClCompile Include="IGLayerManager.cpp" />
+    <ClCompile Include="IGLayerManager_Item.cpp" />
+    <ClCompile Include="IGMainWindow.cpp" />
+    <ClCompile Include="IGMainWindow_init.cpp" />
+    <ClCompile Include="IGMainWindow_tools.cpp" />
+    <ClCompile Include="IGMenuBar.cpp" />
+    <ClCompile Include="IGMenuBarDropButton.cpp" />
+    <ClCompile Include="IGMultiFrame.cpp" />
+    <ClCompile Include="IGPictureEditor.cpp" />
+    <ClCompile Include="IGPropertyManager.cpp" />
+    <ClCompile Include="IGRequest.cpp" />
+    <ClCompile Include="IGRequest_Process.cpp" />
+    <ClCompile Include="IGRequest_Process_SimpleThread.cpp" />
+    <ClCompile Include="IGSimpleButton.cpp" />
+    <ClCompile Include="IGSocket.cpp" />
+    <ClCompile Include="IGWorkspace.cpp" />
+    <ClCompile Include="IGWorkspace_ButtonPanel.cpp" />
+    <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ServerDebug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ServerRelease|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="communicable\IGCommunicable.cpp" />
+    <ClCompile Include="communicable\IGDataObject.cpp" />
+    <ClCompile Include="format\FBitmap.cpp" />
+    <ClCompile Include="format\FDib.cpp" />
+    <ClCompile Include="format\FIGFrame.cpp" />
+    <ClCompile Include="format\FIGLayer.cpp" />
+    <ClCompile Include="format\FIGSelection.cpp" />
+    <ClCompile Include="format\Format.cpp" />
+    <ClCompile Include="format\FormatComm.cpp" />
+    <ClCompile Include="format\FText.cpp" />
+    <ClCompile Include="toolbox\IGTool.cpp" />
+    <ClCompile Include="toolbox\IGToolBox.cpp" />
+    <ClCompile Include="toolbox\IGToolCutterSquare.cpp" />
+    <ClCompile Include="toolbox\IGToolPencil.cpp" />
+    <ClCompile Include="toolbox\IGToolRubber.cpp" />
+    <ClCompile Include="IGPictureEditor_i.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ServerDebug|Win32'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='ServerDebug|Win32'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ServerRelease|Win32'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='ServerRelease|Win32'">false</CompileAsManaged>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\IGLibrary\images\average_eyes_bw.bmp" />
+    <None Include="..\IGLibrary\images\average_eyes_bw_60.bmp" />
+    <None Include="..\IGLibrary\images\average_eyes_bw_70.bmp" />
+    <None Include="..\IGLibrary\images\average_eyes_bw_80.bmp" />
+    <None Include="IGPictureEditor.def" />
+    <None Include="config\IGDeepZoomConfig.xml" />
+    <None Include="config\IGFrameHistory.xml" />
+    <None Include="config\IGImageLibrary.xml" />
+    <None Include="config\IGImageLibraryScroll.xml" />
+    <None Include="config\IGMenuBar.xml" />
+    <None Include="config\IGPictureEditorConfig.xml" />
+    <None Include="fonts\athena_u.TTF" />
+    <None Include="fonts\Cursif.TTF" />
+    <None Include="images\blood1.png" />
+    <None Include="images\blood2.png" />
+    <None Include="images\blood3.png" />
+    <None Include="images\blood4.png" />
+    <None Include="images\pox1.png" />
+    <None Include="images\pox2.png" />
+    <None Include="images\tears1.png" />
+    <None Include="images\tears2.png" />
+    <None Include="images\tears3.png" />
+    <None Include="registry.bin" />
+    <None Include="registry\IGDockPanel.rgs" />
+    <None Include="registry\IGFrame.rgs" />
+    <None Include="registry\IGFrameControl.rgs" />
+    <None Include="registry\IGFramePropertyManager.rgs" />
+    <None Include="registry\IGHistoryManager.rgs" />
+    <None Include="registry\IGImageLibrary.rgs" />
+    <None Include="registry\IGLayerManager.rgs" />
+    <None Include="registry\IGMainWindow.rgs" />
+    <None Include="registry\IGMenuBar.rgs" />
+    <None Include="registry\IGMenuBarDropButton.rgs" />
+    <None Include="registry\IGMultiFrame.rgs" />
+    <None Include="registry\IGPictureEditor.rgs" />
+    <None Include="registry\IGPropertyManager.rgs" />
+    <None Include="registry\IGSimpleButton.rgs" />
+    <None Include="IGSimpleButton.rgs" />
+    <None Include="registry\IGSocket.rgs" />
+    <None Include="registry\IGToolBox.rgs" />
+    <None Include="registry\IGWorkspace.rgs" />
+    <None Include="registry\MainWindow.rgs" />
+    <None Include="images\AddLayer.png" />
+    <None Include="images\Begin.png" />
+    <None Include="images\Close.png" />
+    <None Include="images\Down.png" />
+    <None Include="images\End.png" />
+    <None Include="images\Invisible.png" />
+    <None Include="images\Left.png" />
+    <None Include="images\Maximize.png" />
+    <None Include="images\MergeLayers.png" />
+    <None Include="images\Minimize.png" />
+    <None Include="images\NewFrame.png" />
+    <None Include="images\PageLeft.png" />
+    <None Include="images\PageRight.png" />
+    <None Include="images\RemoveLayer.png" />
+    <None Include="images\Right.png" />
+    <None Include="images\Save.png" />
+    <None Include="images\SaveAs.png" />
+    <None Include="images\Start.png" />
+    <None Include="images\Tool.png" />
+    <None Include="images\UnMaximize.png" />
+    <None Include="images\Up.png" />
+    <None Include="images\Upload.png" />
+    <None Include="images\Visible.png" />
+    <None Include="..\IGLibrary\cursors\ArrowDown.cur" />
+    <None Include="..\IGLibrary\cursors\ArrowDownLeft.cur" />
+    <None Include="..\IGLibrary\cursors\ArrowDownRight.cur" />
+    <None Include="..\IGLibrary\cursors\ArrowLeft.cur" />
+    <None Include="..\IGLibrary\cursors\ArrowRight.cur" />
+    <None Include="..\IGLibrary\cursors\ArrowUp.cur" />
+    <None Include="..\IGLibrary\cursors\ArrowUpLeft.cur" />
+    <None Include="..\IGLibrary\cursors\ArrowUpRight.cur" />
+    <None Include="..\IGLibrary\cursors\Cutter.cur" />
+    <None Include="..\IGLibrary\cursors\CutterMinus.cur" />
+    <None Include="..\IGLibrary\cursors\CutterPlus.cur" />
+    <None Include="..\IGLibrary\images\StepAddLayer.png" />
+    <None Include="images\StepAddLayer.png" />
+    <None Include="..\IGLibrary\images\StepChangeSelection.png" />
+    <None Include="..\IGLibrary\images\StepMergeLayers.png" />
+    <None Include="..\IGLibrary\images\StepMoveLayer.png" />
+    <None Include="..\IGLibrary\images\StepRemoveLayer.png" />
+    <None Include="..\IGLibrary\images\StepStart.png" />
+    <None Include="..\IGLibrary\IGControls\images\HorizontalScrollBarChannel.bmp" />
+    <None Include="..\IGLibrary\IGControls\images\HorizontalScrollBarLeftArrow.bmp" />
+    <None Include="..\IGLibrary\IGControls\images\HorizontalScrollBarRightArrow.bmp" />
+    <None Include="..\IGLibrary\IGControls\images\HorizontalScrollBarThumb.bmp" />
+    <None Include="..\IGLibrary\IGControls\images\HorizontalScrollBarThumbNoColor.bmp" />
+    <None Include="..\IGLibrary\IGControls\images\VerticalScrollBarChannel.bmp" />
+    <None Include="..\IGLibrary\IGControls\images\VerticalScrollBarDownArrow.bmp" />
+    <None Include="..\IGLibrary\IGControls\images\VerticalScrollBarThumb.bmp" />
+    <None Include="..\IGLibrary\IGControls\images\VerticalScrollBarThumbNoColor.bmp" />
+    <None Include="..\IGLibrary\IGControls\images\VerticalScrollBarUpArrow.bmp" />
+    <None Include="images\IGLogo.png" />
+    <None Include="images\IGMultiFrame.png" />
+    <None Include="..\IGLibrary\IGControls\images\IGProgress.png" />
+    <None Include="images\Arrow.png" />
+    <None Include="images\Pencil.png" />
+    <None Include="images\rubber.png" />
+    <None Include="images\SelectorSquare.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="IGPictureEditor.idl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IGFramePropertyManager.h" />
+    <ClInclude Include="IGPropertyManager.h" />
+    <ClInclude Include="_IIGDockPanelEvents_CP.h" />
+    <ClInclude Include="_IIGFrameEvents_CP.h" />
+    <ClInclude Include="_IIGImageLibraryEvents_CP.h" />
+    <ClInclude Include="_IIGLayerManagerEvents_CP.h" />
+    <ClInclude Include="_IIGMenuBarDropButtonEvents_CP.h" />
+    <ClInclude Include="_IIGMenuBarEvents_CP.h" />
+    <ClInclude Include="_IIGMultiFrameEvents_CP.h" />
+    <ClInclude Include="_IIGWorkspaceEvents_CP.h" />
+    <ClInclude Include="_IMainWindowEvents_CP.h" />
+    <ClInclude Include="commandids.h" />
+    <ClInclude Include="dllmain.h" />
+    <ClInclude Include="IGAnswer.h" />
+    <ClInclude Include="IGDockPanel.h" />
+    <ClInclude Include="IGFrameControl.h" />
+    <ClInclude Include="IGHistoryManager.h" />
+    <ClInclude Include="IGImageLibrary.h" />
+    <ClInclude Include="IGImageLibrary_AddPictures.h" />
+    <ClInclude Include="IGLayerManager.h" />
+    <ClInclude Include="IGMainWindow.h" />
+    <ClInclude Include="IGMenuBar.h" />
+    <ClInclude Include="IGMenuBarDropButton.h" />
+    <ClInclude Include="IGMultiFrame.h" />
+    <ClInclude Include="IGRequest.h" />
+    <ClInclude Include="IGRequest_simple.h" />
+    <ClInclude Include="IGSimpleButton.h" />
+    <ClInclude Include="IGSocket.h" />
+    <ClInclude Include="toolbox\IGTool.h" />
+    <ClInclude Include="toolbox\IGToolBox.h" />
+    <ClInclude Include="IGWorkspace.h" />
+    <ClInclude Include="MainWindow.h" />
+    <ClInclude Include="..\IGLibrary\resource.h" />
+    <ClInclude Include="..\IGLibrary\IGControls\resource.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="communicable\IGCommunicable.h" />
+    <ClInclude Include="communicable\IGDataObject.h" />
+    <ClInclude Include="format\FDib.h" />
+    <ClInclude Include="format\FIGFrame.h" />
+    <ClInclude Include="format\FIGLayer.h" />
+    <ClInclude Include="format\FIGSelection.h" />
+    <ClInclude Include="format\Format.h" />
+    <ClInclude Include="format\FormatComm.h" />
+    <ClInclude Include="format\FText.h" />
+    <ClInclude Include="IGPictureEditor_i.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\IGLibrary\IGControls\IGControls.rc" />
+    <ResourceCompile Include="..\IGLibrary\IGLibrary.rc" />
+    <ResourceCompile Include="IGPictureEditor.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IGLibrary\IGLibrary.vcxproj">
+      <Project>{fefb5fee-1091-411f-b1f6-28e14278330f}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Private>true</Private>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="\Shared\Projets\TI_WebSite DEV\Imagenius\IGLibrary\IGLibrary.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

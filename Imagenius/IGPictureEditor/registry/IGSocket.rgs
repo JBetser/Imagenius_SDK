@@ -1,0 +1,26 @@
+HKCR
+{
+	IGPictureEditor.IGSocket.1 = s 'IGSocket Class'
+	{
+		CLSID = s '{18B387CD-5517-4173-A28E-12CE04FC71CD}'
+	}
+	IGPictureEditor.IGSocket = s 'IGSocket Class'
+	{
+		CLSID = s '{18B387CD-5517-4173-A28E-12CE04FC71CD}'
+		CurVer = s 'IGPictureEditor.IGSocket.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {18B387CD-5517-4173-A28E-12CE04FC71CD} = s 'IGSocket Class'
+		{
+			ProgID = s 'IGPictureEditor.IGSocket.1'
+			VersionIndependentProgID = s 'IGPictureEditor.IGSocket'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			'TypeLib' = s '{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}'
+		}
+	}
+}

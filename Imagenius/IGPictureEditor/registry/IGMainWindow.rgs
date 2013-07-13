@@ -1,0 +1,26 @@
+HKCR
+{
+	IGPictureEditor.IGMainWindow.1 = s 'IGMainWindow Class'
+	{
+		CLSID = s '{DF95F65E-E9E9-4B63-893D-D484C77CE09E}'
+	}
+	IGPictureEditor.IGMainWindow = s 'IGMainWindow Class'
+	{
+		CLSID = s '{DF95F65E-E9E9-4B63-893D-D484C77CE09E}'
+		CurVer = s 'IGPictureEditor.IGMainWindow.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {DF95F65E-E9E9-4B63-893D-D484C77CE09E} = s 'IGMainWindow Class'
+		{
+			ProgID = s 'IGPictureEditor.IGMainWindow.1'
+			VersionIndependentProgID = s 'IGPictureEditor.IGMainWindow'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			'TypeLib' = s '{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}'
+		}
+	}
+}

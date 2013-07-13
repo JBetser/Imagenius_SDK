@@ -1,0 +1,8 @@
+# Configuration file (03/29/13 13:03:40.471)
+
+# Object adapter IGFaceDetectorIce-IGFaceDetectorIceBox5
+IGFaceDetectorIce-IGFaceDetectorIceBox5.Endpoints=default
+IGFaceDetectorIce-IGFaceDetectorIceBox5.AdapterId=IGFaceDetectorIce-IGFaceDetectorIceBox5
+# Service descriptor properties
+IGFaceDetectorIce.Identity=ProxyIGFaceDetectorIceBox5
+Ice.Default.Locator=IGFaceDetectorIceGrid/Locator:default -p 4061

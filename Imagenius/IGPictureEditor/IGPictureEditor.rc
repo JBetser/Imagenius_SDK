@@ -1,0 +1,219 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "1 TYPELIB ""IGPictureEditor.tlb""\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "CompanyName", "B.I.T.L."
+            VALUE "FileDescription", "IG Picture Editor ActiveX"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "LegalCopyright", "(c) Imagenius.  All rights reserved."
+            VALUE "InternalName", "IGPictureEditor.dll"
+            VALUE "OriginalFilename", "IGPictureEditor.dll"
+            VALUE "ProductName", "IG Picture Editor"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_PROJNAME            "IGPictureEditor"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// French (France) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)
+#ifdef _WIN32
+LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// CONFIGURATION
+//
+
+IDR_MENUBARCONFIG       CONFIGURATION           "config\\IGMenuBar.xml"
+IDR_IMAGELIBRARYCONFIG  CONFIGURATION           "config\\IGImageLibrary.xml"
+IDR_IGPICTUREEDITORCONFIG CONFIGURATION           "config\\IGPictureEditorConfig.xml"
+IDR_IMAGELIBRARYSCROLLCONFIG CONFIGURATION           "config\\IGImageLibraryScroll.xml"
+IDR_FRAMEHISTORY        CONFIGURATION           "config\\IGFrameHistory.xml"
+IDR_DEEPZOOMCONFIG        CONFIGURATION           "config\\IGDeepZoomConfig.xml"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// FONTS
+//
+
+IDR_FONTS_ATHENA        FONTS                   "fonts\\athena_u.TTF"
+IDR_FONTS_CURSIF        FONTS                   "fonts\\Cursif.TTF"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// PNG
+//
+
+IDB_LOGO                PNG                     "images\\IGLogo.png"
+IDB_RIGHT               PNG                     "images\\Right.png"
+IDB_BEGIN               PNG                     "images\\Begin.png"
+IDB_END                 PNG                     "images\\End.png"
+IDB_LEFT                PNG                     "images\\Left.png"
+IDB_PAGELEFT            PNG                     "images\\PageLeft.png"
+IDB_PAGERIGHT           PNG                     "images\\PageRight.png"
+IDB_MULTIFRAME          PNG                     "images\\IGMultiFrame.png"
+IDB_NEWFRAME            PNG                     "images\\NewFrame.png"
+IDB_SAVE                PNG                     "images\\Save.png"
+IDB_SAVEAS              PNG                     "images\\SaveAs.png"
+IDB_UNMAXIMIZE          PNG                     "images\\UnMaximize.png"
+IDB_UPLOAD              PNG                     "images\\Upload.png"
+IDB_MAXIMIZE            PNG                     "images\\Maximize.png"
+IDB_MINIMIZE            PNG                     "images\\Minimize.png"
+IDB_CLOSE               PNG                     "images\\Close.png"
+IDB_MERGELAYERS         PNG                     "images\\MergeLayers.png"
+IDB_REMOVELAYER         PNG                     "images\\RemoveLayer.png"
+IDB_ADDLAYER            PNG                     "images\\AddLayer.png"
+IDB_TOOL                PNG                     "images\\Tool.png"
+IDB_VISIBLE             PNG                     "images\\Visible.png"
+IDB_INVISIBLE           PNG                     "images\\Invisible.png"
+IDB_UP                  PNG                     "images\\Up.png"
+IDB_DOWN                PNG                     "images\\Down.png"
+IDB_RUBBER              PNG                     "images\\rubber.png"
+IDB_SELECTORSQUARE      PNG                     "images\\SelectorSquare.png"
+IDB_ARROW               PNG                     "images\\Arrow.png"
+IDB_PENCIL              PNG                     "images\\Pencil.png"
+IDB_BLOOD1              PNG                     "images\\blood1.png"
+IDB_BLOOD2              PNG                     "images\\blood2.png"
+IDB_BLOOD3              PNG                     "images\\blood3.png"
+IDB_BLOOD4              PNG                     "images\\blood4.png"
+IDB_TEARS1              PNG                     "images\\tears1.png"
+IDB_TEARS2              PNG                     "images\\tears2.png"
+IDB_TEARS3              PNG                     "images\\tears3.png"
+IDB_POX1	            PNG                     "images\\pox1.png"
+IDB_POX2	            PNG                     "images\\pox2.png"
+IDB_STAR1	            PNG                     "images\\star1.png"
+IDB_STAR2	            PNG                     "images\\star2.png"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// REGISTRY
+//
+
+IDR_IGDOCKPANEL         REGISTRY                "registry\\IGDockPanel.rgs"
+IDR_IGFRAME             REGISTRY                "registry\\IGFrameControl.rgs"
+IDR_IGIMAGELIBRARY      REGISTRY                "registry\\IGImageLibrary.rgs"
+IDR_IGMENUBAR           REGISTRY                "registry\\IGMenuBar.rgs"
+IDR_IGMENUBARDROPBUTTON REGISTRY                "registry\\IGMenuBarDropButton.rgs"
+IDR_IGMULTIFRAME        REGISTRY                "registry\\IGMultiFrame.rgs"
+IDR_IGPICTUREEDITOR     REGISTRY                "registry\\IGPictureEditor.rgs"
+IDR_IGWORKSPACE         REGISTRY                "registry\\IGWorkspace.rgs"
+IDR_MAINWINDOW          REGISTRY                "registry\\MainWindow.rgs"
+IDR_IGLAYERMANAGER      REGISTRY                "registry\\IGLayerManager.rgs"
+IDR_IGSIMPLEBUTTON      REGISTRY                "registry\\IGSimpleButton.rgs"
+IDR_IGHISTORYMANAGER    REGISTRY                "registry\\IGHistoryManager.rgs"
+IDR_IGTOOLBOX           REGISTRY                "registry\\IGToolBox.rgs"
+IDR_IGMAINWINDOW        REGISTRY                "registry\\IGMainWindow.rgs"
+IDR_IGSOCKET            REGISTRY                "registry\\IGSocket.rgs"
+IDR_IGFRAMEPROPERTYMANAGER   REGISTRY           "registry\\IGFramePropertyManager.rgs"
+IDR_IGPROPERTYMANAGER   REGISTRY                "registry\\IGPropertyManager.rgs"
+#endif    // French (France) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+1 TYPELIB "IGPictureEditor.tlb"
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

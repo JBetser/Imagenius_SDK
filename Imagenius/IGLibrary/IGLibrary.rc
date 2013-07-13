@@ -1,0 +1,111 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// French (France) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)
+#ifdef _WIN32
+LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_ARROWUP             CURSOR                  "cursors\\ArrowUp.cur"
+IDC_ARROWDOWN           CURSOR                  "cursors\\ArrowDown.cur"
+IDC_ARROWLEFT           CURSOR                  "cursors\\ArrowLeft.cur"
+IDC_ARROWRIGHT          CURSOR                  "cursors\\ArrowRight.cur"
+IDC_ARROWDOWNLEFT       CURSOR                  "cursors\\ArrowDownLeft.cur"
+IDC_ARROWDOWNRIGHT      CURSOR                  "cursors\\ArrowDownRight.cur"
+IDC_ARROWUPLEFT         CURSOR                  "cursors\\ArrowUpLeft.cur"
+IDC_ARROWUPRIGHT        CURSOR                  "cursors\\ArrowUpRight.cur"
+IDC_CUTTER              CURSOR                  "cursors\\Cutter.cur"
+IDC_CUTTERMINUS         CURSOR                  "cursors\\CutterMinus.cur"
+IDC_CUTTERPLUS          CURSOR                  "cursors\\CutterPlus.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// PNG
+//
+
+IDB_STEPSTART           PNG                     "images\\StepStart.png"
+IDB_STEPADDLAYER        PNG                     "images\\StepAddLayer.png"
+IDB_STEPMERGELAYERS     PNG                     "images\\StepMergeLayers.png"
+IDB_STEPMOVELAYER       PNG                     "images\\StepMoveLayer.png"
+IDB_STEPREMOVELAYER     PNG                     "images\\StepRemoveLayer.png"
+IDB_STEPCHANGESELECTION PNG                     "images\\StepChangeSelection.png"
+IDB_STEPMOVE			PNG                     "images\\StepMove.png"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// BMP
+//
+
+IDB_AVERAGE_EYES_BW     BMP                     "images\\average_eyes_bw.bmp"
+IDB_AVERAGE_EYES_BW_80  BMP                     "images\\average_eyes_bw_80.bmp"
+IDB_AVERAGE_EYES_BW_70  BMP                     "images\\average_eyes_bw_70.bmp"
+IDB_AVERAGE_EYES_BW_60  BMP                     "images\\average_eyes_bw_60.bmp"
+IDB_AVERAGE_EYES_BW2    BMP                     "images\\average_eyes_bw2.bmp"
+IDB_AVERAGE_EYES_BW2_80 BMP                     "images\\average_eyes_bw2_80.bmp"
+IDB_AVERAGE_EYES_BW2_70 BMP                     "images\\average_eyes_bw2_70.bmp"
+IDB_AVERAGE_EYES_BW2_60 BMP                     "images\\average_eyes_bw2_60.bmp"
+IDB_AVERAGE_EYES_BW3    BMP                     "images\\average_eyes_bw3.bmp"
+IDB_AVERAGE_EYES_BW3_80 BMP                     "images\\average_eyes_bw3_80.bmp"
+IDB_AVERAGE_EYES_BW3_70 BMP                     "images\\average_eyes_bw3_70.bmp"
+IDB_AVERAGE_EYES_BW3_60 BMP                     "images\\average_eyes_bw3_60.bmp"
+#endif    // French (France) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

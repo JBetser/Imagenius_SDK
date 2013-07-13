@@ -1,0 +1,46 @@
+#
+# The IceGrid instance name.
+#
+IceGrid.InstanceName=IGServerControllerIceGrid
+
+#
+# The IceGrid locator proxy.
+#
+Ice.Default.Locator=IGServerControllerIceGrid/Locator:default -h 192.168.1.25 -p 4062
+
+#
+# IceGrid registry configuration.
+#
+IceGrid.Registry.Client.Endpoints=default -h 192.168.1.25 -p 4062
+IceGrid.Registry.Server.Endpoints=default -h 192.168.1.25
+IceGrid.Registry.Internal.Endpoints=default -h 192.168.1.25
+IceGrid.Registry.Data=C:\Imagenius\IGSMDesktop\db\registry
+IceGrid.Registry.PermissionsVerifier=IGServerControllerIceGrid/NullPermissionsVerifier
+IceGrid.Registry.AdminPermissionsVerifier=IGServerControllerIceGrid/NullPermissionsVerifier
+IceGrid.Registry.SSLPermissionsVerifier=IGServerControllerIceGrid/NullSSLPermissionsVerifier
+IceGrid.Registry.AdminSSLPermissionsVerifier=IGServerControllerIceGrid/NullSSLPermissionsVerifier
+
+#
+# IceGrid node configuration.
+#
+IceGrid.Node.Name=node1
+IceGrid.Node.Endpoints=default -h 192.168.1.25
+IceGrid.Node.Data=C:\Imagenius\IGSMDesktop\db\node
+IceGrid.Node.CollocateRegistry=1
+IceGrid.Node.Output=C:\Imagenius\IGSMDesktop\db\logs
+IceGrid.Node.RedirectErrToOut=1
+
+#
+# Trace properties.
+#
+IceGrid.Node.Trace.Activator=1
+#IceGrid.Node.Trace.Adapter=2
+#IceGrid.Node.Trace.Server=3
+
+Ice.LogFile=C:\Imagenius\IGSMDesktop\db\logs\logs_IGSMDesktop.txt
+
+#
+# Dummy username and password for icegridadmin.
+#
+IceGridAdmin.Username=foo
+IceGridAdmin.Password=bar

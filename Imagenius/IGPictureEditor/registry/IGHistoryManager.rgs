@@ -1,0 +1,33 @@
+HKCR
+{
+	IGPictureEditor.IGHistoryManager.1 = s 'IGHistoryManager Class'
+	{
+		CLSID = s '{9B8BD9F2-10F5-40E2-B33F-3AC8F5E3AD9B}'
+	}
+	IGPictureEditor.IGHistoryManager = s 'IGHistoryManager Class'
+	{
+		CLSID = s '{9B8BD9F2-10F5-40E2-B33F-3AC8F5E3AD9B}'
+		CurVer = s 'IGPictureEditor.IGHistoryManager.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {9B8BD9F2-10F5-40E2-B33F-3AC8F5E3AD9B} = s 'IGHistoryManager Class'
+		{
+			ProgID = s 'IGPictureEditor.IGHistoryManager.1'
+			VersionIndependentProgID = s 'IGPictureEditor.IGHistoryManager'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			ForceRemove 'Control'
+			ForceRemove 'ToolboxBitmap32' = s '%MODULE%, 107'
+			'MiscStatus' = s '0'
+			{
+			    '1' = s '%OLEMISC%'
+			}
+			'TypeLib' = s '{D2A4BEB6-188C-42EB-B7BD-F173C68EBDD8}'
+			'Version' = s '1.0'
+		}
+	}
+}

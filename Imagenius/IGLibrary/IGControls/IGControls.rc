@@ -1,0 +1,194 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "#ifdef _VC60\r\n"
+    "/////////////////////////////////////////////////////////////////////////////\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_SPLASH DIALOGEX 0, 0, 85, 89
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "###%",IDC_PROGRESS,45,32,23,13
+    LTEXT           "Message",IDC_MESSAGE,9,74,65,12
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_SPLASH, DIALOG
+    BEGIN
+        RIGHTMARGIN, 83
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// PNG
+//
+
+IDB_PROGRESS            PNG                     "images\\IGProgress.png"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_HORIZONTAL_SCROLLBAR_LEFTARROW BITMAP                  "images\\HorizontalScrollBarLeftArrow.bmp"
+IDB_HORIZONTAL_SCROLLBAR_RIGHTARROW BITMAP                  "images\\HorizontalScrollBarRightArrow.bmp"
+IDB_HORIZONTAL_SCROLLBAR_CHANNEL BITMAP                  "images\\HorizontalScrollBarChannel.bmp"
+IDB_HORIZONTAL_SCROLLBAR_THUMB BITMAP                  "images\\HorizontalScrollBarThumb.bmp"
+IDB_HORIZONTAL_SCROLLBAR_THUMB_NO_COLOR BITMAP                  "images\\HorizontalScrollBarThumbNoColor.bmp"
+IDB_VERTICAL_SCROLLBAR_UPARROW BITMAP                  "images\\VerticalScrollBarUpArrow.bmp"
+IDB_VERTICAL_SCROLLBAR_DOWNARROW BITMAP                  "images\\VerticalScrollBarDownArrow.bmp"
+IDB_VERTICAL_SCROLLBAR_CHANNEL BITMAP                  "images\\VerticalScrollBarChannel.bmp"
+IDB_VERTICAL_SCROLLBAR_THUMB BITMAP                  "images\\VerticalScrollBarThumb.bmp"
+IDB_VERTICAL_SCROLLBAR_THUMB_NO_COLOR BITMAP                  "images\\VerticalScrollBarThumbNoColor.bmp"
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// French (France) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)
+LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_IGPROPERTYMANAGER DIALOGEX 0, 0, 271, 105
+STYLE DS_SETFONT | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    LTEXT           "Insert your controls here.",IDC_STATIC,57,43,178,9
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_IGPROPERTYMANAGER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 264
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 98
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_TITLEIGPROPERTYMANAGER "Imagenius runtime properties"
+END
+
+#endif    // French (France) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "afxres.rc"         // Standard components
+#endif
+#ifdef _VC60
+/////////////////////////////////////////////////////////////////////////////
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
