@@ -19,3 +19,5 @@ To activate the email to our support, you can specify your smtp parameters in we
 <add key="ADMIN_SMTP" value="auth.smtp.1and1.fr"></add>
 
 When using the contact us page, the test page can send emails to us on your behalf (always with your confirmation!) using that account
+
+test
