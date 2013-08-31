@@ -343,6 +343,8 @@ bool IGIPIndex::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 		}
 	case IGIPINDEX_FACE:
 		return pLayer->IndexFaces();
+	case IGIPINDEX_IRIS:	// added by TQ
+		return pLayer->IndexFacenIris();
 	}
 
 	return false;
