@@ -527,6 +527,232 @@ bool IGSmartLayer::IndexFaces (int nDescriptorIdx)
 	return bRes;
 }
 
+// added by TQ
+bool IGSmartLayer::IndexFacenIris(int nDescriptorIdx ) // added by TQ
+{
+	// creation of skin layer
+	ProgressSetRange(10);
+	if (m_pLayerSkinFiltered)
+		delete m_pLayerSkinFiltered;
+	m_pLayerSkinFiltered = new IGSmartLayer();
+	m_pLayerSkinFiltered->Copy (*this, true, false, false, false);
+	ProgressStepIt();
+	if (!m_pLayerSkinFiltered->GrayScale())
+		return false;
+	ProgressStepIt();
+	// ANN face detection
+	list <Face> lFaces;
+	if (nDescriptorIdx == -1) {
+		if (!m_pFaceDescriptor)
+			DetectFaces();
+		m_pFaceDescriptor->GetFaces (lFaces);
+	}
+	else
+		lFaces.push_back (m_pFaceDescriptor->GetFace(nDescriptorIdx));
+	ProgressStepIt();
+	// creation of background layer around the faces
+	std::list <RECT> lCircleFaces;
+	for (std::list <Face>::iterator it = lFaces.begin(); it != lFaces.end(); ++it){
+		RECT rcFace = (*it).getFaceCoords();
+		RECT rcCircleFace;
+		rcCircleFace.left = (rcFace.left + rcFace.right) / 2;
+		rcCircleFace.top = (rcFace.top + rcFace.bottom) / 2;
+		rcCircleFace.right = (rcFace.right - rcFace.left);
+		rcCircleFace.bottom = (rcFace.bottom - rcFace.top);
+		lCircleFaces.push_back (rcCircleFace);
+	}
+	std::list <IGSmartLayer *> lLayerFaces;
+	IGLibrary::IGSmartLayer layerBackground (*m_pLayerSkinFiltered);
+	::memset (layerBackground.GetBits(), 0xFF, layerBackground.GetWidth() * layerBackground.GetHeight());
+	std::list <Face>::iterator it = lFaces.begin();
+	RGBQUAD grey255 = {255,255,255,255};
+	RGBQUAD black255 = {0,0,0,0};
+	float fScaleWidth = (float)(layerBackground.GetWidth()) / (float)(m_pFaceDescriptor->GetWidth());
+	float fScaleHeight = (float)(layerBackground.GetHeight()) / (float)(m_pFaceDescriptor->GetHeight());
+	for (std::list <RECT>::iterator itC = lCircleFaces.begin(); itC != lCircleFaces.end(); ++itC, ++it){
+		RECT& rcCircleFace = (*itC);
+		for (std::list <RECT>::iterator itC2 = lCircleFaces.begin(); itC2 != lCircleFaces.end(); ++itC2){
+			RECT& rcCircleFace2 = (*itC2);
+			if (rcCircleFace2.left != rcCircleFace. left || rcCircleFace2.top != rcCircleFace.top || rcCircleFace2.right != rcCircleFace.right){
+				int nDiff = (*itC2).right / 2 + (*itC).right / 2 - (int)sqrt ((float)(((*itC2).left - (*itC).left) * ((*itC2).left - (*itC).left) + ((*itC2).top - (*itC).top) * ((*itC2).top - (*itC).top)));
+				if (nDiff > 0){
+					rcCircleFace.right -= nDiff / 2;
+					rcCircleFace2.right -= nDiff / 2;
+				}
+			}
+		}
+		RECT rcFace = (*it).getFaceCoords(); // TQ: Rect with face coordinates
+		IGSmartLayer *pLayer = new IGSmartLayer (*m_pLayerSkinFiltered);
+		::memset (pLayer->GetBits(), 0x00, pLayer->GetWidth() * pLayer->GetHeight());
+		RECT rcEnlargedFace;
+		rcEnlargedFace.left = (int)(rcFace.left - (rcFace.right - rcFace.left) * 0.66f);
+		rcEnlargedFace.right = (int)(rcFace.right + (rcFace.right - rcFace.left) * 0.66f);
+		rcEnlargedFace.top = (int)(rcFace.top - (rcFace.bottom - rcFace.top) * 0.66f);
+		rcEnlargedFace.bottom = (int)(rcFace.bottom + (rcFace.bottom - rcFace.top) * 0.66f); 
+		int nCenterX = (rcEnlargedFace.left + rcEnlargedFace.right) / 2;
+		int nCenterY = (rcEnlargedFace.top + rcEnlargedFace.bottom) / 2;
+		int nRayHoriz = (rcEnlargedFace.right - rcEnlargedFace.left) / 2;
+		int nRayVert = (rcEnlargedFace.bottom - rcEnlargedFace.top) / 2;
+		float fEllipticCoeff = (float)nRayVert / (float)nRayHoriz;
+		IGSTRUCTELEM_ELLIPSE ellipseFunc (&fEllipticCoeff);
+		for (int x = 0; x < (int)pLayer->GetWidth(); x++){
+			for (int y = 0; y < (int)pLayer->GetHeight(); y++){
+				int rx, ry;
+				rotatePt (-(*it).getRotation(), m_pFaceDescriptor->GetWidth() / 2, m_pFaceDescriptor->GetHeight() / 2, (int)((float)x / fScaleWidth), (int)((float)y / fScaleHeight), rx, ry);
+				if (ellipseFunc (rx - nCenterX, ry - nCenterY, nRayVert)){
+					if (rx >= 0 && rx < (int)m_pFaceDescriptor->GetWidth() && ry >= 0 && ry < (int)m_pFaceDescriptor->GetHeight()){
+						pLayer->SetPixelColor (x, y, grey255);
+						layerBackground.SetPixelColor (x, y, black255);
+					}
+				}
+				// the minimal background marker
+				if (x < 10 || x >= (int)pLayer->GetWidth() - 10)
+					layerBackground.SetPixelColor (x, y, grey255);
+			}
+		}
+		lLayerFaces.push_back (pLayer);
+		rcFace.left = rcCircleFace.left - abs (rcCircleFace.right) / 2;
+		rcFace.top = rcCircleFace.top - abs (rcCircleFace.bottom) / 2;
+		rcFace.right = rcCircleFace.left + abs (rcCircleFace.right) / 2;
+		rcFace.bottom = rcCircleFace.top + abs (rcCircleFace.bottom) / 2;
+	}	
+	ProgressStepIt();
+	// construct the face mask, i.e. the head circles. It is the opposite of the background
+	IGLibrary::IGSmartLayer layerSkinMask (layerBackground);
+	layerSkinMask.Negative();
+	layerBackground.SelectionAddColor (grey255);
+	ProgressStepIt();
+	// create background marker
+	int nNbMarkers = lFaces.size() + 1;
+	IGLibrary::IGMarker** tMarkers = new IGLibrary::IGMarker* [nNbMarkers];
+	tMarkers [0] = new IGMarker (IGMARKER_BACKGROUND, layerBackground);	
+	// create face markers
+	std::list <IGSmartLayer *>::iterator itFace = lLayerFaces.begin();
+	// pre-segmentation processing
+	RECT rcNo = {-1,-1,-1,-1};
+	std::list <Face>::iterator itFaceDetect = lFaces.begin();
+	for (int idxMarker = 1; idxMarker < nNbMarkers; idxMarker++){
+		IGSmartLayer *pLayer = new IGSmartLayer (*m_pLayerSkinFiltered);
+		::memset (pLayer->GetBits(), 0x00, pLayer->GetWidth() * pLayer->GetHeight());
+		tMarkers [idxMarker] = new IGMarker (IGMARKER_REGION1 + idxMarker - 1, *pLayer, (*itFaceDetect).getRotation());
+		// deduce missing eyes
+		RECT rcEyeLeft = (*itFaceDetect).getEyeLeftCoords();
+		RECT rcEyeRight = (*itFaceDetect).getEyeRightCoords();
+		if (rcEyeLeft.left != -1 || rcEyeRight.left != -1){
+			RECT rcFace = (*itFaceDetect).getFaceCoords();
+			RECT rcEye1, rcEye2; rcEye1 = rcEyeLeft;  rcEye2 = rcEyeRight;
+			int nXmiddle = (rcFace.right - rcFace.left) / 2;
+			if (rcEye1.left == -1){
+				if (nXmiddle > (rcEye2.right - rcEye2.left) / 2){
+					rcEye1 = rcEye2;
+					rcEye2 = rcNo;
+				}
+			}
+			if (rcEye2.left == -1){
+				if (nXmiddle < (rcEye1.right - rcEye1.left) / 2){
+					rcEye2 = rcEye1;
+					rcEye1 = rcNo;
+				}
+			}
+			if (rcEye1.left == -1){
+				rcEye1.left = rcEye2.left - (int)(1.2f*(float)(rcEye2.right - rcEye2.left));
+				rcEye1.right = rcEye1.left + rcEye2.right - rcEye2.left;
+				rcEye1.top = rcEye2.top;
+				rcEye1.bottom = rcEye2.bottom;
+				RECT rcIntersectEyeFace;
+				rcIntersectEyeFace.left = max ((int)rcEye1.left, (int)rcFace.left + (rcFace.right - rcEye2.right));
+				rcIntersectEyeFace.top = max ((int)rcEye1.top, (int)rcFace.top);
+				rcIntersectEyeFace.right = min ((int)rcEye1.right, (int)rcFace.right);
+				rcIntersectEyeFace.bottom = min ((int)rcEye1.bottom, (int)rcFace.bottom);
+				rcEye1 = rcIntersectEyeFace;
+			}
+			else if (rcEye2.left == -1){
+				rcEye2.right = rcEye1.right + (int)(1.2f*(float)(rcEye1.right - rcEye1.left));
+				rcEye2.left = rcEye2.right - (rcEye1.right - rcEye1.left);
+				rcEye2.top = rcEye1.top;
+				rcEye2.bottom = rcEye1.bottom;
+				RECT rcIntersectEyeFace;
+				rcIntersectEyeFace.left = max ((int)rcEye2.left, (int)rcFace.left);
+				rcIntersectEyeFace.top = max ((int)rcEye2.top, (int)rcFace.top);
+				rcIntersectEyeFace.right = min ((int)rcEye2.right, (int)rcFace.right - (rcEye1.left - rcFace.left));
+				rcIntersectEyeFace.bottom = min ((int)rcEye2.bottom, (int)rcFace.bottom);
+				rcEye2 = rcIntersectEyeFace;
+			}
+			tMarkers[idxMarker]->SetEyes (rcEye1, rcEye2);
+			tMarkers[idxMarker]->SetMouth ((*itFaceDetect).getMouthCoords());
+			tMarkers[idxMarker]->SetNoze ((*itFaceDetect).getNozeCoords());
+		}
+		else
+			tMarkers[idxMarker]->SetGenericEyes(); // set generic eyes for faces with no detected eyes
+		++itFaceDetect;
+	}
+	ProgressStepIt();
+	int nIdxFace = 1;
+	for (std::list <Face>::iterator it = lFaces.begin(); it != lFaces.end(); ++it){ // TQ, Draw markers on eye coordinates 
+		CxImage *pLayer = tMarkers[nIdxFace]->GetLayer();
+		RECT rcFace = (*it).getFaceCoords();										// TQ, Draw markers on left eye coordinates
+		RECT rcEyeLeft = (*it).getEyeLeftCoords();
+		RECT rcEyeRight = (*it).getEyeRightCoords();
+		int nRayVert = (3 * (max (rcEyeLeft.top, rcEyeRight.top) - rcFace.top)) / 4;
+		int nFaceX = (rcFace.right + rcFace.left) / 2;
+		int nFaceY = (rcFace.bottom + rcFace.top) / 2;
+		float fEllipticCoeff = 3.0f;
+		IGSTRUCTELEM_ELLIPSE ellipseFunc (&fEllipticCoeff);	
+		for (int x = 0; x < (int)pLayer->GetWidth(); x++){
+			for (int y = 0; y < (int)pLayer->GetHeight(); y++){
+				int rx, ry;
+				rotatePt (-(*it).getRotation(), m_pFaceDescriptor->GetWidth() / 2, m_pFaceDescriptor->GetHeight() / 2, (int)((float)x / fScaleWidth), (int)((float)y / fScaleHeight), rx, ry);
+				if (ellipseFunc (rx - nFaceX, ry - nFaceY, nRayVert)){
+					if (rx >= 0 && rx < (int)m_pFaceDescriptor->GetWidth() && ry >= 0 && ry < (int)m_pFaceDescriptor->GetHeight())
+						pLayer->SetPixelColor (x, y, grey255);
+				}
+			}
+		}
+		nRayVert = (3 * (max (rcEyeLeft.top, rcEyeRight.top) - rcFace.top)) / 4;
+		RECT rcEyes;
+		rcEyes.left = (rcEyeLeft.left + rcEyeLeft.right) / 2;
+		rcEyes.right = (rcEyeRight.left + rcEyeRight.right) / 2;
+		rcEyes.top = min (rcEyeLeft.top, rcEyeRight.top);
+		rcEyes.bottom = max (rcEyeLeft.bottom, rcEyeRight.bottom);
+		for (int x = rcEyes.left; x < rcEyes.right; x++){
+			for (int y = rcEyes.top; y < rcEyes.bottom; y++){
+				int rx, ry;
+				rotatePt (-(*it).getRotation(), m_pFaceDescriptor->GetWidth() / 2, m_pFaceDescriptor->GetHeight() / 2, (int)((float)x / fScaleWidth), (int)((float)y / fScaleHeight), rx, ry);
+				if (rx >= 0 && rx < (int)m_pFaceDescriptor->GetWidth() && ry >= 0 && ry < (int)m_pFaceDescriptor->GetHeight())
+					pLayer->SetPixelColor (x, y, grey255);
+			}
+		}
+		pLayer->SelectionAddColor (grey255);
+		nIdxFace++;
+		++itFace;
+	}
+	ProgressStepIt();
+	// added by TQ
+	// iris detection  
+	for (std::list <Face>::iterator it = lFaces.begin(); it != lFaces.end(); ++it){ 
+		
+		CxImage faceImg(*this);
+		RECT rcFace = (*it).getFaceCoords();		
+		RECT rcEyeLeft = (*it).getEyeLeftCoords();
+		RECT rcEyeRight = (*it).getEyeRightCoords();
+		Crop(rcFace, &faceImg);
+		
+		IGIrisDetection irisPt;
+		irisPt.detect_iris(faceImg, rcEyeLeft, rcEyeRight);
+	
+		++itFace;
+	}
+	// watershed segmentation
+	bool bRes = IndexLPE (tMarkers, nNbMarkers);
+	ProgressStepIt();
+	// release markers
+	for (int nIdxMarker = 0; nIdxMarker < nNbMarkers; nIdxMarker++){
+		delete tMarkers [nIdxMarker];
+	}
+	delete [] tMarkers;
+	return bRes;
+}
+
 bool IGSmartLayer::ProcessFaceEffect(IGIPFaceEffectMessage *pEffectMessage)
 {
 	SelectionDelete();
@@ -1236,7 +1462,7 @@ bool IGSmartLayer::ConstructSaddle()
 	else if (head.biBitCount != 8)
 		return false;
 	/*
-		//Selection du step de segmentation adapté
+		//Selection du step de segmentation adaptï¿½
 		Segmentation3D NewSegModel=new Segmentation3D((Objet3D)mainform.CurScene.WFModel.Objets[0],mainform.CurSegOptions,mainform);
 		ArrayList CurSegmentationStep=(ArrayList)mainform.SegmentationSteps[0];
 		Segmentation3D CurSeg=(Segmentation3D)CurSegmentationStep[0];
@@ -1342,7 +1568,7 @@ bool IGSmartLayer::ConstructSaddle()
 				CurVert.Label=FirstVoisin.Label;
 		}
 
-		//Renumérotation des régions
+		//Renumï¿½rotation des rï¿½gions
 		LabelIndices.Clear();
 		WorkingRegList.Clear();
 		foreach(SegVertex Vert in NewSegModel.VertexList)
