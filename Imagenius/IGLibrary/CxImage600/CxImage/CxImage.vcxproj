@@ -136,7 +136,7 @@
     </ClCompile>
     <Lib>
       <OutputFile>$(SolutionDir)\$(Configuration)\$(ProjectName).lib</OutputFile>
-      <AdditionalDependencies>..\jpeg\$(Configuration)\jpeg.lib;..\zlib\$(Configuration)\zlib.lib;..\tiff\$(Configuration)\tiff.lib;..\png\$(Configuration)\png.lib;opencv_core230.lib;</AdditionalDependencies>
+      <AdditionalDependencies>..\jpeg\$(Configuration)\jpeg.lib;..\zlib\$(Configuration)\zlib.lib;..\tiff\$(Configuration)\tiff.lib;..\png\$(Configuration)\png.lib;opencv_core230.lib;opencv_imgproc230.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../FaceDetection/opencv/Lib</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

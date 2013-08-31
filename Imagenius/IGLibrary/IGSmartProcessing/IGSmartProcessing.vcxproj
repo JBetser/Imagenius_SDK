@@ -86,7 +86,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>./;../;../CxImage600/CxImage/;../FaceDetection/;../IGControls/;../../IGFaceDetectorIceClient/;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;../;../CxImage600/CxImage/;../FaceDetection/;../IGControls/;../../IGFaceDetectorIceClient/;../FaceDetection/opencv;../FaceDetection/opencv/core/include;../FaceDetection/opencv/imgproc/include;../FaceDetection/opencv/features2d/include;../FaceDetection/opencv/flann/include;../FaceDetection/opencv/highgui/include;../FaceDetection/opencv/objdetect/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -97,7 +97,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>./;../;../CxImage600/CxImage/;../FaceDetection/;../IGControls/;../../IGFaceDetectorIceClient/;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;../;../CxImage600/CxImage/;../FaceDetection/;../IGControls/;../../IGFaceDetectorIceClient/;../FaceDetection/opencv;../FaceDetection/opencv/core/include;../FaceDetection/opencv/imgproc/include;../FaceDetection/opencv/features2d/include;../FaceDetection/opencv/flann/include;../FaceDetection/opencv/highgui/include;../FaceDetection/opencv/objdetect/include</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -111,7 +111,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>./;../;../CxImage600/CxImage/;../FaceDetection/;../IGControls/;../../IGFaceDetectorIceClient/;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;../;../CxImage600/CxImage/;../FaceDetection/;../IGControls/;../../IGFaceDetectorIceClient/;../FaceDetection/opencv;../FaceDetection/opencv/core/include;../FaceDetection/opencv/imgproc/include;../FaceDetection/opencv/features2d/include;../FaceDetection/opencv/flann/include;../FaceDetection/opencv/highgui/include;../FaceDetection/opencv/objdetect/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -126,7 +126,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>./;../;../CxImage600/CxImage/;../FaceDetection/;../IGControls/;../../IGFaceDetectorIceClient/;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;../;../CxImage600/CxImage/;../FaceDetection/;../IGControls/;../../IGFaceDetectorIceClient/;../FaceDetection/opencv;../FaceDetection/opencv/core/include;../FaceDetection/opencv/imgproc/include;../FaceDetection/opencv/features2d/include;../FaceDetection/opencv/flann/include;../FaceDetection/opencv/highgui/include;../FaceDetection/opencv/objdetect/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -139,6 +139,7 @@
     <ClCompile Include="clipper.cpp" />
     <ClCompile Include="IGFaceDescriptor.cpp" />
     <ClCompile Include="IGFaceEffect.cpp" />
+    <ClCompile Include="IGIrisDetection.cpp" />
     <ClCompile Include="IGLPE.cpp" />
     <ClCompile Include="IGRandomGenerator.cpp" />
     <ClCompile Include="IGSmartLayer.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="clipper.hpp" />
     <ClInclude Include="IGFaceDescriptor.h" />
     <ClInclude Include="IGFaceEffect.h" />
+    <ClInclude Include="IGIrisDetection.h" />
     <ClInclude Include="IGLPE.h" />
     <ClInclude Include="IGRandomGenerator.h" />
     <ClInclude Include="IGSmartLayer.h" />

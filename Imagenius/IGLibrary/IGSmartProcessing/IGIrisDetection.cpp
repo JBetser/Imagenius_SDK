@@ -1,19 +1,13 @@
 #include "StdAfx.h"
 #include "IGIrisDetection.h"
+#include "cv.h"
 #include <vector>
 #include <list>
-#include "cv.h"
 
-IGIrisDetection::IGIrisDetection(void)
-{
-}
+using namespace std;
+using namespace IGLibrary;
 
-
-IGIrisDetection::~IGIrisDetection(void)
-{
-}
-
-cv::Point IGIrisDetection::getIrisCoor(const cv::Mat& inputEyeImg)
+cv::Point getIrisCoor(const cv::Mat& inputEyeImg)
 {
 	cv::Mat srcGray;
 	cv::Point center;
@@ -41,11 +35,11 @@ cv::Point IGIrisDetection::getIrisCoor(const cv::Mat& inputEyeImg)
 		findContours(tmp, contours, hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
  
 		//find contour with max area
-		int maxArea = 0;
+		double maxArea = 0;
 		cv::Rect maxContourRect;
-		for (int i=0; i<contours.size(); i++)
+		for (int i=0; i < (int)contours.size(); i++)
 		{
-			int area = cv::contourArea(contours[i]);
+			double area = cv::contourArea(contours[i]);
 			cv::Rect rect = cv::boundingRect(contours[i]);
 			double squareKoef = ((double) rect.width)/rect.height;
  
@@ -77,6 +71,15 @@ cv::Point IGIrisDetection::getIrisCoor(const cv::Mat& inputEyeImg)
 		
 	}
 	return center;
+}
+
+IGIrisDetection::IGIrisDetection(void)
+{
+}
+
+
+IGIrisDetection::~IGIrisDetection(void)
+{
 }
 
 bool IGIrisDetection::detect_iris (const CxImage& faceImg, RECT eye1, RECT eye2 )

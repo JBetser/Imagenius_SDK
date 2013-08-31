@@ -5,6 +5,7 @@
 #include "IGException.h"
 #include "IGSplashWindow.h"
 #include "IGFaceDescriptor.h"
+#include "IGIrisDetection.h"
 #include "FaceDetector.h"
 #include "ximaDZ.h"
 #include <algorithm>
