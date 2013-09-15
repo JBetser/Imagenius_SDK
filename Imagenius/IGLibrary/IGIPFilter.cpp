@@ -287,6 +287,112 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 		return pLayer->Dither();
 	case IGIPFILTER_CLAY:
 		return pLayer->Clay();
+	case IGIPFILTER_FILTER1:
+		{
+			CxImage *layer1 (*pLayer);
+			CxImage *layer2 (*pLayer);
+			CxImage *layer3 (*pLayer);
+			int nAlpha = 0;
+
+			// Contrast the image using the curve: out 116, in 139
+			long contrast_in = 139, contrast_out = 116;
+			CxImage *contrast_IN (*pLayer);
+			CxImage *contrast_OUT (*pLayer);
+			contrast_IN->Mix(*contrast_OUT, CxImage::OpAvg, false); 
+
+			contrast_IN->Light(0, contrast_in);
+			contrast_OUT->Light(0, contrast_out);
+
+			// Add contrast IN & OUT images
+			// Apply layer 2 as screen with opacity 48
+			nAlpha = 48;
+			layer2->AlphaDelete();
+			layer2->AlphaCreate ((BYTE)((float)nAlpha * 2.55f));
+
+			// Apply layer 3 as overlay with opacity 35
+			nAlpha = 35;
+			layer3->AlphaDelete();
+			layer3->AlphaCreate ((BYTE)((float)nAlpha * 2.55f));
+
+			// Adding the three layers 
+			layer1->Mix(*layer2, CxImage::OpAvg, false);
+			layer1->Mix(*layer3, CxImage::OpAvg, false);
+
+			return layer1;
+		}
+	case IGIPFILTER_FILTER2:
+		{
+			int nAlpha =0;
+			CxImage *layerA (*pLayer);
+			CxImage *layerB (*pLayer);
+			CxImage *layerC (*pLayer);
+			// Apply the original as screen on white background with opacity 90 -> layer “A”
+			nAlpha = 90;
+			layerA->AlphaDelete();
+			layerA->AlphaCreate((BYTE)((float)nAlpha * 2.55f));
+
+			// Copy the original, convert to grayscale, add 30% contrast and multiply with layer “A” -> layer “B”
+			layerB->GrayScale();
+			layerB->Light(0, (long)255*.3);
+			// multiplication function
+
+			// Apply darken 55% to the paper layer -> layer “C”
+			layerC->Light((long)(-255*.55));
+
+			// Apply layer “C” to layer “B” as screen with 20% opacity
+			nAlpha = (int) (255*.2);
+			layerB->AlphaDelete();
+			layerB->AlphaCreate((BYTE)((float)nAlpha *2.55f));
+
+			layerC->Mix(*layerB, CxImage::OpScreen, true); 
+
+			return layerC;
+
+		}
+
+	case IGIPFILTER_FILTER3:
+		{
+			CxImage *layerA (*pLayer);
+			CxImage *layerSrc1, *layerSrc2;
+			// Duotone original with colors: #741c19 (116, 28, 25) and #d7ad7f (215, 173, 127)
+			// get the two most represented colors
+			//[layerSrc1 layerSrc2 ] = CxImage::kmeanClustering(*layerA);
+			layerSrc1->kmeanClustering(*layerA);
+			
+			// Convert the given colors to HSL
+			RGBQUAD dest1;
+			dest1.rgbRed = 116;
+			dest1.rgbGreen = 28;
+			dest1.rgbBlue = 25;
+
+			RGBQUAD dest2;
+			dest2.rgbRed = 215;
+			dest2.rgbGreen = 173;
+			dest2.rgbBlue = 127;
+
+			RGBQUAD dest1HSL = CxImage::RGBtoHSL(dest1);	
+			RGBQUAD dest2HSL = CxImage::RGBtoHSL(dest2);	
+			
+			// Map source image hues with requested hues
+			RGBQUAD srcHSL1, srcHSL2;
+			for (long y=0; y<layerSrc1->GetWidth(); y++ ){
+				for (long x=0; x<layerSrc1->GetHeight(); x++){
+					srcHSL1 = CxImage::RGBtoHSL(layerSrc1->BlindGetPixelColor(x,y));
+					//srcHSL2 = CxImage::RGBtoHSL(layerSrc2->BlindGetPixelColor(x,y));
+					if (srcHSL1.rgbBlue ==0 && srcHSL1.rgbGreen==0 && srcHSL1.rgbRed==0)
+						layerA->SetPixelColor(x, y, dest2HSL);
+					else
+						layerA->SetPixelColor(x,y, dest1HSL);
+
+				}
+			}
+
+
+
+
+
+			return layerA;
+		}
 
 	}
 	return false;
@@ -345,6 +451,10 @@ bool IGIPIndex::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 		return pLayer->IndexFaces();
 	case IGIPINDEX_IRIS:	// added by TQ
 		return pLayer->IndexFacenIris();
+//<<<<<<< HEAD
+//=======
+//
+//>>>>>>> New Commit
 	}
 
 	return false;
