@@ -1449,6 +1449,73 @@ bool CxImage::OilPainting(float fDiffusion)
 	return true;
 }
 
+bool CxImage::kmeanClustering(CxImage & sourceImg)
+{
+	int size;
+	CvMat *points;
+	CvMat *clusters;
+	int colorCount = 2; // To find two dominant colors
+	CvMat *domColor1 = cvCreateMat((int) sourceImg.GetHeight(), (int) sourceImg.GetWidth(), 3);
+	CvMat *domColor2 = cvCreateMat((int) sourceImg.GetHeight(), (int) sourceImg.GetWidth(), 3);
+
+	size = sourceImg.head.biWidth * sourceImg.head.biHeight;
+	
+	// Convert CxImage to CvMat*
+	for(long y=0, i=0; y< sourceImg.GetWidth(); y++){
+		BYTE *pSrc = sourceImg.GetBits(y);
+		for(long x=0; x<=sourceImg.GetHeight(); x++, i++){
+			points->data.fl[i * 3 + 0] = (uchar) *pSrc++;
+			points->data.fl[i * 3 + 1] = (uchar) *pSrc++;
+			points->data.fl[i * 3 + 2] = (uchar) *pSrc++;
+		}
+	}
+
+	// Apply Kmean Clusterig 
+	 cvKMeans2 (points, colorCount, clusters, cvTermCriteria (CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 10, 1.0));
+
+	// Cluster two dominat colors
+	cvSetZero (domColor1);
+	cvSetZero (domColor2);
+	for (int i = 0; i < size; i++) {
+    int idx = clusters->data.i[i];
+	if (idx ==0)
+	{
+		domColor1->data.fl[idx * 3 + 0] = 0;
+		domColor1->data.fl[idx * 3 + 1] = 0;
+		domColor1->data.fl[idx * 3 + 2] = 255;
+	}
+	if (idx==1)
+	{
+		domColor2->data.fl[idx * 3 + 0] = 0;
+		domColor2->data.fl[idx * 3 + 1] = 255;
+		domColor2->data.fl[idx * 3 + 2] = 0;
+	}
+  }
+
+	// Convert CvMat* to CxImage
+
+	for(long y=0, i=0; y< sourceImg.GetWidth(); y++){
+		BYTE *pSrc = sourceImg.GetBits(y);
+		BYTE *pDst1 = GetBits(y);
+		BYTE *pDst2 = GetBits(y);
+		for(long x=0; x<=sourceImg.GetHeight(); x++, i++){
+			*pDst1++ = (char) domColor1->data.fl[i * 3 + 0];
+			*pDst1++ = (char) domColor1->data.fl[i * 3 + 1];
+			*pDst1++ = (char) domColor1->data.fl[i * 3 + 2];
+
+			*pDst2++ = (char) domColor2->data.fl[i * 3 + 0];
+			*pDst2++ = (char) domColor2->data.fl[i * 3 + 1];
+			*pDst2++ = (char) domColor2->data.fl[i * 3 + 2];
+		}
+	}
+
+	cvReleaseMat (&clusters);
+	cvReleaseMat (&points);
+	cvReleaseMat (&domColor2);
+	cvReleaseMat (&domColor1);
+	return true;
+}
+
 bool CxImage::Quantize(int colorCount)
 {
      int i, size;
@@ -1566,6 +1633,29 @@ bool CxImage::Light(long brightness, long contrast)
 
 	return Lut(cTable);
 }
+
+//////////////////////////////////////////////////////////////////////////////////
+///**
+// * Changes the brightness and the contrast of the image using the curve: OUT and IN parameters. 
+// * \param brightness: can be from -255 to 255, if brightness is negative, the image becomes dark.
+// * \param contrast_IN: can be from -100 to 100, the neutral value is 0.
+// * \param contrast_OUT: can be from -100 to 100, the neutral value is 0.
+// * \return true if everything is ok
+// */
+//bool InOutLight(long brightness, long contrast_IN = 0, long contrast_OUT = 0)
+//{
+//	if (!pDib) return false;
+//	float c_in=(100 + contrast_IN)/100.0f;
+//	float c_out=(100 + contrast_OUT)/100.0f;
+//	brightness+=128;
+//
+//	BYTE cTable[256]; //<nipper>
+//	for (int i=0;i<256;i++)	{
+//		cTable[i] = (BYTE)max(0,min(255,(int)((i-128)*c_in + brightness + 0.5f)));
+//	}
+//
+//	return Lut(cTable);
+//}
 ////////////////////////////////////////////////////////////////////////////////
 /**
  * \return mean lightness of the image. Useful with Threshold() and Light()
@@ -4954,7 +5044,7 @@ int  CxImage::OptimalThreshold(long method, RECT * pBox, CxImage* pContrastMask)
 		}
 
 		//potential difference (based on Electrostatic Binarization method by J. Acharya & G. Sreechakra)
-		// L=-fabs(vdiff/vsum); è molto selettivo, sembra che L=-fabs(vdiff) o L=-(vsum)
+		// L=-fabs(vdiff/vsum); Ã¨ molto selettivo, sembra che L=-fabs(vdiff) o L=-(vsum)
 		// abbiano lo stesso valore di soglia... il che semplificherebbe molto la routine
 		double vdiff = 0;
 		for (k=gray_min;k<=i;k++)
