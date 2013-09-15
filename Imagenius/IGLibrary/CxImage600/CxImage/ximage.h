@@ -516,6 +516,7 @@ public:
 	bool Threshold2(BYTE level, bool bDirection, RGBQUAD nBkgndColor, bool bSetAlpha = false);
 	bool Colorize(BYTE hue, BYTE sat, BYTE val, float blend, bool bMixVal = false);
 	bool Light(long brightness, long contrast = 0);
+	//bool InOutLight(long brightness, long contrast_IN = 0, long contrast_OUT = 0);
 	float Mean();
 	bool Filter(long* kernel, long Ksize, long Kfactor, long Koffset);
 	bool GradientMorpho(long nDiam, bool bHSV = false);
@@ -542,6 +543,7 @@ public:
 	bool AdaptiveThreshold(long method = 0, long nBoxSize = 64, CxImage* pContrastMask = 0, long nBias = 0, float fGlobalLocalBalance = 0.5f);
 	bool DeletePixels(bool bSmart);
 	bool MovePixels(int nVectorX, int nVectorY);
+	bool kmeanClustering(CxImage & sourceImg);
 	void Move(int nVectorX, int nVectorY) { info.xOffset += nVectorX; info.yOffset += nVectorY; }
 //@}
 
