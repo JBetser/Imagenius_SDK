@@ -2,7 +2,6 @@
 #include "IGLPE.h"
 #include "IGSmartPixel.h"
 #include "IGFaceEffect.h"
-#include "ximage.h"
 #include <vector>
 #include <list>
 #include <map>
