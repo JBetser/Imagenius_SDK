@@ -91,7 +91,7 @@ build/
 *objects
 *.type
 *.gitignore
-
+*_i.h
 
 # Visual C++ cache files
 ipch/
