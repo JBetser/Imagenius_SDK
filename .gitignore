@@ -71,6 +71,27 @@ build/
 *.pidb
 *.log
 *.scc
+*.tlog
+*.lastbuildstate
+*.idb
+*.manifest
+*.InstallLog
+*.dll
+*.lib
+*.pdb
+*lock
+*__catalog
+*__catalogIndexList
+*adapters
+*.replicaGroupId
+*applications
+*internal-objects
+*.type
+*.0000000001
+*objects
+*.type
+*.gitignore
+
 
 # Visual C++ cache files
 ipch/
