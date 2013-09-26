@@ -2609,6 +2609,34 @@ void CxImage::Mix(CxImage & imgsrc2, ImageOpType op, bool bMixAlpha)
 }
 #endif
 
+
+//bool CxImage::Multiply(CxImage & imageSrc1, CxImage & imageSrc2)
+//{
+//	int size;
+//	CvMat *imgSr2;
+//	CvMat *imgSr1;
+//
+//	size = imageSrc1.head.biWidth * imageSrc1.head.biHeight;
+//	
+//	// Convert CxImage to CvMat*
+//	for(long y=0, i=0; y< imageSrc1.GetWidth(); y++){
+//		BYTE *pSrc1 = imageSrc1.GetBits(y);
+//		BYTE *pSrc2 = imageSrc2.GetBits(y);
+//		for(long x=0; x<=imageSrc1.GetHeight(); x++, i++){
+//			imgSr1->data.fl[i * 3 + 0] = (uchar) *pSrc1++;
+//			imgSr1->data.fl[i * 3 + 1] = (uchar) *pSrc1++;
+//			imgSr1->data.fl[i * 3 + 2] = (uchar) *pSrc1++;
+//
+//			imgSr2->data.fl[i * 3 + 0] = (uchar) *pSrc2++;
+//			imgSr2->data.fl[i * 3 + 1] = (uchar) *pSrc2++;
+//			imgSr2->data.fl[i * 3 + 2] = (uchar) *pSrc2++;
+//		}
+//	}
+//	
+//	imgSr1.mul 
+//	return true;
+//}
+
 ////////////////////////////////////////////////////////////////////////////////
 // thanks to Kenneth Ballard
 void CxImage::MixFrom(CxImage & imagesrc2, long lXOffset, long lYOffset)
@@ -5044,7 +5072,7 @@ int  CxImage::OptimalThreshold(long method, RECT * pBox, CxImage* pContrastMask)
 		}
 
 		//potential difference (based on Electrostatic Binarization method by J. Acharya & G. Sreechakra)
-		// L=-fabs(vdiff/vsum); Ã¨ molto selettivo, sembra che L=-fabs(vdiff) o L=-(vsum)
+		// L=-fabs(vdiff/vsum); è molto selettivo, sembra che L=-fabs(vdiff) o L=-(vsum)
 		// abbiano lo stesso valore di soglia... il che semplificherebbe molto la routine
 		double vdiff = 0;
 		for (k=gray_min;k<=i;k++)

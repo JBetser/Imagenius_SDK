@@ -2,6 +2,7 @@
 #include "IGLPE.h"
 #include "IGSmartPixel.h"
 #include "IGFaceEffect.h"
+//#include "ximage.h"
 #include <vector>
 #include <list>
 #include <map>
@@ -79,6 +80,7 @@ namespace IGLibrary
 		bool IndexFacenIris (int nDescriptorIdx = -1); // added by TQ
 		//bool detectIris(const CxImage& faceImg, RECT eye1, RECT eye2 ); // added by TQ
 		//cvPoint getIrisCoor(Mat inputEyeImg); // added by TQ
+
 		bool IndexSkinBinary();
 		int DetectFaces();	
 		IGFaceDescriptor* GetFaceDescriptor();

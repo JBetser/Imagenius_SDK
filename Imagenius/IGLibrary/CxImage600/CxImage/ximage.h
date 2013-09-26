@@ -544,6 +544,8 @@ public:
 	bool DeletePixels(bool bSmart);
 	bool MovePixels(int nVectorX, int nVectorY);
 	bool kmeanClustering(CxImage & sourceImg);
+	//bool Multiply(CxImage & imageSrc1, CxImage & imageSrc2); 
+
 	void Move(int nVectorX, int nVectorY) { info.xOffset += nVectorX; info.yOffset += nVectorY; }
 //@}
 

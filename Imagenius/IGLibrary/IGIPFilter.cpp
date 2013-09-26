@@ -326,20 +326,38 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 			CxImage *layerA (*pLayer);
 			CxImage *layerB (*pLayer);
 			CxImage *layerC (*pLayer);
-			// Apply the original as screen on white background with opacity 90 -> layer â€œAâ€
+			// Apply the original as screen on white background with opacity 90 -> layer “A”
 			nAlpha = 90;
 			layerA->AlphaDelete();
 			layerA->AlphaCreate((BYTE)((float)nAlpha * 2.55f));
 
-			// Copy the original, convert to grayscale, add 30% contrast and multiply with layer â€œAâ€ -> layer â€œBâ€
+			// Copy the original, convert to grayscale, add 30% contrast and multiply with layer “A” -> layer “B”
 			layerB->GrayScale();
 			layerB->Light(0, (long)255*.3);
 			// multiplication function
+			if (layerB->GetHeight() == layerA->GetHeight() && layerB->GetWidth() == layerA->GetWidth())
+			{
+				for (long y=0; y<layerB->GetWidth(); y++ ){
+				for (long x=0; x<layerB->GetHeight(); x++){
+					BYTE *pSrc1 = layerA->GetBits(y);
+					BYTE *pSrc2 = layerB->GetBits(y);
+					int product = (*pSrc1) * (*pSrc2);
+					if (product > 255)
+						*pSrc1 = 255;
+					else if (product < 0)
+						*pSrc1 = 0;
+					else
+						*pSrc1= (BYTE) product;
+					}
+					
+				}
 
-			// Apply darken 55% to the paper layer -> layer â€œCâ€
+			}
+
+			// Apply darken 55% to the paper layer -> layer “C”
 			layerC->Light((long)(-255*.55));
 
-			// Apply layer â€œCâ€ to layer â€œBâ€ as screen with 20% opacity
+			// Apply layer “C” to layer “B” as screen with 20% opacity
 			nAlpha = (int) (255*.2);
 			layerB->AlphaDelete();
 			layerB->AlphaCreate((BYTE)((float)nAlpha *2.55f));
@@ -352,12 +370,13 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 
 	case IGIPFILTER_FILTER3:
 		{
-			CxImage *layerA (*pLayer);
+			int nAlpha = 0;
+			CxImage *layerSrc (*pLayer);
 			CxImage *layerSrc1, *layerSrc2;
 			// Duotone original with colors: #741c19 (116, 28, 25) and #d7ad7f (215, 173, 127)
 			// get the two most represented colors
 			//[layerSrc1 layerSrc2 ] = CxImage::kmeanClustering(*layerA);
-			layerSrc1->kmeanClustering(*layerA);
+			layerSrc1->kmeanClustering(*layerSrc);
 			
 			// Convert the given colors to HSL
 			RGBQUAD dest1;
@@ -374,24 +393,71 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 			RGBQUAD dest2HSL = CxImage::RGBtoHSL(dest2);	
 			
 			// Map source image hues with requested hues
-			RGBQUAD srcHSL1, srcHSL2;
-			for (long y=0; y<layerSrc1->GetWidth(); y++ ){
-				for (long x=0; x<layerSrc1->GetHeight(); x++){
+			RGBQUAD srcHSL1, srcHSL;
+			for (long y=0; y<layerSrc->GetWidth(); y++ ){
+				for (long x=0; x<layerSrc->GetHeight(); x++){
+					srcHSL = CxImage::RGBtoHSL(pLayer->BlindGetPixelColor(x,y));
 					srcHSL1 = CxImage::RGBtoHSL(layerSrc1->BlindGetPixelColor(x,y));
 					//srcHSL2 = CxImage::RGBtoHSL(layerSrc2->BlindGetPixelColor(x,y));
 					if (srcHSL1.rgbBlue ==0 && srcHSL1.rgbGreen==0 && srcHSL1.rgbRed==0)
-						layerA->SetPixelColor(x, y, dest2HSL);
+						  srcHSL.rgbRed = dest2HSL.rgbRed;
 					else
-						layerA->SetPixelColor(x,y, dest1HSL);
-
+						 srcHSL.rgbRed = dest1HSL.rgbRed;
+					 layerSrc->SetPixelColor(x,y, CxImage::HSLtoRGB(srcHSL));
 				}
 			}
 
+			// Apply the brush layer with 70% opacity
+			nAlpha = (int) (255*.70);
+			layerSrc->AlphaDelete();
+			layerSrc->AlphaCreate((BYTE)((float)nAlpha *2.55f));
+
+			return layerSrc;
+		}
+
+	case IGIPFILTER_FILTER4:
+		{
+			int nAlpha = 0;
+			CxImage *layerSrc (*pLayer);
+			CxImage *layerSrc1;
+			layerSrc1->kmeanClustering(*layerSrc);
+
+			// Convert the given colors to HSL
+			RGBQUAD dest1;
+			dest1.rgbRed = 60;
+			dest1.rgbGreen = 60;
+			dest1.rgbBlue = 60;
+
+			RGBQUAD dest2;
+			dest2.rgbRed = 163;
+			dest2.rgbGreen = 163;
+			dest2.rgbBlue = 163;
+
+			RGBQUAD dest1HSL = CxImage::RGBtoHSL(dest1);	
+			RGBQUAD dest2HSL = CxImage::RGBtoHSL(dest2);
+
+			// Map source image hues with requested hues
+			RGBQUAD srcHSL1, srcHSL;
+			for (long y=0; y<layerSrc->GetWidth(); y++ ){
+				for (long x=0; x<layerSrc->GetHeight(); x++){
+					srcHSL = CxImage::RGBtoHSL(pLayer->BlindGetPixelColor(x,y));
+					srcHSL1 = CxImage::RGBtoHSL(layerSrc1->BlindGetPixelColor(x,y));
+					//srcHSL2 = CxImage::RGBtoHSL(layerSrc2->BlindGetPixelColor(x,y));
+					if (srcHSL1.rgbBlue ==0 && srcHSL1.rgbGreen==0 && srcHSL1.rgbRed==0)
+						  srcHSL.rgbRed = dest2HSL.rgbRed;
+					else
+						 srcHSL.rgbRed = dest1HSL.rgbRed;
+					 layerSrc->SetPixelColor(x,y, CxImage::HSLtoRGB(srcHSL));
+				}
+			}
+
+			// Apply layer 2 as screen with opacity 24
+			nAlpha = (int) (24);
+			layerSrc->AlphaDelete();
+			layerSrc->AlphaCreate((BYTE)((float)nAlpha *2.55f));
 
 
-
-
-			return layerA;
+			return layerSrc;
 		}
 
 	}
