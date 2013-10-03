@@ -543,7 +543,7 @@ public:
 	bool AdaptiveThreshold(long method = 0, long nBoxSize = 64, CxImage* pContrastMask = 0, long nBias = 0, float fGlobalLocalBalance = 0.5f);
 	bool DeletePixels(bool bSmart);
 	bool MovePixels(int nVectorX, int nVectorY);
-	bool kmeanClustering(CxImage & sourceImg);
+	bool kmeanClustering();
 	//bool Multiply(CxImage & imageSrc1, CxImage & imageSrc2); 
 
 	void Move(int nVectorX, int nVectorY) { info.xOffset += nVectorX; info.yOffset += nVectorY; }
