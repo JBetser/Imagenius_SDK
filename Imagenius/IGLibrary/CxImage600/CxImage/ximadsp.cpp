@@ -1450,79 +1450,174 @@ bool CxImage::OilPainting(float fDiffusion)
 }
 
 //bool CxImage::kmeanClustering(CxImage & sourceImg)
+//bool CxImage::kmeanClustering()
+//{
+//	int size;
+//	
+//	int colorCount = 2; // To find two dominant colors
+//
+//	IGSmartLayer sourceImg;
+//	sourceImg.Copy (*this, true, true);
+//
+//	//CvMat *points;
+//	CvMat *clusters;
+//
+//	CvMat *domColor1 = cvCreateMat((int) sourceImg.head.biHeight, (int) sourceImg.head.biWidth, 3);
+//	CvMat *domColor2 = cvCreateMat((int) sourceImg.head.biHeight, (int) sourceImg.head.biWidth, 3);
+//	CvMat *imgPoints = cvCreateMat ((int) sourceImg.head.biHeight, (int) sourceImg.head.biWidth, CV_32FC3);
+//
+//	size = sourceImg.head.biWidth * sourceImg.head.biHeight;
+//	
+//
+//	// Convert CxImage to CvMat*
+//	for(long y=0, i=0; y<sourceImg.GetWidth()-1; y++){
+//		BYTE *pSrc = sourceImg.GetBits(y);
+//		for(long x=0; x<sourceImg.GetHeight()-1; x++, i++){
+//			imgPoints->data.fl[i * 3 + 0] = (uchar) *pSrc++;
+//			imgPoints->data.fl[i * 3 + 1] = (uchar) *pSrc++;
+//			imgPoints->data.fl[i * 3 + 2] = (uchar) *pSrc++;
+//		}
+//	}
+//
+//	// Apply Kmean Clusterig 
+//	 cvKMeans2 (imgPoints, colorCount, clusters, cvTermCriteria (CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 10, 1.0));
+//
+//	// Cluster two dominat colors
+//	cvSetZero (domColor1);
+//	cvSetZero (domColor2);
+//
+//	for (int i=0; i< imgPoints->rows; i++){
+//		for (int j=0; j< imgPoints->cols; j++){
+//			int idx = clusters->data.fl[clusters->step *j + i + 0];
+//			if (idx ==0)
+//			{
+//				domColor1->data.fl[domColor1->step *j + i + 0]  = 255;
+//				domColor1->data.fl[domColor1->step *j + i + 1]  = 255;
+//				domColor1->data.fl[domColor1->step *j + i + 2]  = 255;
+//			}
+//			else
+//			{
+//				domColor1->data.fl[domColor1->step *j + i + 0]  = 0;
+//				domColor1->data.fl[domColor1->step *j + i + 1]  = 0;
+//				domColor1->data.fl[domColor1->step *j + i + 2]  = 0;
+//			}
+//		}
+//	}
+//
+//	//for (int i = 0; i < size; i++) {
+// //   int idx = clusters->data.i[i];
+//	//if (idx ==0)
+//	//{
+//	//	domColor1->data.fl[idx * 3 + 0] = 0;
+//	//	domColor1->data.fl[idx * 3 + 1] = 0;
+//	//	domColor1->data.fl[idx * 3 + 2] = 255;
+//	//}
+//	//
+//	///*if (idx==1)
+//	//{
+//	//	domColor2->data.fl[idx * 3 + 0] = 0;
+//	//	domColor2->data.fl[idx * 3 + 1] = 255;
+//	//	domColor2->data.fl[idx * 3 + 2] = 0;
+//	//}*/
+// // }
+//
+//	// Convert CvMat* to CxImage
+//
+//	for(long y=0, i=0; y< sourceImg.GetWidth(); y++){
+//		BYTE *pSrc = sourceImg.GetBits(y);
+//		BYTE *pDst1 = GetBits(y);
+//	/*	BYTE *pDst2 = GetBits(y);*/
+//		for(long x=0; x<=sourceImg.GetHeight(); x++, i++){
+//			*pDst1++ = (char) domColor1->data.fl[i * 3 + 0];
+//			*pDst1++ = (char) domColor1->data.fl[i * 3 + 1];
+//			*pDst1++ = (char) domColor1->data.fl[i * 3 + 2];
+//
+//			/**pDst2++ = (char) domColor2->data.fl[i * 3 + 0];
+//			*pDst2++ = (char) domColor2->data.fl[i * 3 + 1];
+//			*pDst2++ = (char) domColor2->data.fl[i * 3 + 2];*/
+//		}
+//	}
+//
+//	cvReleaseMat (&clusters);
+//	cvReleaseMat (&imgPoints);
+//	cvReleaseMat (&domColor2);
+//	cvReleaseMat (&domColor1);
+//	return true;
+//}
+
 bool CxImage::kmeanClustering()
 {
-	int size;
+     int i, size, colorCount=2;
+
+  CvMat *clusters;
+  CvMat *points;
+  CvMat *color = cvCreateMat (colorCount, 1, CV_32FC3);
+  CvMat *count = cvCreateMat (colorCount, 1, CV_32SC1);
+
+  IGSmartLayer tmpLayer;
+	tmpLayer.Copy (*this, true, true);
 	
-	int colorCount = 2; // To find two dominant colors
+	size = tmpLayer.head.biWidth * tmpLayer.head.biHeight;
 
-	IGSmartLayer sourceImg;
-	sourceImg.Copy (*this, true, true);
+  clusters = cvCreateMat (size, 1, CV_32SC1);
+  points = cvCreateMat (size, 1, CV_32FC3);
 
-	//CvMat *points;
-	CvMat *clusters;
+  long xmin,xmax,ymin,ymax;
+	if (pSelection){
+		xmin = info.rSelectionBox.left; xmax = info.rSelectionBox.right;
+		ymin = info.rSelectionBox.bottom; ymax = info.rSelectionBox.top;
+	} else {
+		xmin = ymin = 0;
+		xmax = head.biWidth - 1; ymax=head.biHeight - 1;
+	}
 
-	CvMat *domColor1 = cvCreateMat((int) sourceImg.head.biHeight, (int) sourceImg.head.biWidth, 3);
-	CvMat *domColor2 = cvCreateMat((int) sourceImg.head.biHeight, (int) sourceImg.head.biWidth, 3);
-	CvMat *imgPoints = cvCreateMat ((int) sourceImg.head.biHeight, (int) sourceImg.head.biWidth, CV_32FC3);
-
-	size = sourceImg.head.biWidth * sourceImg.head.biHeight;
-	
-
-	// Convert CxImage to CvMat*
-	for(long y=0, i=0; y< sourceImg.GetWidth(); y++){
-		BYTE *pSrc = sourceImg.GetBits(y);
-		for(long x=0; x<=sourceImg.GetHeight(); x++, i++){
-			imgPoints->data.fl[i * 3 + 0] = (uchar) *pSrc++;
-			imgPoints->data.fl[i * 3 + 1] = (uchar) *pSrc++;
-			imgPoints->data.fl[i * 3 + 2] = (uchar) *pSrc++;
+  for(long y=ymin, i=0; y<=ymax; y++){
+		BYTE *pSrc = tmpLayer.GetBits(y);
+		for(long x=xmin; x<=xmax; x++, i++){
+			points->data.fl[i * 3 + 0] = (uchar) *pSrc++;
+			points->data.fl[i * 3 + 1] = (uchar) *pSrc++;
+			points->data.fl[i * 3 + 2] = (uchar) *pSrc++;
 		}
-	}
-
-	// Apply Kmean Clusterig 
-	 cvKMeans2 (imgPoints, colorCount, clusters, cvTermCriteria (CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 10, 1.0));
-
-	// Cluster two dominat colors
-	cvSetZero (domColor1);
-	cvSetZero (domColor2);
-	for (int i = 0; i < size; i++) {
-    int idx = clusters->data.i[i];
-	if (idx ==0)
-	{
-		domColor1->data.fl[idx * 3 + 0] = 0;
-		domColor1->data.fl[idx * 3 + 1] = 0;
-		domColor1->data.fl[idx * 3 + 2] = 255;
-	}
-	/*if (idx==1)
-	{
-		domColor2->data.fl[idx * 3 + 0] = 0;
-		domColor2->data.fl[idx * 3 + 1] = 255;
-		domColor2->data.fl[idx * 3 + 2] = 0;
-	}*/
   }
 
-	// Convert CvMat* to CxImage
+  cvKMeans2 (points, colorCount, clusters, cvTermCriteria (CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 10, 1.0));
 
-	for(long y=0, i=0; y< sourceImg.GetWidth(); y++){
-		BYTE *pSrc = sourceImg.GetBits(y);
-		BYTE *pDst1 = GetBits(y);
-	/*	BYTE *pDst2 = GetBits(y);*/
-		for(long x=0; x<=sourceImg.GetHeight(); x++, i++){
-			*pDst1++ = (char) domColor1->data.fl[i * 3 + 0];
-			*pDst1++ = (char) domColor1->data.fl[i * 3 + 1];
-			*pDst1++ = (char) domColor1->data.fl[i * 3 + 2];
-/*
-			*pDst2++ = (char) domColor2->data.fl[i * 3 + 0];
-			*pDst2++ = (char) domColor2->data.fl[i * 3 + 1];
-			*pDst2++ = (char) domColor2->data.fl[i * 3 + 2];*/
-		}
+  cvSetZero (color);
+  cvSetZero (count);
+  for (i = 0; i < size; i++) {
+    int idx = clusters->data.i[i];
+    if (idx == 0)
+	{
+		color->data.fl[idx * 3 + 0] = 255;
+		color->data.fl[idx * 3 + 1] = 255;
+		color->data.fl[idx * 3 + 2] = 255;
 	}
+	else
+	{
+		color->data.fl[idx * 3 + 0] = 0;
+		color->data.fl[idx * 3 + 1] = 0;
+		color->data.fl[idx * 3 + 2] = 0;
+	}
+  }
+    
+	for(long y=ymin; y<=ymax; y++){
+		BYTE *pSrc = tmpLayer.GetBits(y);
+		BYTE *pDst = GetBits(y);
+		for(long x=xmin; x<=xmax; x++){
+				int idx = clusters->data.i[y * head.biWidth + x];
+				*pDst++ = (char) color->data.fl[idx * 3 + 0];
+				*pDst++ = (char) color->data.fl[idx * 3 + 1];
+				*pDst++ = (char) color->data.fl[idx * 3 + 2];
+			}
+	}
+	
+  cvReleaseMat (&clusters);
+  cvReleaseMat (&points);
+  cvReleaseMat (&color);
+  cvReleaseMat (&count);
 
-	cvReleaseMat (&clusters);
-	cvReleaseMat (&imgPoints);
-	cvReleaseMat (&domColor2);
-	cvReleaseMat (&domColor1);
-	return true;
+  return true;
+
 }
 
 bool CxImage::Quantize(int colorCount)

@@ -372,13 +372,17 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 		{
 			int nAlpha = 0;
 			CxImage *layerSrc (*pLayer);
-			//CxImage *layerSrc1 (*pLayer);//, *layerSrc2;
-			// Duotone original with colors: #741c19 (116, 28, 25) and #d7ad7f (215, 173, 127)
-			// get the two most represented colors
-			//[layerSrc1 layerSrc2 ] = CxImage::kmeanClustering(*layerA);
-			layerSrc->kmeanClustering();
+			//CxImage *layerOutput (*pLayer);
+			CxImage *layerOutput;
+			layerOutput->Copy(*pLayer, true, true);
 			
-			// Convert the given colors to HSL
+			// Duotone original with colors: #741c19 (116, 28, 25) and #d7ad7f (215, 173, 127)
+		
+			// get the two most represented colors
+			layerSrc->kmeanClustering();
+			//layerSrc->Quantize(2);
+			
+			 //Convert the given colors to HSL
 			RGBQUAD dest1;
 			dest1.rgbRed = 116;
 			dest1.rgbGreen = 28;
@@ -396,21 +400,22 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 			RGBQUAD srcHSL1, srcHSL;
 			for (long y=0; y<layerSrc->GetWidth(); y++ ){
 				for (long x=0; x<layerSrc->GetHeight(); x++){
-					srcHSL = CxImage::RGBtoHSL(pLayer->BlindGetPixelColor(x,y));
-					srcHSL1 = CxImage::RGBtoHSL(layerSrc->BlindGetPixelColor(x,y));
+					srcHSL = CxImage::RGBtoHSL(layerOutput->BlindGetPixelColor(x,y));
+					//srcHSL1 = CxImage::RGBtoHSL(layerSrc->BlindGetPixelColor(x,y));
+					srcHSL1 = layerSrc->BlindGetPixelColor(x,y);
 					//srcHSL2 = CxImage::RGBtoHSL(layerSrc2->BlindGetPixelColor(x,y));
 					if (srcHSL1.rgbBlue ==0 && srcHSL1.rgbGreen==0 && srcHSL1.rgbRed==0)
 						  srcHSL.rgbRed = dest2HSL.rgbRed;
 					else
 						 srcHSL.rgbRed = dest1HSL.rgbRed;
-					 pLayer->SetPixelColor(x,y, CxImage::HSLtoRGB(srcHSL));
+					 layerOutput->SetPixelColor(x,y, CxImage::HSLtoRGB(srcHSL));
 				}
 			}
 
 			// Apply the brush layer with 70% opacity
 			nAlpha = (int) (255*.70);
-			pLayer->AlphaDelete();
-			pLayer->AlphaCreate((BYTE)((float)nAlpha *2.55f));
+			layerOutput->AlphaDelete();
+			layerOutput->AlphaCreate((BYTE)((float)nAlpha *2.55f));
 
 			return true;
 		}
