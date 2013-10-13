@@ -371,16 +371,13 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 	case IGIPFILTER_FILTER3:
 		{
 			int nAlpha = 0;
+			CxImage *layerOutput (*pLayer);
 			CxImage *layerSrc (*pLayer);
-			//CxImage *layerOutput (*pLayer);
-			CxImage *layerOutput;
-			layerOutput->Copy(*pLayer, true, true);
 			
 			// Duotone original with colors: #741c19 (116, 28, 25) and #d7ad7f (215, 173, 127)
 		
 			// get the two most represented colors
 			layerSrc->kmeanClustering();
-			//layerSrc->Quantize(2);
 			
 			 //Convert the given colors to HSL
 			RGBQUAD dest1;
@@ -398,16 +395,16 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 			
 			// Map source image hues with requested hues
 			RGBQUAD srcHSL1, srcHSL;
-			for (long y=0; y<layerSrc->GetWidth(); y++ ){
-				for (long x=0; x<layerSrc->GetHeight(); x++){
+			for (long y=0; y<layerOutput->GetWidth(); y++ ){
+				for (long x=0; x<layerOutput->GetHeight(); x++){
 					srcHSL = CxImage::RGBtoHSL(layerOutput->BlindGetPixelColor(x,y));
 					//srcHSL1 = CxImage::RGBtoHSL(layerSrc->BlindGetPixelColor(x,y));
 					srcHSL1 = layerSrc->BlindGetPixelColor(x,y);
 					//srcHSL2 = CxImage::RGBtoHSL(layerSrc2->BlindGetPixelColor(x,y));
 					if (srcHSL1.rgbBlue ==0 && srcHSL1.rgbGreen==0 && srcHSL1.rgbRed==0)
-						  srcHSL.rgbRed = dest2HSL.rgbRed;
+						  srcHSL.rgbRed = dest1HSL.rgbRed;
 					else
-						 srcHSL.rgbRed = dest1HSL.rgbRed;
+						 srcHSL.rgbRed = dest2HSL.rgbRed;
 					 layerOutput->SetPixelColor(x,y, CxImage::HSLtoRGB(srcHSL));
 				}
 			}
@@ -416,6 +413,7 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 			nAlpha = (int) (255*.70);
 			layerOutput->AlphaDelete();
 			layerOutput->AlphaCreate((BYTE)((float)nAlpha *2.55f));
+
 
 			return true;
 		}
@@ -446,7 +444,7 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 			for (long y=0; y<layerSrc->GetWidth(); y++ ){
 				for (long x=0; x<layerSrc->GetHeight(); x++){
 					srcHSL = CxImage::RGBtoHSL(pLayer->BlindGetPixelColor(x,y));
-					srcHSL1 = CxImage::RGBtoHSL(layerSrc->BlindGetPixelColor(x,y));
+					srcHSL1 = layerSrc->BlindGetPixelColor(x,y);
 					//srcHSL2 = CxImage::RGBtoHSL(layerSrc2->BlindGetPixelColor(x,y));
 					if (srcHSL1.rgbBlue ==0 && srcHSL1.rgbGreen==0 && srcHSL1.rgbRed==0)
 						  srcHSL.rgbRed = dest2HSL.rgbRed;

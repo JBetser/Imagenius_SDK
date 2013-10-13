@@ -1584,6 +1584,11 @@ bool CxImage::kmeanClustering()
 
   cvSetZero (color);
   cvSetZero (count);
+
+  //
+  RGBQUAD srcHSL1, srcHSL;
+  //
+
   for (i = 0; i < size; i++) {
     int idx = clusters->data.i[i];
     if (idx == 0)
@@ -1611,6 +1616,7 @@ bool CxImage::kmeanClustering()
 			}
 	}
 	
+  //Transfer(tmpLayer);
   cvReleaseMat (&clusters);
   cvReleaseMat (&points);
   cvReleaseMat (&color);
