@@ -264,7 +264,7 @@ void IGFaceEffect::applyTexture (CxImage& text, int nNbOcc, float fRelativeSize,
 			nPosY = max (0, nPosY + text.GetHeight() / 2);
 		}
 		text.SetOffset (nPosX, m_layer.GetHeight() - 1 - nPosY);
-		m_layer.Mix (text, CxImage::OpAlphaBlend, true);
+		m_layer.Mix (text);
 		lPos.push_back (pair <int, int> (nPosX, nPosY));
 		nNbOcc--;
 	}
@@ -352,13 +352,13 @@ void IGFaceEffect::applyDoubleTexture (CxImage& text1, CxImage& text2, int nNbOc
 			nPosY = max (0, nPosY + text1.GetHeight() / 2);
 		}
 		text1.SetOffset (nPosX, m_layer.GetHeight() - nPosY);
-		m_layer.Mix (text1, CxImage::OpAlphaBlend, true);
+		m_layer.Mix (text1);
 		nPosX += abs ((long)(text1.GetWidth() - text2.GetWidth())) / 2;
 		nPosY -= abs ((long)(text1.GetHeight() - text2.GetHeight())) / 2;
 		if (bApplyRot)
 			text2.Rotate ((float)(rand() % 360), NULL, CxImage::IM_BILINEAR, CxImage::OM_BACKGROUND, NULL, true, true);
 		text2.SetOffset (nPosX, m_layer.GetHeight() - 1 - nPosY);
-		m_layer.Mix (text2, CxImage::OpAlphaBlend, true);
+		m_layer.Mix (text2);
 		lPos.push_back (pair <int, int> (nPosX, nPosY));
 		nNbOcc--;
 	}
@@ -735,41 +735,41 @@ bool IGFaceEffectMorphing::sad (const RECT& rcEyeLeft, const RECT& rcEyeRight, c
 		tears2.Resample ((long)(fRatio * (float)tears2.GetWidth()), (long)(fRatio * (float)tears2.GetHeight()));
 		if (rand() % 2 == 0){
 			tears1.SetOffset ((rcInsideEyeLeft.left + rcInsideEyeLeft.right - tears1.GetWidth()) / 2, (int)(m_layer.GetHeight() - 1 - rcUnderEyeLeft.top - (float)nInsideEyeLeftHeight / 3.0f));
-			m_layer.Mix (tears1, CxImage::OpAlphaBlend, true);
+			m_layer.Mix (tears1);
 			if (rand() % 2 == 0){
 				tears2.SetOffset (rcInsideEyeLeft.left, m_layer.GetHeight() - 1 - (rcInsideEyeLeft.top + rcInsideEyeLeft.bottom) / 2);
-				m_layer.Mix (tears2, CxImage::OpAlphaBlend, true);	
+				m_layer.Mix (tears2);	
 				if (m_fCoeff1 > 0.67f){
 					tears2.SetOffset (rcInsideEyeRight.right, m_layer.GetHeight() - 1 - (rcInsideEyeRight.top + rcInsideEyeRight.bottom) / 2);
-					m_layer.Mix (tears2, CxImage::OpAlphaBlend, true);
+					m_layer.Mix (tears2);
 				}
 			}
 			else{
 				tears2.SetOffset (rcInsideEyeRight.left, m_layer.GetHeight() - 1 - (rcInsideEyeRight.top + rcInsideEyeRight.bottom) / 2);
-				m_layer.Mix (tears2, CxImage::OpAlphaBlend, true);	
+				m_layer.Mix (tears2);	
 				if (m_fCoeff1 > 0.67f){
 					tears2.SetOffset (rcInsideEyeLeft.right, m_layer.GetHeight() - 1 - (rcInsideEyeLeft.top + rcInsideEyeLeft.bottom) / 2);
-					m_layer.Mix (tears2, CxImage::OpAlphaBlend, true);
+					m_layer.Mix (tears2);
 				}
 			}
 		}
 		else{
 			tears1.SetOffset ((rcInsideEyeRight.left + rcInsideEyeRight.right - tears1.GetWidth()) / 2, (int)(m_layer.GetHeight() - 1 - rcUnderEyeRight.top - (float)nInsideEyeRightHeight / 3.0f));
-			m_layer.Mix (tears1, CxImage::OpAlphaBlend, true);
+			m_layer.Mix (tears1);
 			if (rand() % 2 == 0){
 				tears2.SetOffset (rcInsideEyeLeft.right, m_layer.GetHeight() - 1 - (rcInsideEyeLeft.top + rcInsideEyeLeft.bottom) / 2);
-				m_layer.Mix (tears2, CxImage::OpAlphaBlend, true);
+				m_layer.Mix (tears2);
 				if (m_fCoeff1 > 0.67f){
 					tears2.SetOffset (rcInsideEyeRight.left, m_layer.GetHeight() - 1 - (rcInsideEyeRight.top + rcInsideEyeRight.bottom) / 2);
-					m_layer.Mix (tears2, CxImage::OpAlphaBlend, true);
+					m_layer.Mix (tears2);
 				}
 			}
 			else{
 				tears2.SetOffset (rcInsideEyeRight.right, m_layer.GetHeight() - 1 - (rcInsideEyeRight.top + rcInsideEyeRight.bottom) / 2);
-				m_layer.Mix (tears2, CxImage::OpAlphaBlend, true);
+				m_layer.Mix (tears2);
 				if (m_fCoeff1 > 0.67f){
 					tears2.SetOffset (rcInsideEyeLeft.left, m_layer.GetHeight() - 1 - (rcInsideEyeLeft.top + rcInsideEyeLeft.bottom) / 2);
-					m_layer.Mix (tears2, CxImage::OpAlphaBlend, true);
+					m_layer.Mix (tears2);
 				}
 			}
 		}
@@ -829,7 +829,7 @@ bool IGFaceEffectMorphing::smile(const RECT& rcEyeLeft, const RECT& rcEyeRight, 
 			star1.SetOffset ((rcInsideEyeRight.left + rcInsideEyeRight.right - star1.GetWidth()) / 2 + (rand() % 2 == 0 ? 1 : -1) * (int)(0.25f * (float)(rcInsideEyeLeft.right - rcInsideEyeLeft.left)), m_layer.GetHeight() - 1 - ((int)(rcInsideEyeRight.top + (rcInsideEyeRight.bottom - rcInsideEyeRight.top + star1.GetHeight()) / 2 + (int)(0.25f * (float)(rcInsideEyeLeft.bottom - rcInsideEyeLeft.top)))));
 		star1.Rotate ((float)(rand() % 360), NULL, CxImage::IM_BILINEAR, CxImage::OM_BACKGROUND, NULL, true, true);
 		if (m_fCoeff1 > 0.33)
-			m_layer.Mix (star1, CxImage::OpAlphaBlend, true);		
+			m_layer.Mix (star1);		
 	}
 	
 	m_layer.SelectionAddRect (rcFace);
@@ -1061,7 +1061,7 @@ bool IGFaceEffectHooligan::InternalProcess()
 		blood3_2.Resample ((long)(0.5f * (float)blood3.GetWidth()), (long)(0.5f * (float)blood3.GetHeight()));
 		blood3_2.SetOffset ((rcInsideEyeLeft.left + rcInsideEyeLeft.right - blood3_2.GetWidth()) / 2, m_layer.GetHeight() - 1 - rcUnderEyeLeft.top);
 		blood3_2.Rotate ((float)(rand() % 360), NULL, CxImage::IM_BILINEAR, CxImage::OM_BACKGROUND, NULL, true, true);
-		m_layer.Mix (blood3_2, CxImage::OpAlphaBlend, true);
+		m_layer.Mix (blood3_2);
 		rcUnderEyeLeft.top += nInsideEyeLeftHeight;
 		rcUnderEyeLeft.bottom += nInsideEyeLeftHeight;
 		m_layer.AddEyeRGB (col, rcUnderEyeLeft, true);
@@ -1080,7 +1080,7 @@ bool IGFaceEffectHooligan::InternalProcess()
 			if (m_fStrength > 0.67f){
 				blood3.SetOffset ((rcInsideEyeRight.left + rcInsideEyeRight.right - blood3.GetWidth()) / 2, m_layer.GetHeight() - 1 - rcUnderEyeRight.top);
 				blood3.Rotate ((float)(rand() % 360), NULL, CxImage::IM_BILINEAR, CxImage::OM_BACKGROUND, NULL, true, true);
-				m_layer.Mix (blood3, CxImage::OpAlphaBlend, true);	
+				m_layer.Mix (blood3);	
 				rcUnderEyeRight.left = rcEyeRight.left;
 				rcUnderEyeRight.right = rcEyeRight.right;
 				rcUnderEyeRight.top -= nInsideEyeRightHeight;
@@ -1121,7 +1121,7 @@ bool IGFaceEffectHooligan::InternalProcess()
 		blood3_2.Resample ((long)(0.5f * (float)blood3.GetWidth()), (long)(0.5f * (float)blood3.GetHeight()));
 		blood3_2.SetOffset ((rcInsideEyeRight.left + rcInsideEyeRight.right - blood3_2.GetWidth()) / 2, m_layer.GetHeight() - 1 - rcUnderEyeRight.top);
 		blood3_2.Rotate ((float)(rand() % 360), NULL, CxImage::IM_BILINEAR, CxImage::OM_BACKGROUND, NULL, true, true);
-		m_layer.Mix (blood3_2, CxImage::OpAlphaBlend, true);	
+		m_layer.Mix (blood3_2);	
 		rcUnderEyeRight.top += nInsideEyeRightHeight;
 		rcUnderEyeRight.bottom += nInsideEyeRightHeight;
 		m_layer.AddEyeRGB (col, rcUnderEyeRight, true);
@@ -1140,7 +1140,7 @@ bool IGFaceEffectHooligan::InternalProcess()
 			if (m_fStrength > 0.67f){
 				blood3.SetOffset ((rcInsideEyeLeft.left + rcInsideEyeLeft.right - blood3.GetWidth()) / 2, m_layer.GetHeight() - 1 - rcUnderEyeLeft.top);
 				blood3.Rotate ((float)(rand() % 360), NULL, CxImage::IM_BILINEAR, CxImage::OM_BACKGROUND, NULL, true, true);
-				m_layer.Mix (blood3, CxImage::OpAlphaBlend, true);
+				m_layer.Mix (blood3);
 				rcUnderEyeLeft.left = rcEyeLeft.left;
 				rcUnderEyeLeft.right = rcEyeLeft.right;
 				rcUnderEyeLeft.top -= nInsideEyeLeftHeight;
@@ -1174,32 +1174,32 @@ bool IGFaceEffectHooligan::InternalProcess()
 	m_layer.SetEyeHueSat (255, 0, rcInsideEyeRight, 0, true);
 	if (rand() % 2 == 0){
 		blood2.SetOffset (rcEyeLeft.left, m_layer.GetHeight() - 1 - (rcInsideEyeLeft.top + rcInsideEyeLeft.bottom) / 2);
-		m_layer.Mix (blood2, CxImage::OpAlphaBlend, true);		
+		m_layer.Mix (blood2);		
 	}
 	else{
 		blood1.SetOffset (rcEyeLeft.right, m_layer.GetHeight() - 1 - (rcInsideEyeLeft.top + rcInsideEyeLeft.bottom) / 2);
-		m_layer.Mix (blood1, CxImage::OpAlphaBlend, true);
+		m_layer.Mix (blood1);
 	}
 	if (rand() % 2 == 0){
 		blood2.SetOffset (rcEyeLeft.left, m_layer.GetHeight() - 1 - (rcInsideEyeLeft.top + rcInsideEyeLeft.bottom) / 2);
-		m_layer.Mix (blood2, CxImage::OpAlphaBlend, true);
+		m_layer.Mix (blood2);
 	}
 	else{
 		blood1.SetOffset (rcEyeLeft.right, m_layer.GetHeight() - 1 - (rcInsideEyeLeft.top + rcInsideEyeLeft.bottom) / 2);
-		m_layer.Mix (blood1, CxImage::OpAlphaBlend, true);
+		m_layer.Mix (blood1);
 	}
 	if (rand() % 2 == 0){
 		blood2.SetOffset (rcMouth.left, m_layer.GetHeight() - 1 - (rcMouth.top + rcMouth.bottom) / 2);
-		m_layer.Mix (blood2, CxImage::OpAlphaBlend, true);
+		m_layer.Mix (blood2);
 	}
 	else{
 		blood1.SetOffset (rcMouth.right, m_layer.GetHeight() - 1 - (rcMouth.top + rcMouth.bottom) / 2);
-		m_layer.Mix (blood1, CxImage::OpAlphaBlend, true);
+		m_layer.Mix (blood1);
 	}		
 	if (m_fStrength > 0.67f){
 		blood3.SetOffset ((rcMouth.left + rcMouth.right - blood3.GetWidth()) / 2, m_layer.GetHeight() - 1 - rcMouth.top);
 		blood3.Rotate ((float)(rand() % 360), NULL, CxImage::IM_BILINEAR, CxImage::OM_BACKGROUND, NULL, true, true);
-		m_layer.Mix (blood3, CxImage::OpAlphaBlend, true);
+		m_layer.Mix (blood3);
 	}
 	return true;
 }
@@ -1251,7 +1251,7 @@ bool IGFaceEffectSurprised::InternalProcess()
 			tears3.SetOffset (rcInsideEyeLeft.left - (rcInsideEyeLeft.right - rcInsideEyeLeft.left) / 2, (int)(m_layer.GetHeight() - 1 - rcInsideEyeLeft.bottom - (float)nInsideEyeLeftHeight * 2.0f));
 		else
 			tears3.SetOffset (rcInsideEyeRight.right + (rcInsideEyeRight.right - rcInsideEyeRight.left) / 2, (int)(m_layer.GetHeight() - 1 - rcInsideEyeRight.bottom - (float)nInsideEyeRightHeight * 2.0f));
-		m_layer.Mix (tears3, CxImage::OpAlphaBlend, true);
+		m_layer.Mix (tears3);
 
 		if (m_fStrength > 0.66f){
 			RGBQUAD rgbq;

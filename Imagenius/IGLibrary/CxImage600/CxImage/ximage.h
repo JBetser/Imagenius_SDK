@@ -525,7 +525,7 @@ public:
 	bool Edge(long Ksize=2);
 	void HuePalette(float correction=1);
 	enum ImageOpType {OpAdd, OpAnd, OpXor, OpOr, OpMask, OpSrcCopy, OpDstCopy, OpSub, OpSrcBlend, OpScreen, OpAvg, OpAlphaBlend};
-	void Mix(CxImage & imgsrc2, ImageOpType op, bool bMixAlpha = false);
+	void Mix(CxImage & imgsrc2);
 	void MixFrom(CxImage & imagesrc2, long lXOffset, long lYOffset);
 	bool UnsharpMask(float radius = 5.0f, float amount = 0.5f, int threshold = 0);
 	bool Lut(BYTE* pLut);
@@ -544,7 +544,7 @@ public:
 	bool DeletePixels(bool bSmart);
 	bool MovePixels(int nVectorX, int nVectorY);
 	bool kmeanClustering();
-	//bool Multiply(CxImage & imageSrc1, CxImage & imageSrc2); 
+	bool Multiply(const CxImage & imageSrc); 
 
 	void Move(int nVectorX, int nVectorY) { info.xOffset += nVectorX; info.yOffset += nVectorY; }
 //@}

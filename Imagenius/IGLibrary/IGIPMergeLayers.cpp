@@ -58,7 +58,7 @@ bool IGIPMergeLayers::OnImageProcessing (CxImage& image, IGImageProcMessage& mes
 	for (list <CxImage*>::const_iterator itItem = pIGThreadMessage->m_lpSrcLayers.begin();
 		 itItem != pIGThreadMessage->m_lpSrcLayers.end(); ++itItem)
 	{
-		pMergedLayer->Mix (*(*itItem), CxImage::OpAlphaBlend, true);
+		pMergedLayer->Mix (*(*itItem));
 	}
 	dynamic_cast <IGLayer*> (pMergedLayer)->SetWorking();
 	return true;

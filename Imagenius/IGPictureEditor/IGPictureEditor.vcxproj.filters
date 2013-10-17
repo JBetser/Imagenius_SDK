@@ -586,6 +586,9 @@
     <None Include="images\tears3.png">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="images\paper.png">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

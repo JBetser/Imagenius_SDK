@@ -75,14 +75,15 @@
 #define IDB_POX2						286
 #define IDB_STAR1						287
 #define IDB_STAR2						288
+#define IDB_PAPER						289
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        289
+#define _APS_NEXT_RESOURCE_VALUE        290
 #define _APS_NEXT_COMMAND_VALUE         32768
-#define _APS_NEXT_CONTROL_VALUE         289
-#define _APS_NEXT_SYMED_VALUE           289
+#define _APS_NEXT_CONTROL_VALUE         290
+#define _APS_NEXT_SYMED_VALUE           290
 #endif
 #endif

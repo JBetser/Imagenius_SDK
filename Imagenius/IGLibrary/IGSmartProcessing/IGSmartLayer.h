@@ -47,6 +47,7 @@ namespace IGLibrary
 		~IGSmartLayer();
 
 		// basic features
+		static bool Init (HRSRC hPaper);
 		void UpdateSize (int nWidth, int nHeight);
 		inline void AddRegion (IGRegion *pNewRegion);
 		inline IGSmartPixel* GetPixel (int nCol, int nRow);		
@@ -73,7 +74,8 @@ namespace IGLibrary
 		bool FilterSmallRegions(std::vector <IGRegion*> vRegions);
 		void FilterMorphoBackgroundRegions();
 		bool ProcessFaceEffect (IGIPFaceEffectMessage *pEffectMessage);
-
+		bool Filter2();
+		
 		// indexers
 		virtual bool IndexLPE (IGMarker **ppMarkers, int& nNbMarkers, bool bShowMarkerMode = false);
 		bool IndexFaces (int nDescriptorIdx = -1);
@@ -231,6 +233,7 @@ namespace IGLibrary
 		std::vector <IGSmartPixel*> m_vBoundaries;
 		std::vector <std::vector <IGSmartPixel*>> m_vvTreePixels;
 		std::vector <std::vector <IGRegion*>> m_vvTreeRegions;
+		static IGSmartPtr <IGFrame> mg_spPaper;
 	};
 
 	inline void IGSmartLayer::AddRegion (IGRegion *pNewRegion)

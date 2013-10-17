@@ -158,6 +158,7 @@ AppPackages/
 sql/
 Debug/
 ServerDebug/
+WebDebug/
 *.Cache
 ClientBin/
 [Ss]tyle[Cc]op.*

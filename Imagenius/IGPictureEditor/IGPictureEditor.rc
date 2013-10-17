@@ -179,6 +179,7 @@ IDB_POX1	            PNG                     "images\\pox1.png"
 IDB_POX2	            PNG                     "images\\pox2.png"
 IDB_STAR1	            PNG                     "images\\star1.png"
 IDB_STAR2	            PNG                     "images\\star2.png"
+IDB_PAPER	            PNG                     "images\\paper.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //

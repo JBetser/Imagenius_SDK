@@ -1766,6 +1766,62 @@ bool CxImage::Light(long brightness, long contrast)
 //
 //	return Lut(cTable);
 //}
+
+////////////////////////////////////////////////////////////////////////////////
+/**
+ * \return multiplication chanel by chanel of current image with src
+ */
+bool CxImage::Multiply(const CxImage& src)
+{
+	if (!pDib) 
+		return false;
+
+	CxImage tmp (*this);
+	if (!tmp.IsValid()){
+		strcpy(info.tcLastError,tmp.GetLastError());
+		return false;
+	}
+
+	float sum=0;
+
+	long xmin,xmax,ymin,ymax;
+	if (pSelection){
+		xmin = info.rSelectionBox.left; xmax = info.rSelectionBox.right;
+		ymin = info.rSelectionBox.bottom; ymax = info.rSelectionBox.top;
+	} else {
+		xmin = ymin = 0;
+		xmax = head.biWidth - 1; ymax=head.biHeight - 1;
+	}
+	if (xmin==xmax || ymin==ymax) 
+		return false;
+
+	BYTE *pRowSrc = info.pImage;
+	BYTE *pRowDst = tmp.info.pImage;
+	pRowSrc += tmp.info.dwEffWidth * ymin; 
+	pRowDst += info.dwEffWidth * ymin; 
+
+	for(long y=ymin; y<=ymax; y++){
+		info.nProgress = (long)(100*(y-ymin)/(ymax-ymin)); 
+		for(long x=xmin; x<=xmax; x++){
+#if CXIMAGE_SUPPORT_SELECTION
+			if (BlindSelectionIsInside(x,y))
+#endif //CXIMAGE_SUPPORT_SELECTION
+			{
+				BYTE *pCurSrc = pRowSrc + x * 3;
+				BYTE *pCurDst = pRowDst + x * 3;
+				*pCurDst++ = (BYTE)(255.0f * ((float)*pCurSrc++ / 255.0f) * ((float)*pCurDst / 255.0f));
+				*pCurDst++ = (BYTE)(255.0f * ((float)*pCurSrc++ / 255.0f) * ((float)*pCurDst / 255.0f));
+				*pCurDst++ = (BYTE)(255.0f * ((float)*pCurSrc++ / 255.0f) * ((float)*pCurDst / 255.0f));
+			}
+		}
+		pRowSrc += tmp.info.dwEffWidth;
+		pRowDst += info.dwEffWidth;
+	}
+
+	Transfer(tmp);
+	return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 /**
  * \return mean lightness of the image. Useful with Threshold() and Light()
@@ -2266,7 +2322,7 @@ bool CxImage::Edge(long Ksize)
 // 
 #if CXIMAGE_SUPPORT_ALPHA
 
-void CxImage::Mix(CxImage & imgsrc2, ImageOpType op, bool bMixAlpha)
+void CxImage::Mix(CxImage & imgsrc2)
 {
 	if (head.biClrUsed || head.biBitCount != 24)
 		return;

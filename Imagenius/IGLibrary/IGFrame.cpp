@@ -686,7 +686,7 @@ HANDLE IGFrame::CopyToHandle (bool bCopyAlpha)
 	}
 	for (int idxLayer = 1; idxLayer < nNbLayers; idxLayer++)
 	{
-		pNewLayer->Mix (*GetLayer (idxLayer), CxImage::OpAlphaBlend, true);
+		pNewLayer->Mix (*GetLayer (idxLayer));
 	}
 	m_spProgress->Hide();
 

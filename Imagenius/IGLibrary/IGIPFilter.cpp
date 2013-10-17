@@ -298,7 +298,7 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 			long contrast_in = 139, contrast_out = 116;
 			CxImage *contrast_IN (*pLayer);
 			CxImage *contrast_OUT (*pLayer);
-			contrast_IN->Mix(*contrast_OUT, CxImage::OpAvg, false); 
+			contrast_IN->Mix(*contrast_OUT); 
 
 			contrast_IN->Light(0, contrast_in);
 			contrast_OUT->Light(0, contrast_out);
@@ -315,58 +315,14 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 			layer3->AlphaCreate ((BYTE)((float)nAlpha * 2.55f));
 
 			// Adding the three layers 
-			layer1->Mix(*layer2, CxImage::OpAvg, false);
-			layer1->Mix(*layer3, CxImage::OpAvg, false);
+			layer1->Mix(*layer2);
+			layer1->Mix(*layer3);
 
 			return true;
 		}
+
 	case IGIPFILTER_FILTER2:
-		{
-			int nAlpha =0;
-			CxImage *layerA (*pLayer);
-			CxImage *layerB (*pLayer);
-			CxImage *layerC (*pLayer);
-			// Apply the original as screen on white background with opacity 90 -> layer “A”
-			nAlpha = 90;
-			layerA->AlphaDelete();
-			layerA->AlphaCreate((BYTE)((float)nAlpha * 2.55f));
-
-			// Copy the original, convert to grayscale, add 30% contrast and multiply with layer “A” -> layer “B”
-			layerB->GrayScale();
-			layerB->Light(0, (long)255*.3);
-			// multiplication function
-			if (layerB->GetHeight() == layerA->GetHeight() && layerB->GetWidth() == layerA->GetWidth())
-			{
-				for (long y=0; y<layerB->GetWidth(); y++ ){
-				for (long x=0; x<layerB->GetHeight(); x++){
-					//BYTE *pSrc1 = layerA->GetPixelGray(x,y);
-					//BYTE *pSrc2 = layerB->GetBits(y);
-					float product = (layerA->GetPixelGray(x,y)) * (layerB->GetPixelGray(x,y));
-					if (product > 255)
-						layerB->SetPixelIndex(x,y,(BYTE)255);
-					else if (product < 0)
-						layerB->SetPixelIndex(x,y,(BYTE)0);
-					else
-						layerB->SetPixelIndex(x,y,(BYTE) product);
-					}
-					
-				}
-
-			}
-
-			//// Apply darken 55% to the paper layer -> layer “C”
-			layerC->Light((long)(-255*.55));
-
-			// Apply layer “C” to layer “B” as screen with 20% opacity
-			nAlpha = (int) (255*.2);
-			layerB->AlphaDelete();
-			layerB->AlphaCreate((BYTE)((float)nAlpha *2.55f));
-
-			layerC->Mix(*layerB, CxImage::OpScreen, true); 
-
-			return true;
-
-		}
+		return pLayer->Filter2();
 
 	case IGIPFILTER_FILTER3:
 		{

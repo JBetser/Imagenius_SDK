@@ -430,7 +430,7 @@ bool IGImageProcessing::OnImageProcessing (CxImage& image, IGImageProcMessage& m
 				pNewLayer->Copy (*image.GetLayer (0), true, false, true, false);
 				for (int idxLayer = 1; idxLayer < nNbLayers; idxLayer++)
 				{
-					pNewLayer->Mix (*image.GetLayer (idxLayer), CxImage::OpAlphaBlend, true);
+					pNewLayer->Mix (*image.GetLayer (idxLayer));
 				}
 				bRes = pNewLayer->Save (pIGThreadMessage->m_wsImagePath.c_str(), pIGThreadMessage->m_dwImageType);	
 				if (bExport)

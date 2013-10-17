@@ -70,6 +70,9 @@ bool CIGMainWindow::initAll ()
 						::FindResourceW (getInstance(), MAKEINTRESOURCE (IDB_STAR1), L"PNG"),
 						::FindResourceW (getInstance(), MAKEINTRESOURCE (IDB_STAR2), L"PNG"));
 
+	// load filter effect textures
+	IGSmartLayer::Init (::FindResourceW (getInstance(), MAKEINTRESOURCE (IDB_PAPER), L"PNG"));
+
 	// new site coordinates
 	RECT rc;
 	::ZeroMemory (&rc, sizeof (RECT));

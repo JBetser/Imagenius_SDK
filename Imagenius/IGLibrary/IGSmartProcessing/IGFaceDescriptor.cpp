@@ -254,7 +254,7 @@ int IGFaceDescriptor::Detect(int nLayerWidth, int nLayerHeight, IGSmartLayer& sa
 			int nSampledScaleHeight = (int)(fRatio * (float)sampledLayerScale.GetHeight());
 			if (sampledLayerScale.Resample2 (nSampledScaleWidth, nSampledScaleHeight)){
 
-				sampledLayerScale.Mix (sampledLayer, CxImage::OpAlphaBlend, true);
+				sampledLayerScale.Mix (sampledLayer);
 				
 				sampledLayerScale.Resample();
 												
