@@ -883,9 +883,18 @@ bool CxImage::Resample(long newx, long newy, int mode, CxImage* iDst)
 	}
 
 	float xScale, yScale, fX, fY;
-	xScale = (float)head.biWidth  / (float)newx;
-	yScale = (float)head.biHeight / (float)newy;
-
+	if (newx == -1){
+		yScale = (float)head.biHeight / (float)newy;
+		xScale = yScale;
+	}
+	else if (newy == -1){
+		xScale = (float)head.biWidth / (float)newx;
+		yScale = xScale;
+	} 
+	else{
+		xScale = (float)head.biWidth  / (float)newx;
+		yScale = (float)head.biHeight / (float)newy;
+	}
 	CxImage newImage;
 	newImage.CopyInfo(*this);
 	newImage.Create(newx,newy,head.biBitCount,GetType());

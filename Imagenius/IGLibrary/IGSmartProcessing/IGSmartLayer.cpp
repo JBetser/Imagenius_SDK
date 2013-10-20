@@ -2117,6 +2117,9 @@ bool IGSmartLayer::Filter2()
 		return false;
 
 	CxImage paper (*(CxImage*)mg_spPaper->GetLayer(0));
+	if (paper.Resample (-1, GetHeight()))
+		return false;
+
 	if (!paper.Light ((long)(255*.55)))
 		return false;
 	paper.AlphaCreate ((long)(255*.2));
