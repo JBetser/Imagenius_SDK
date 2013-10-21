@@ -333,7 +333,8 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 			// Duotone original with colors: #741c19 (116, 28, 25) and #d7ad7f (215, 173, 127)
 		
 			// get the two most represented colors
-			layerSrc.kmeanClustering();
+			//layerSrc.kmeanClustering();
+			layerSrc.GrayScale(true);
 			
 			 //Convert the given colors to HSL
 			RGBQUAD dest1;
@@ -345,31 +346,27 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 			dest2.rgbRed = 215;
 			dest2.rgbGreen = 173;
 			dest2.rgbBlue = 127;
+			for(int idx = 0; idx < 256; idx++){
+				float fAlpha = (float)idx / 256.0f;
+				float fInvAlpha = 1.0f - fAlpha;
+				layerSrc.SetPaletteColor (idx, RGB((float)dest1.rgbRed * fInvAlpha + fAlpha * (float)dest2.rgbRed,
+													(float)dest1.rgbGreen * fInvAlpha + fAlpha * (float)dest2.rgbGreen,
+													(float)dest1.rgbBlue * fInvAlpha + fAlpha * (float)dest2.rgbBlue));
+			}			
 
-			RGBQUAD dest1HSL = CxImage::RGBtoHSL(dest1);	
-			RGBQUAD dest2HSL = CxImage::RGBtoHSL(dest2);	
-			
 			// Map source image hues with requested hues
 			RGBQUAD srcHSL1, srcHSL;
 			if (layerSrc.GetWidth() == layerOutput->GetWidth()){
 			for (long y=0; y<layerOutput->GetWidth(); y++ ){
 				for (long x=0; x<layerOutput->GetHeight(); x++){
-					srcHSL = CxImage::RGBtoHSL(layerOutput->BlindGetPixelColor(x,y));
-					//srcHSL1 = CxImage::RGBtoHSL(layerSrc->BlindGetPixelColor(x,y));
-					srcHSL1 = layerSrc.BlindGetPixelColor(x,y);
-					//srcHSL2 = CxImage::RGBtoHSL(layerSrc2->BlindGetPixelColor(x,y));
-					if (srcHSL1.rgbBlue ==0 && srcHSL1.rgbGreen==0 && srcHSL1.rgbRed==0)
-						  srcHSL.rgbRed = dest1HSL.rgbRed;
-					else
-						 srcHSL.rgbRed = dest2HSL.rgbRed;
-					 layerOutput->SetPixelColor(x,y, CxImage::HSLtoRGB(srcHSL));
+					layerOutput->SetPixelColor(x,y, layerSrc.GetPixelColor(x,y,false));
 				}
 			}
 			}
 			// Apply the brush layer with 70% opacity
-			nAlpha = (int) (255*.70);
-			layerOutput->AlphaDelete();
-			layerOutput->AlphaCreate((BYTE)((float)nAlpha *2.55f));
+			//nAlpha = (int) (255*.70);
+			//layerOutput->AlphaDelete();
+			//layerOutput->AlphaCreate((BYTE)((float)nAlpha *2.55f));
 
 
 			return true;
