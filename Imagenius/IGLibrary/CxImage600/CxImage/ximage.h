@@ -545,6 +545,7 @@ public:
 	bool MovePixels(int nVectorX, int nVectorY);
 	bool kmeanClustering();
 	bool Multiply(const CxImage & imageSrc); 
+	bool Duotone(COLORREF col1, COLORREF col2);
 
 	void Move(int nVectorX, int nVectorY) { info.xOffset += nVectorX; info.yOffset += nVectorY; }
 //@}
@@ -653,6 +654,7 @@ public:
 	inline void AlphaSet(BYTE level);
 	bool AlphaSet(CxImage &from);
 	void AlphaSet(const long x,const long y,const BYTE level);
+	void AlphaSetMixingFunc(MIXING_FUNC func);
 	BYTE AlphaGet(const long x,const long y);
 	BYTE AlphaGetMax() const;
 	void AlphaSetMax(BYTE nAlphaMax);

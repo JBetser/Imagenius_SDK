@@ -85,6 +85,9 @@
     <ClCompile Include="ximawnd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ximamix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CxAlloc.h">
@@ -184,6 +187,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="xmemfile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ximamix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

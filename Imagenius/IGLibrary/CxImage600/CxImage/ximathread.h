@@ -85,10 +85,18 @@ CMAX_IMAGE_FORMATS = CXIMAGE_SUPPORT_BMP + CXIMAGE_SUPPORT_GIF + CXIMAGE_SUPPORT
 class CxImageThread;
 class CvLib;
 
+typedef RGBQUAD (*MIXING_FUNC) (RGBQUAD, BYTE);
+
 //extensible information collector
 typedef struct tagCxImageInfo {
 
-	tagCxImageInfo(){}
+	tagCxImageInfo() : pImage(NULL),
+						pGhost(NULL),
+						pParent(NULL),
+						pFaceDetection(NULL),
+						pMixingFunc(NULL)
+	{
+	}
 	~tagCxImageInfo(){
 	}
 
@@ -137,6 +145,7 @@ typedef struct tagCxImageInfo {
 	TCHAR	twLastOutputPath[256];
 	TCHAR	twLastReqGuid[256];
 	CvLib	*pFaceDetection;
+	MIXING_FUNC pMixingFunc;
 } CXIMAGEINFO;
 
 class CxImageThread : public IGLibrary::IGThread

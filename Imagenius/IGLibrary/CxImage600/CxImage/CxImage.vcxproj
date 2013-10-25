@@ -184,6 +184,7 @@
     <ClCompile Include="ximalpha.cpp" />
     <ClCompile Include="ximalyr.cpp" />
     <ClCompile Include="ximalyrcache.cpp" />
+    <ClCompile Include="ximamix.cpp" />
     <ClCompile Include="ximapal.cpp" />
     <ClCompile Include="ximapng.cpp" />
     <ClCompile Include="ximasel.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="ximajbg.h" />
     <ClInclude Include="ximajpg.h" />
     <ClInclude Include="ximalyrcache.h" />
+    <ClInclude Include="ximamix.h" />
     <ClInclude Include="ximamng.h" />
     <ClInclude Include="ximapcx.h" />
     <ClInclude Include="ximapng.h" />

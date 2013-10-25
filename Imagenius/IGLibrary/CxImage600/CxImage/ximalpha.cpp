@@ -28,6 +28,14 @@ void CxImage::AlphaSetMax(BYTE nAlphaMax)
 }
 ////////////////////////////////////////////////////////////////////////////////
 /**
+ * Sets the mixing func to apply to the whole image when mixing with other images (Mix)
+ */
+void CxImage::AlphaSetMixingFunc(MIXING_FUNC func)
+{
+	info.pMixingFunc = func;
+}
+////////////////////////////////////////////////////////////////////////////////
+/**
  * Checks if the image has a valid alpha channel.
  */
 bool CxImage::AlphaIsValid()
@@ -59,10 +67,8 @@ bool CxImage::AlphaPaletteIsEnabled()
  */
 void CxImage::AlphaClear()
 {
-	
-	
-
 	if (pAlpha)	memset(pAlpha,0,head.biWidth * head.biHeight);
+	info.pMixingFunc = NULL;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,12 +81,14 @@ bool CxImage::AlphaCreate (BYTE level)
 		pAlpha = (BYTE*)malloc (head.biWidth * head.biHeight);
 		if (pAlpha) memset (pAlpha, level, head.biWidth * head.biHeight);
 	}
+	info.pMixingFunc = NULL;
 	return (pAlpha!=0);
 }
 ////////////////////////////////////////////////////////////////////////////////
 void CxImage::AlphaDelete()
 {
 	if (pAlpha) { free(pAlpha); pAlpha=0; }
+	info.pMixingFunc = NULL;
 }
 ////////////////////////////////////////////////////////////////////////////////
 void CxImage::AlphaInvert()

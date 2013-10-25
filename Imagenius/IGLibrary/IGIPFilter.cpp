@@ -326,50 +326,12 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 
 	case IGIPFILTER_FILTER3:
 		{
-			int nAlpha = 0;
-			CxImage *layerOutput (*pLayer);
-			CxImage layerSrc (*pLayer);
-			
-			// Duotone original with colors: #741c19 (116, 28, 25) and #d7ad7f (215, 173, 127)
-		
-			// get the two most represented colors
-			//layerSrc.kmeanClustering();
-			layerSrc.GrayScale(true);
-			
-			 //Convert the given colors to HSL
-			RGBQUAD dest1;
-			dest1.rgbRed = 116;
-			dest1.rgbGreen = 28;
-			dest1.rgbBlue = 25;
+			return pLayer->Duotone(RGB(116, 28, 25), RGB(215, 173, 127));
 
-			RGBQUAD dest2;
-			dest2.rgbRed = 215;
-			dest2.rgbGreen = 173;
-			dest2.rgbBlue = 127;
-			for(int idx = 0; idx < 256; idx++){
-				float fAlpha = (float)idx / 256.0f;
-				float fInvAlpha = 1.0f - fAlpha;
-				layerSrc.SetPaletteColor (idx, RGB((float)dest1.rgbRed * fInvAlpha + fAlpha * (float)dest2.rgbRed,
-													(float)dest1.rgbGreen * fInvAlpha + fAlpha * (float)dest2.rgbGreen,
-													(float)dest1.rgbBlue * fInvAlpha + fAlpha * (float)dest2.rgbBlue));
-			}			
-
-			// Map source image hues with requested hues
-			RGBQUAD srcHSL1, srcHSL;
-			if (layerSrc.GetWidth() == layerOutput->GetWidth()){
-			for (long y=0; y<layerOutput->GetWidth(); y++ ){
-				for (long x=0; x<layerOutput->GetHeight(); x++){
-					layerOutput->SetPixelColor(x,y, layerSrc.GetPixelColor(x,y,false));
-				}
-			}
-			}
 			// Apply the brush layer with 70% opacity
 			//nAlpha = (int) (255*.70);
 			//layerOutput->AlphaDelete();
 			//layerOutput->AlphaCreate((BYTE)((float)nAlpha *2.55f));
-
-
-			return true;
 		}
 
 	case IGIPFILTER_FILTER4:

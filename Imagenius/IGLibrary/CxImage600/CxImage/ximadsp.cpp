@@ -1824,6 +1824,93 @@ bool CxImage::Multiply(const CxImage& src)
 
 ////////////////////////////////////////////////////////////////////////////////
 /**
+ * \return apply 8-bit palette with range between two specified colors
+ */
+bool CxImage::Duotone(COLORREF col1, COLORREF col2)
+{
+	if (!pDib) 
+		return false;
+
+	CxImage tmp (*this);
+	if (!tmp.IsValid()){
+		strcpy(info.tcLastError,tmp.GetLastError());
+		return false;
+	}
+	
+	long xmin,xmax,ymin,ymax;
+	if (pSelection){
+		xmin = info.rSelectionBox.left; xmax = info.rSelectionBox.right;
+		ymin = info.rSelectionBox.bottom; ymax = info.rSelectionBox.top;
+	} else {
+		xmin = ymin = 0;
+		xmax = head.biWidth - 1; ymax=head.biHeight - 1;
+	}
+	if (xmin==xmax || ymin==ymax) 
+		return false;
+
+	CxImage tmpGray (*this);
+	if (!tmpGray.GrayScale (true))
+		return false;
+
+	BYTE minBrightness = 255;
+	BYTE maxBrightness = 0;
+	for (long y=0; y<tmp.GetWidth(); y++ ){
+		for (long x=0; x<tmp.GetHeight(); x++){
+			BYTE idx = tmpGray.GetPixelIndex(x,y);
+			if (idx < minBrightness)
+				minBrightness = idx;
+			if (idx > maxBrightness)
+				maxBrightness = idx;
+		}
+	}
+	
+	RGBQUAD dest1;
+	dest1.rgbRed = GetRValue(col1);
+	dest1.rgbGreen = GetGValue(col1);
+	dest1.rgbBlue = GetBValue(col1);
+	RGBQUAD dest1HSL = CxImage::RGBtoHSL(dest1);
+
+	RGBQUAD dest2;
+	dest2.rgbRed = GetRValue(col2);
+	dest2.rgbGreen = GetGValue(col2);
+	dest2.rgbBlue = GetBValue(col2);
+	RGBQUAD dest2HSL = CxImage::RGBtoHSL(dest2);
+	BYTE minTargetBrightness = min(dest1HSL.rgbBlue, dest2HSL.rgbBlue);
+
+	float fCoeffRange = (float)(maxBrightness - minBrightness) / (float)abs(dest1HSL.rgbBlue - dest2HSL.rgbBlue);
+	for(int idx = 0; idx < 256; idx++){
+		float fAlpha = (float)idx / 256.0f;
+		float fInvAlpha = 1.0f - fAlpha;
+		RGBQUAD curCol;
+		curCol.rgbRed = (float)dest1.rgbRed * fInvAlpha + fAlpha * (float)dest2.rgbRed;
+		curCol.rgbGreen = (float)dest1.rgbGreen * fInvAlpha + fAlpha * (float)dest2.rgbGreen;
+		curCol.rgbBlue = (float)dest1.rgbBlue * fInvAlpha + fAlpha * (float)dest2.rgbBlue;
+		RGBQUAD curHSL = CxImage::RGBtoHSL(curCol);
+		curHSL.rgbBlue = (BYTE)((float)(curHSL.rgbBlue - minTargetBrightness) * fCoeffRange);
+		curCol = CxImage::HSLtoRGB(curHSL);
+		tmpGray.SetPaletteColor (idx, curCol);
+	}			
+
+	// Map source image hues with requested hues
+	RGBQUAD srcHSL1, srcHSL;
+	for(long y=ymin; y<=ymax; y++){
+		for(long x=xmin; x<=xmax; x++){
+#if CXIMAGE_SUPPORT_SELECTION
+			if (BlindSelectionIsInside(x,y))
+#endif //CXIMAGE_SUPPORT_SELECTION
+			{
+				tmp.SetPixelColor(x,y, tmpGray.GetPixelColor(x,y,false));
+			}
+		}
+	}
+
+	Transfer(tmp);
+	return true;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+/**
  * \return mean lightness of the image. Useful with Threshold() and Light()
  */
 float CxImage::Mean()
