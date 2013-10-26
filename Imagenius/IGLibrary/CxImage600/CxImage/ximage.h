@@ -546,6 +546,7 @@ public:
 	bool kmeanClustering();
 	bool Multiply(const CxImage & imageSrc); 
 	bool Duotone(COLORREF col1, COLORREF col2);
+	bool Overlay(const CxImage & imageSrc);
 
 	void Move(int nVectorX, int nVectorY) { info.xOffset += nVectorX; info.yOffset += nVectorY; }
 //@}

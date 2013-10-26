@@ -336,51 +336,29 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 
 	case IGIPFILTER_FILTER4:
 		{
-			int nAlpha = 0;
-			CxImage layerSrc (*pLayer);
-			//CxImage *layerSrc1;
-			layerSrc.kmeanClustering();
+		
+			//return pLayer->Duotone(RGB(60, 60, 60), RGB(163, 163, 163));
+			CxImage duotoneImg(*pLayer);
+			CxImage opacityLyr1(*pLayer);
+			CxImage overlayLyr(*pLayer);
+			CxImage *opacityLyr2(*pLayer);
 
-			// Convert the given colors to HSL
-			RGBQUAD dest1;
-			dest1.rgbRed = 60;
-			dest1.rgbGreen = 60;
-			dest1.rgbBlue = 60;
+			duotoneImg.Duotone(RGB(60, 60, 60), RGB(163, 163, 163));
 
-			RGBQUAD dest2;
-			dest2.rgbRed = 163;
-			dest2.rgbGreen = 163;
-			dest2.rgbBlue = 163;
+			opacityLyr1.AlphaCreate ((long)(255*.24));
+			opacityLyr1.Mix(duotoneImg);
 
-			RGBQUAD dest1HSL = CxImage::RGBtoHSL(dest1);	
-			RGBQUAD dest2HSL = CxImage::RGBtoHSL(dest2);
+			opacityLyr2->Overlay(opacityLyr1);
 
-			// Map source image hues with requested hues
-			RGBQUAD srcHSL1, srcHSL;
-			for (long y=0; y<layerSrc.GetWidth(); y++ ){
-				for (long x=0; x<layerSrc.GetHeight(); x++){
-					srcHSL = CxImage::RGBtoHSL(pLayer->BlindGetPixelColor(x,y));
-					srcHSL1 = layerSrc.BlindGetPixelColor(x,y);
-					//srcHSL2 = CxImage::RGBtoHSL(layerSrc2->BlindGetPixelColor(x,y));
-					if (srcHSL1.rgbBlue ==0 && srcHSL1.rgbGreen==0 && srcHSL1.rgbRed==0)
-						  srcHSL.rgbRed = dest2HSL.rgbRed;
-					else
-						 srcHSL.rgbRed = dest1HSL.rgbRed;
-					 pLayer->SetPixelColor(x,y, CxImage::HSLtoRGB(srcHSL));
-				}
-			}
+			/*opacityLyr2->Multiply(opacityLyr1);
 
-			// Apply layer 2 as screen with opacity 24
-			nAlpha = (int) (24);
-			pLayer->AlphaDelete();
-			pLayer->AlphaCreate((BYTE)((float)nAlpha *2.55f));
-
+			opacityLyr2->AlphaCreate((long)(255*.14)); */
 
 			return true;
 		}
 
 	}
-	return false;
+
 }
 
 int IGIPFilter::GetFirstParam (IGImageProcMessage& message, CxImage& image) const

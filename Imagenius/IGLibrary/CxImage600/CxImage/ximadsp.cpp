@@ -1822,6 +1822,71 @@ bool CxImage::Multiply(const CxImage& src)
 	return true;
 }
 
+bool CxImage::Overlay(const CxImage& src)
+{
+	if (!pDib) 
+		return false;
+
+	CxImage tmp (*this);
+	if (!tmp.IsValid()){
+		strcpy(info.tcLastError,tmp.GetLastError());
+		return false;
+	}
+
+	float sum=0;
+
+	long xmin,xmax,ymin,ymax;
+	if (pSelection){
+		xmin = info.rSelectionBox.left; xmax = info.rSelectionBox.right;
+		ymin = info.rSelectionBox.bottom; ymax = info.rSelectionBox.top;
+	} else {
+		xmin = ymin = 0;
+		xmax = head.biWidth - 1; ymax=head.biHeight - 1;
+	}
+	if (xmin==xmax || ymin==ymax) 
+		return false;
+
+	BYTE *pRowSrc = info.pImage;
+	BYTE *pRowDst = tmp.info.pImage;
+	pRowSrc += tmp.info.dwEffWidth * ymin; 
+	pRowDst += info.dwEffWidth * ymin; 
+
+	for(long y=ymin; y<=ymax; y++){
+		info.nProgress = (long)(100*(y-ymin)/(ymax-ymin)); 
+		for(long x=xmin; x<=xmax; x++){
+#if CXIMAGE_SUPPORT_SELECTION
+			if (BlindSelectionIsInside(x,y))
+#endif //CXIMAGE_SUPPORT_SELECTION
+			{
+				BYTE *pCurSrc = pRowSrc + x * 3;
+				BYTE *pCurDst = pRowDst + x * 3;
+				BYTE *pCurSrcTemp = pRowSrc + x * 3;
+				BYTE *pCurDstTemp = pRowDst + x * 3;
+				if (*pCurDstTemp++ < 128)
+					*pCurDst++ = (BYTE)(2.0f * ((float)*pCurSrc++ / 255.0f) * ((float)*pCurDst));
+				else
+					*pCurDst++ = (BYTE)(255.0f - 2.0f * ((float)(255.0f - *pCurSrc++) / 255.0f) * ((float)(255.0f - *pCurDst)));
+
+				if (*pCurDstTemp++ < 128)
+					*pCurDst++ = (BYTE)(2.0f * ((float)*pCurSrc++ / 255.0f) * ((float)*pCurDst));
+				else
+					*pCurDst++ = (BYTE)(255.0f - 2.0f * ((float)(255.0f - *pCurSrc++) / 255.0f) * ((float)(255.0f - *pCurDst)));
+
+				if (*pCurDstTemp++ < 128)
+					*pCurDst++ = (BYTE)(2.0f * ((float)*pCurSrc++ / 255.0f) * ((float)*pCurDst));
+				else
+					*pCurDst++ = (BYTE)(255.0f - 2.0f * ((float)(255.0f - *pCurSrc++) / 255.0f) * ((float)(255.0f - *pCurDst)));
+
+			}
+		}
+		pRowSrc += tmp.info.dwEffWidth;
+		pRowDst += info.dwEffWidth;
+	}
+
+	Transfer(tmp);
+	return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 /**
  * \return apply 8-bit palette with range between two specified colors
