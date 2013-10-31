@@ -4,6 +4,7 @@
  */
 #include "stdafx.h"
 #include "ximage.h"
+#include "ximamix.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // CxImage 
@@ -32,6 +33,7 @@ void CxImage::Startup(DWORD imagetype)
 	info.rcUpdateBox.right = -1;info.rcUpdateBox.bottom = -1;
 	info.rcLastUpdateBox.right = -1;info.rcLastUpdateBox.bottom = -1;
 	info.rSelectionBox.right = -1;info.rSelectionBox.bottom = -1;
+	info.pMixingFunc = CXIMAGEMIXING_ALPHA;
 	SetXDPI(CXIMAGE_DEFAULT_DPI);
 	SetYDPI(CXIMAGE_DEFAULT_DPI);
 

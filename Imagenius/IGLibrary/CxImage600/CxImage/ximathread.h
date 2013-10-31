@@ -3,6 +3,7 @@
 #include "IGThread.h"
 #include "IGUserMessages.h"
 #include "ximadef.h"	// defines which formats are supported
+#include "ximamix.h"
 #include <vector>
 
 /////////////////////////////////////////////////////////////////////////////
@@ -85,7 +86,7 @@ CMAX_IMAGE_FORMATS = CXIMAGE_SUPPORT_BMP + CXIMAGE_SUPPORT_GIF + CXIMAGE_SUPPORT
 class CxImageThread;
 class CvLib;
 
-typedef RGBQUAD (*MIXING_FUNC) (RGBQUAD, BYTE);
+typedef RGBQUAD (*MIXING_FUNC) (RGBQUAD, RGBQUAD);
 
 //extensible information collector
 typedef struct tagCxImageInfo {

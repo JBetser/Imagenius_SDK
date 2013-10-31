@@ -1863,6 +1863,18 @@ bool CxImage::Duotone(COLORREF col1, COLORREF col2)
 				maxBrightness = idx;
 		}
 	}
+
+	BYTE minSat = 255;
+	BYTE maxSat = 0;
+	for (long y=0; y<GetWidth(); y++ ){
+		for (long x=0; x<GetHeight(); x++){
+			RGBQUAD hsl = CxImage::RGBtoHSL(tmp.GetPixelColor(x,y));
+			if (hsl.rgbGreen < minSat)
+				minSat = hsl.rgbGreen;
+			if (hsl.rgbGreen > maxSat)
+				maxSat = hsl.rgbGreen;
+		}
+	}
 	
 	RGBQUAD dest1;
 	dest1.rgbRed = GetRValue(col1);
@@ -1876,8 +1888,10 @@ bool CxImage::Duotone(COLORREF col1, COLORREF col2)
 	dest2.rgbBlue = GetBValue(col2);
 	RGBQUAD dest2HSL = CxImage::RGBtoHSL(dest2);
 	BYTE minTargetBrightness = min(dest1HSL.rgbBlue, dest2HSL.rgbBlue);
+	BYTE minTargetSat = min(dest1HSL.rgbGreen, dest2HSL.rgbGreen);
 
-	float fCoeffRange = (float)(maxBrightness - minBrightness) / (float)abs(dest1HSL.rgbBlue - dest2HSL.rgbBlue);
+	float fCoeffRangeVal = 255.0f / (float)abs(dest1HSL.rgbBlue - dest2HSL.rgbBlue);
+	float fCoeffRangeSat = (float)(maxSat - minSat) / (float)abs(dest1HSL.rgbGreen - dest2HSL.rgbGreen);
 	for(int idx = 0; idx < 256; idx++){
 		float fAlpha = (float)idx / 256.0f;
 		float fInvAlpha = 1.0f - fAlpha;
@@ -1886,7 +1900,8 @@ bool CxImage::Duotone(COLORREF col1, COLORREF col2)
 		curCol.rgbGreen = (float)dest1.rgbGreen * fInvAlpha + fAlpha * (float)dest2.rgbGreen;
 		curCol.rgbBlue = (float)dest1.rgbBlue * fInvAlpha + fAlpha * (float)dest2.rgbBlue;
 		RGBQUAD curHSL = CxImage::RGBtoHSL(curCol);
-		curHSL.rgbBlue = (BYTE)((float)(curHSL.rgbBlue - minTargetBrightness) * fCoeffRange);
+		curHSL.rgbBlue = (BYTE)((float)(curHSL.rgbBlue - minTargetBrightness) * fCoeffRangeVal);
+		//curHSL.rgbGreen = (BYTE)((float)(curHSL.rgbGreen - minTargetSat) * fCoeffRangeSat);
 		curCol = CxImage::HSLtoRGB(curHSL);
 		tmpGray.SetPaletteColor (idx, curCol);
 	}			
@@ -2414,6 +2429,9 @@ void CxImage::Mix(CxImage & imgsrc2)
 	if (head.biClrUsed || head.biBitCount != 24)
 		return;
 
+	if (!info.pMixingFunc)
+		info.pMixingFunc = CXIMAGEMIXING_ALPHA;
+
 	DWORD dwSrcEffWidth = imgsrc2.GetEffWidth();
 	unsigned long ulSrcWidth = imgsrc2.GetWidth();
 	unsigned long ulSrcHeight = imgsrc2.GetHeight();
@@ -2451,24 +2469,23 @@ void CxImage::Mix(CxImage & imgsrc2)
 					{
 						if (*iAlphaSrc)
 						{
-							fAlphaSrc = ((float)*iAlphaSrc++) / 255.0f;
-							fAlphaOpSrc = 1.0f - fAlphaSrc;
-							fAlphaDst = ((float)*iAlphaDst) / 255.0f;
+							RGBQUAD rgbQuadSrc;
+							*reinterpret_cast<int*> (&rgbQuadSrc) = *reinterpret_cast<int*>(iSrc);
+							rgbQuadSrc.rgbReserved = *iAlphaSrc;
+							RGBQUAD rgbQuadDst;
+							*reinterpret_cast<int*> (&rgbQuadDst) = *reinterpret_cast<int*>(iDst);
+							rgbQuadDst.rgbReserved = *iAlphaDst;	
 
-							if (*iAlphaDst)
-							{
-								*iDst++ = (BYTE) (fAlphaOpSrc * ((float)*iDst) + fAlphaSrc * ((float)*iSrc++));
-								*iDst++ = (BYTE) (fAlphaOpSrc * ((float)*iDst) + fAlphaSrc * ((float)*iSrc++));
-								*iDst++ = (BYTE) (fAlphaOpSrc * ((float)*iDst) + fAlphaSrc * ((float)*iSrc++));
-								*iAlphaDst++ = (BYTE)min (255.0f, 255.0f * (fAlphaDst + fAlphaSrc));
-							}
-							else
-							{
-								*iDst++ = (BYTE) (*iSrc++);
-								*iDst++ = (BYTE) (*iSrc++);
-								*iDst++ = (BYTE) (*iSrc++);
-								*iAlphaDst++ = (BYTE)min (255.0f, 255.0f * fAlphaSrc);
-							}
+							rgbQuadDst = info.pMixingFunc (rgbQuadSrc, rgbQuadDst);
+
+							*iDst++ = rgbQuadDst.rgbBlue;
+							*iDst++ = rgbQuadDst.rgbGreen;
+							*iDst++ = rgbQuadDst.rgbRed;
+
+							*iAlphaDst++ = rgbQuadDst.rgbReserved;
+							
+							iSrc += 3;
+							iAlphaSrc++;
 						}
 						else
 						{
