@@ -180,6 +180,7 @@ IDB_POX2	            PNG                     "images\\pox2.png"
 IDB_STAR1	            PNG                     "images\\star1.png"
 IDB_STAR2	            PNG                     "images\\star2.png"
 IDB_PAPER	            PNG                     "images\\paper.png"
+IDB_FILTER2_HALO        PNG                     "images\\filter2_halo.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //

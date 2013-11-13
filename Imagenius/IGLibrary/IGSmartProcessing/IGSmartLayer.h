@@ -47,7 +47,7 @@ namespace IGLibrary
 		~IGSmartLayer();
 
 		// basic features
-		static bool Init (HRSRC hPaper);
+		static bool Init (HRSRC hPaper, HRSRC hFilter2_halo);
 		void UpdateSize (int nWidth, int nHeight);
 		inline void AddRegion (IGRegion *pNewRegion);
 		inline IGSmartPixel* GetPixel (int nCol, int nRow);		
@@ -234,6 +234,7 @@ namespace IGLibrary
 		std::vector <std::vector <IGSmartPixel*>> m_vvTreePixels;
 		std::vector <std::vector <IGRegion*>> m_vvTreeRegions;
 		static IGSmartPtr <IGFrame> mg_spPaper;
+		static IGSmartPtr <IGFrame> mg_spFilter2_halo;
 	};
 
 	inline void IGSmartLayer::AddRegion (IGRegion *pNewRegion)

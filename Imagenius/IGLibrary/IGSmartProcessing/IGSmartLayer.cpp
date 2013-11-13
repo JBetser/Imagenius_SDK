@@ -18,6 +18,7 @@ using namespace IGLibrary;
 IGException SmartLayerException ("IGSmartLayer");
 
 IGSmartPtr <IGFrame> IGSmartLayer::mg_spPaper;
+IGSmartPtr <IGFrame> IGSmartLayer::mg_spFilter2_halo;
 
 IGSmartLayer::IGSmartLayer() : m_bReconstructionNeeded (true)
 	, m_pPixels (NULL)
@@ -110,11 +111,12 @@ IGSmartLayer::~IGSmartLayer()
 		delete m_pFaceDescriptor;
 }
 
-bool IGSmartLayer::Init (HRSRC hPaper)
+bool IGSmartLayer::Init (HRSRC hPaper, HRSRC hFilter2_halo)
 {
 	if (!hPaper)
 		return false;
 	mg_spPaper = new IGFrame (hPaper, CXIMAGE_FORMAT_PNG, GetInstance());
+	mg_spFilter2_halo = new IGFrame (hFilter2_halo, CXIMAGE_FORMAT_PNG, GetInstance());
 	return true;
 }
 
@@ -2101,30 +2103,32 @@ bool IGSmartLayer::SelectionEyesMouth (BYTE level)
 bool IGSmartLayer::Filter2()
 {
 	CxImage final(*this);
-	CxImage layerBackground (GetWidth(), GetHeight(), 24, CXIMAGE_FORMAT_BMP, 0xFF);
-	layerBackground.AlphaCreate ((long)(255*.1));
-
-	final.Mix (layerBackground);
+	if (!final.Light ((long)(255*.1)))
+		return false;
 
 	CxImage grayLayer(*this);
 	if (!grayLayer.GrayScale())
 		return false;
 
-	if (!grayLayer.Light (0, (long)(255*.3)))
+	if (!grayLayer.Light ((long)(255*.3)))
 		return false;
 
-	if (!final.Multiply (grayLayer))
-		return false;
-
+	final.AlphaSetMixingFunc (CXIMAGEMIXING_MULTIPLY);
+	final.Mix (grayLayer);
+	
 	CxImage paper (*(CxImage*)mg_spPaper->GetLayer(0));
-	if (paper.Resample (-1, GetHeight()))
+	if (!paper.Resample (-1, GetHeight()))
 		return false;
 
-	if (!paper.Light ((long)(255*.55)))
-		return false;
-	paper.AlphaCreate ((long)(255*.2));
-
+	final.AlphaSetMixingFunc (CXIMAGEMIXING_DARKENING);
 	final.Mix (paper);
+
+	CxImage halo (*(CxImage*)mg_spFilter2_halo->GetLayer(0));
+	if (!halo.Resample (-1, GetHeight()))
+		return false;
+
+	final.AlphaSetMixingFunc (CXIMAGEMIXING_ALPHA);
+	final.Mix (halo);
 
 	Transfer (final);
 	return true;

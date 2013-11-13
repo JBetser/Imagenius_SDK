@@ -886,10 +886,12 @@ bool CxImage::Resample(long newx, long newy, int mode, CxImage* iDst)
 	if (newx == -1){
 		yScale = (float)head.biHeight / (float)newy;
 		xScale = yScale;
+		newx = head.biWidth;
 	}
 	else if (newy == -1){
 		xScale = (float)head.biWidth / (float)newx;
 		yScale = xScale;
+		newy = head.biHeight;
 	} 
 	else{
 		xScale = (float)head.biWidth  / (float)newx;
