@@ -181,6 +181,10 @@ IDB_STAR1	            PNG                     "images\\star1.png"
 IDB_STAR2	            PNG                     "images\\star2.png"
 IDB_PAPER	            PNG                     "images\\paper.png"
 IDB_FILTER2_HALO        PNG                     "images\\filter2_halo.png"
+IDB_FILTER3_BRUSH       PNG                     "images\\filter3_brush.png"
+IDB_FILTER4_SCREEN      PNG                     "images\\filter4_screen.png"
+IDB_FILTER4_OVERLAY     PNG                     "images\\filter4_overlay.png"
+IDB_FILTER4_BRUSH       PNG                     "images\\filter4_brush.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //

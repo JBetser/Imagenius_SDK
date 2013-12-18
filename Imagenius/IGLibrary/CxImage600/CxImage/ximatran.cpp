@@ -886,12 +886,12 @@ bool CxImage::Resample(long newx, long newy, int mode, CxImage* iDst)
 	if (newx == -1){
 		yScale = (float)head.biHeight / (float)newy;
 		xScale = yScale;
-		newx = head.biWidth;
+		newx = (int)((float)head.biWidth / xScale);
 	}
 	else if (newy == -1){
 		xScale = (float)head.biWidth / (float)newx;
 		yScale = xScale;
-		newy = head.biHeight;
+		newy = (int)((float)head.biHeight / yScale);
 	} 
 	else{
 		xScale = (float)head.biWidth  / (float)newx;
@@ -1115,12 +1115,132 @@ bool CxImage::Resample(long newx, long newy, int mode, CxImage* iDst)
 #if CXIMAGE_SUPPORT_ALPHA
 	if (AlphaIsValid()){
 		newImage.AlphaCreate();
-		for(long y=0; y<newy; y++){
-			fY = y * yScale;
-			for(long x=0; x<newx; x++){
-				fX = x * xScale;
-				newImage.AlphaSet(x,y,AlphaGet((long)fX,(long)fY));
+
+		switch (mode) {
+		case 1: // nearest pixel
+			for(long y=0; y<newy; y++){
+				fY = y * yScale;
+				for(long x=0; x<newx; x++){
+					fX = x * xScale;
+					newImage.AlphaSet(x,y,AlphaGet((long)fX,(long)fY));
+				}
 			}
+			break;
+		default:
+			// bilinear interpolation
+			if (!(head.biWidth>newx && head.biHeight>newy && head.biBitCount==24)) {
+				// (c) 1999 Steve McMahon (steve@dogma.demon.co.uk)
+				long ifX, ifY, ifX1, ifY1, xmax, ymax;
+				float ia1, ia2, dx, dy;
+				BYTE aDst;
+				BYTE a1, a2, a3, a4;
+				xmax = head.biWidth-1;
+				ymax = head.biHeight-1;
+				for(long y=0; y<newy; y++){
+					info.nProgress = (long)(100*y/newy);
+					if (info.nEscape) break;
+					fY = y * yScale;
+					ifY = (int)fY;
+					ifY1 = min(ymax, ifY+1);
+					dy = fY - ifY;
+					for(long x=0; x<newx; x++){
+						fX = x * xScale;
+						ifX = (int)fX;
+						ifX1 = min(xmax, ifX+1);
+						dx = fX - ifX;
+						// Interpolate using the four nearest pixels in the source
+						BYTE* iDst;
+						iDst = pAlpha + ifY*head.biWidth + ifX;
+						a1 = *iDst++;
+						iDst = pAlpha + ifY*head.biWidth + ifX1;
+						a2 = *iDst++;
+						iDst = pAlpha + ifY1*head.biWidth + ifX;
+						a3 = *iDst++;
+						iDst = pAlpha + ifY1*head.biWidth + ifX1;
+						a4 = *iDst++;
+						// Interplate in x direction:
+						ia1 = a1   + (a3   - a1)   * dy;
+						ia2 = a2   + (a4   - a2)   * dy;
+						// Interpolate in y:
+						aDst = (BYTE)(ia1 + (ia2-ia1) * dx);
+						// Set output
+						newImage.AlphaSet(x,y,aDst);
+					}
+				} 
+			} else {
+				//high resolution shrink, thanks to Henrik Stellmann <henrik.stellmann@volleynet.de>
+				const long ACCURACY = 1000;
+				long i; // index for faValue
+				long x,y; // coordinates in  source image
+				BYTE* pSource;
+				BYTE* pDest = newImage.pAlpha;
+				long* naAccu  = new long[newx];
+				long* naCarry = new long[newx];
+				long* naTemp;
+				long  nWeightX,nWeightY;
+				float fEndX;
+				long nScale = (long)(ACCURACY * xScale * yScale);
+
+				memset(naAccu,  0, sizeof(long) * newx);
+				memset(naCarry, 0, sizeof(long) * newx);
+
+				int u, v = 0; // coordinates in dest image
+				float fEndY = yScale - 1.0f;
+				for (y = 0; y < head.biHeight; y++){
+					info.nProgress = (long)(100*y/head.biHeight); //<Anatoly Ivasyuk>
+					if (info.nEscape) break;
+					pSource = pAlpha + y * head.biWidth;
+					u = i = 0;
+					fEndX = xScale - 1.0f;
+					if ((float)y < fEndY) {       // complete source row goes into dest row
+						for (x = 0; x < head.biWidth; x++){
+							if ((float)x < fEndX){       // complete source pixel goes into dest pixel
+								naAccu[i] += (*pSource++) * ACCURACY;
+							} else {       // source pixel is splitted for 2 dest pixels
+								nWeightX = (long)(((float)x - fEndX) * ACCURACY);
+								naAccu[i] += (ACCURACY - nWeightX) * (*pSource);
+								naAccu[1 + i++] += nWeightX * (*pSource++);
+								fEndX += xScale;
+								u++;
+							}
+						}
+					} else {       // source row is splitted for 2 dest rows       
+						nWeightY = (long)(((float)y - fEndY) * ACCURACY);
+						for (x = 0; x < head.biWidth; x++){
+							if ((float)x < fEndX){       // complete source pixel goes into 2 pixel
+								naAccu[i] += ((ACCURACY - nWeightY) * (*pSource));
+								naCarry[i] += nWeightY * (*pSource++);
+							} else {       // source pixel is splitted for 4 dest pixels
+								nWeightX = (int)(((float)x - fEndX) * ACCURACY);
+								naAccu[i] += ((ACCURACY - nWeightY) * (ACCURACY - nWeightX)) * (*pSource) / ACCURACY;
+								*pDest++ = (BYTE)(naAccu[i] / nScale);
+								naCarry[i] += (nWeightY * (ACCURACY - nWeightX) * (*pSource)) / ACCURACY;
+								naAccu[i + 1] += ((ACCURACY - nWeightY) * nWeightX * (*pSource)) / ACCURACY;
+								naCarry[i + 1] = (nWeightY * nWeightX * (*pSource)) / ACCURACY;
+								i++;
+								pSource++;
+								fEndX += xScale;
+								u++;
+							}
+						}
+						if (u < newx){ // possibly not completed due to rounding errors
+							*pDest++ = (BYTE)(naAccu[i++] / nScale);
+						}
+						naTemp = naCarry;
+						naCarry = naAccu;
+						naAccu = naTemp;
+						*naCarry = 0;    // need only to set first pixel zero
+						pDest = newImage.pAlpha + (++v * newImage.head.biWidth);
+						fEndY += yScale;
+					}
+				}
+				if (v < newy){	// possibly not completed due to rounding errors
+					for (i = 0; i < newx; i++) *pDest++ = (BYTE)(naAccu[i] / nScale);
+				}
+				delete [] naAccu;
+				delete [] naCarry;
+			}
+		break;
 		}
 	}
 #endif //CXIMAGE_SUPPORT_ALPHA
@@ -1136,13 +1256,28 @@ bool CxImage::Resample(long newx, long newy, int mode, CxImage* iDst)
 			}
 		}
 	}
-#endif //CXIMAGE_SUPPORT_ALPHA
+#endif //CXIMAGE_SUPPORT_SELECTION
 
 	//select the destination
 	if (iDst) iDst->Transfer(newImage);
 	else Transfer(newImage);
 
 	return true;
+}
+
+bool CxImage::Resample(const CxImage& iSrc)
+{
+	long newx = iSrc.head.biWidth;
+	long newy = iSrc.head.biHeight;
+	if (newy > newx) {
+		if (!Resample (newx, -1))
+			return false;
+	}
+	else {
+		if (!Resample (-1, newy))
+			return false;
+	}
+	return Crop (0, 0, newx, newy);
 }
 ////////////////////////////////////////////////////////////////////////////////
 /**

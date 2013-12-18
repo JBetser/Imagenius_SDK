@@ -1955,10 +1955,10 @@ bool CxImage::Duotone(COLORREF col1, COLORREF col2)
 	BYTE minTargetBrightness = min(dest1HSL.rgbBlue, dest2HSL.rgbBlue);
 	BYTE minTargetSat = min(dest1HSL.rgbGreen, dest2HSL.rgbGreen);
 
-	float fCoeffRangeVal = 255.0f / (float)abs(dest1HSL.rgbBlue - dest2HSL.rgbBlue);
+	float fCoeffRangeVal = (float)(maxBrightness - minBrightness) / (float)abs(dest1HSL.rgbBlue - dest2HSL.rgbBlue);
 	float fCoeffRangeSat = (float)(maxSat - minSat) / (float)abs(dest1HSL.rgbGreen - dest2HSL.rgbGreen);
 	for(int idx = 0; idx < 256; idx++){
-		float fAlpha = (float)idx / 256.0f;
+		float fAlpha = (float)idx / 255.0f;
 		float fInvAlpha = 1.0f - fAlpha;
 		RGBQUAD curCol;
 		curCol.rgbRed = (float)dest1.rgbRed * fInvAlpha + fAlpha * (float)dest2.rgbRed;
@@ -2525,6 +2525,7 @@ void CxImage::Mix(CxImage & imgsrc2)
 			long nOffsetNextDstLine = (long)info.dwEffWidth - (long)ulSrcWidth * 3;
 			long nOffsetNextSrcLine = (long)dwSrcEffWidth - (long)ulSrcWidth * 3;
 			long nOffsetNextDstAlphaLine = (long)ulDstWidth - (long)ulSrcWidth;
+			RGBQUAD rgbQuadSrc, rgbQuadDst;
 			if (info.hProgress)
 			{
 				for(unsigned long lY=0;lY<ulSrcHeight;lY++)
@@ -2534,10 +2535,8 @@ void CxImage::Mix(CxImage & imgsrc2)
 					{
 						if (*iAlphaSrc)
 						{
-							RGBQUAD rgbQuadSrc;
 							*reinterpret_cast<int*> (&rgbQuadSrc) = *reinterpret_cast<int*>(iSrc);
 							rgbQuadSrc.rgbReserved = *iAlphaSrc;
-							RGBQUAD rgbQuadDst;
 							*reinterpret_cast<int*> (&rgbQuadDst) = *reinterpret_cast<int*>(iDst);
 							rgbQuadDst.rgbReserved = *iAlphaDst;	
 

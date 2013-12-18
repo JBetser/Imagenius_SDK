@@ -19,6 +19,10 @@ IGException SmartLayerException ("IGSmartLayer");
 
 IGSmartPtr <IGFrame> IGSmartLayer::mg_spPaper;
 IGSmartPtr <IGFrame> IGSmartLayer::mg_spFilter2_halo;
+IGSmartPtr <IGFrame> IGSmartLayer::mg_spFilter3_brush;
+IGSmartPtr <IGFrame> IGSmartLayer::mg_spFilter4_screen;
+IGSmartPtr <IGFrame> IGSmartLayer::mg_spFilter4_overlay;
+IGSmartPtr <IGFrame> IGSmartLayer::mg_spFilter4_brush;
 
 IGSmartLayer::IGSmartLayer() : m_bReconstructionNeeded (true)
 	, m_pPixels (NULL)
@@ -111,12 +115,17 @@ IGSmartLayer::~IGSmartLayer()
 		delete m_pFaceDescriptor;
 }
 
-bool IGSmartLayer::Init (HRSRC hPaper, HRSRC hFilter2_halo)
+bool IGSmartLayer::Init (HRSRC hPaper, HRSRC hFilter2_halo, HRSRC hFilter3_brush,
+				HRSRC hFilter4_screen, HRSRC hFilter4_overlay, HRSRC hFilter4_brush)
 {
 	if (!hPaper)
 		return false;
 	mg_spPaper = new IGFrame (hPaper, CXIMAGE_FORMAT_PNG, GetInstance());
 	mg_spFilter2_halo = new IGFrame (hFilter2_halo, CXIMAGE_FORMAT_PNG, GetInstance());
+	mg_spFilter3_brush = new IGFrame (hFilter3_brush, CXIMAGE_FORMAT_PNG, GetInstance());
+	mg_spFilter4_screen = new IGFrame (hFilter4_screen, CXIMAGE_FORMAT_PNG, GetInstance());
+	mg_spFilter4_overlay = new IGFrame (hFilter4_overlay, CXIMAGE_FORMAT_PNG, GetInstance());
+	mg_spFilter4_brush = new IGFrame (hFilter4_brush, CXIMAGE_FORMAT_PNG, GetInstance());
 	return true;
 }
 
@@ -2129,6 +2138,55 @@ bool IGSmartLayer::Filter2()
 
 	final.AlphaSetMixingFunc (CXIMAGEMIXING_ALPHA);
 	final.Mix (halo);
+
+	Transfer (final);
+	return true;
+}
+
+bool IGSmartLayer::Filter3()
+{
+	CxImage final(*this);
+	final.Duotone(RGB(116, 28, 25), RGB(215, 173, 127));
+
+	CxImage brush (*(CxImage*)mg_spFilter2_halo->GetLayer(0));
+	if (!brush.Resample (-1, GetHeight()))
+		return false;
+
+	int nAlpha = (int) (255*.70);
+	brush.AlphaCreate((BYTE)((float)nAlpha *2.55f));
+	final.Mix (brush);
+
+	Transfer (final);
+	return true;
+}
+
+bool IGSmartLayer::Filter4()
+{
+	CxImage final(*this);
+	final.Duotone(RGB(60, 60, 60), RGB(163, 163, 163));
+	
+	CxImage screen (*(CxImage*)mg_spFilter4_screen->GetLayer(0));
+	if (!screen.Resample (*this))
+		return false;
+	screen.AlphaMultiply (0.35f);
+	
+	final.AlphaSetMixingFunc (CXIMAGEMIXING_SCREEN);
+	final.Mix (screen);
+
+	CxImage overlay (*(CxImage*)mg_spFilter4_overlay->GetLayer(0));
+	if (!overlay.Resample (*this))
+		return false;
+
+	final.AlphaSetMixingFunc (CXIMAGEMIXING_OVERLAY);
+	final.Mix (overlay);
+
+	CxImage brush (*(CxImage*)mg_spFilter4_brush->GetLayer(0));
+	if (!brush.Resample (*this))
+		return false;
+	brush.AlphaMultiply (0.14f);
+
+	final.AlphaSetMixingFunc (CXIMAGEMIXING_MULTIPLY);
+	final.Mix (brush);
 
 	Transfer (final);
 	return true;

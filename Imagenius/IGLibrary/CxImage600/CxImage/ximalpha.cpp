@@ -82,6 +82,27 @@ bool CxImage::AlphaCreate (BYTE level)
 	}
 	return (pAlpha!=0);
 }
+
+void CxImage::AlphaAdd (BYTE level)
+{
+	if (pAlpha) {
+		BYTE *iSrc=pAlpha;
+		long n=head.biHeight*head.biWidth;
+		for(long i=0; i < n; i++)
+			*iSrc++=(BYTE)(min(255, (int)(*(iSrc) + level)));
+	}
+}
+
+void CxImage::AlphaMultiply (float fFactor)
+{
+	if (pAlpha) {
+		BYTE *iSrc=pAlpha;
+		long n=head.biHeight*head.biWidth;
+		for(long i=0; i < n; i++)
+			*iSrc++ = (BYTE)((float)*iSrc * fFactor);
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 void CxImage::AlphaDelete()
 {

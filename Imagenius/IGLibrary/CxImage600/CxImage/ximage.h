@@ -451,7 +451,8 @@ public:
                 bool const optimizeRightAngles=true, bool const bKeepOriginalSize=false);
 	bool Rotate180(CxImage* iDst = NULL);
 	virtual bool AutoRotate() { return false; }
-	bool Resample(long newx, long newy, int mode = 1, CxImage* iDst = NULL);
+	bool Resample(long newx, long newy, int mode = 0, CxImage* iDst = NULL);
+	bool Resample(const CxImage& iDst);
 	bool Resample2(long newx, long newy, InterpolationMethod const inMethod=IM_BICUBIC2,
 				OverflowMethod const ofMethod=OM_REPEAT, CxImage* const iDst = NULL,
 				bool const disableAveraging=false);
@@ -547,6 +548,7 @@ public:
 	bool Multiply(const CxImage & imageSrc); 
 	bool Duotone(COLORREF col1, COLORREF col2);
 	bool Overlay(const CxImage & imageSrc);
+	inline void SetBackgroundColor (const RGBQUAD& rgbq) { info.nBkgndColor.rgbRed = rgbq.rgbRed; info.nBkgndColor.rgbGreen = rgbq.rgbGreen; info.nBkgndColor.rgbBlue = rgbq.rgbBlue;}
 
 	void Move(int nVectorX, int nVectorY) { info.xOffset += nVectorX; info.yOffset += nVectorY; }
 //@}
@@ -645,6 +647,8 @@ public:
 /** \addtogroup Alpha */ //@{
 	void AlphaClear();
 	bool AlphaCreate(BYTE level = 255);
+	void AlphaAdd (BYTE level);
+	void AlphaMultiply (float fFactor);
 	void AlphaDelete();
 	void AlphaInvert();
 	bool AlphaMirror();

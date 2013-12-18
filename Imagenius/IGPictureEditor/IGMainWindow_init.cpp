@@ -72,7 +72,11 @@ bool CIGMainWindow::initAll ()
 
 	// load filter effect textures
 	IGSmartLayer::Init (::FindResourceW (getInstance(), MAKEINTRESOURCE (IDB_PAPER), L"PNG"),
-						::FindResourceW (getInstance(), MAKEINTRESOURCE (IDB_FILTER2_HALO), L"PNG"));
+						::FindResourceW (getInstance(), MAKEINTRESOURCE (IDB_FILTER2_HALO), L"PNG"),
+						::FindResourceW (getInstance(), MAKEINTRESOURCE (IDB_FILTER3_BRUSH), L"PNG"),
+						::FindResourceW (getInstance(), MAKEINTRESOURCE (IDB_FILTER4_SCREEN), L"PNG"),
+						::FindResourceW (getInstance(), MAKEINTRESOURCE (IDB_FILTER4_OVERLAY), L"PNG"),
+						::FindResourceW (getInstance(), MAKEINTRESOURCE (IDB_FILTER4_BRUSH), L"PNG"));
 
 	// new site coordinates
 	RECT rc;

@@ -27,16 +27,24 @@
 #define ChannelBlend_Reflect(A,B)    ((BYTE)((B == 255) ? B:min(255, (A * A / (255 - B)))))
 #define ChannelBlend_Glow(A,B)       (ChannelBlend_Reflect(B,A))
 #define ChannelBlend_Phoenix(A,B)    ((BYTE)(min(A,B) - max(A,B) + 255))
-#define ChannelBlend_Alpha(A,B,O)    ((BYTE)(O * A + (1 - O) * B))
+#define ChannelBlend_Alpha(A,B,O)    ((BYTE)(O * A + (1.0f - O) * B))
 #define ChannelBlend_AlphaF(A,B,F,O) (ChannelBlend_Alpha(F(A,B),A,O))
 
-#define MultiChannelBlend(rgbqSrc,rgbqDst,blendFunc){\
+#define MultiChannelAlphaBlend(rgbqSrc,rgbqDst,blendFunc){\
 	float fAlphaSrc = (float)rgbqSrc.rgbReserved / 255.0f;\
-	rgbqDst.rgbRed = ChannelBlend_Alpha (rgbqDst.rgbRed, blendFunc (rgbqDst.rgbRed, rgbqSrc.rgbRed), fAlphaSrc);\
-	rgbqDst.rgbGreen = ChannelBlend_Alpha (rgbqDst.rgbGreen, blendFunc (rgbqDst.rgbGreen, rgbqSrc.rgbGreen), fAlphaSrc);\
-	rgbqDst.rgbBlue = ChannelBlend_Alpha (rgbqDst.rgbBlue, blendFunc (rgbqDst.rgbBlue, rgbqSrc.rgbBlue), fAlphaSrc);\
+	rgbqDst.rgbRed = ChannelBlend_Alpha (blendFunc (rgbqSrc.rgbRed, rgbqDst.rgbRed), rgbqDst.rgbRed, fAlphaSrc);\
+	rgbqDst.rgbGreen = ChannelBlend_Alpha (blendFunc (rgbqSrc.rgbGreen, rgbqDst.rgbGreen), rgbqDst.rgbGreen, fAlphaSrc);\
+	rgbqDst.rgbBlue = ChannelBlend_Alpha (blendFunc (rgbqSrc.rgbBlue, rgbqDst.rgbBlue), rgbqDst.rgbBlue, fAlphaSrc);\
 	return rgbqDst;}
 
-RGBQUAD CXIMAGEMIXING_ALPHA (RGBQUAD rgbqSrc, RGBQUAD rgbqDst)		MultiChannelBlend (rgbqSrc, rgbqDst, ChannelBlend_Normal)
-RGBQUAD CXIMAGEMIXING_DARKENING (RGBQUAD rgbqSrc, RGBQUAD rgbqDst)	MultiChannelBlend (rgbqSrc, rgbqDst, ChannelBlend_Darken)
-RGBQUAD CXIMAGEMIXING_MULTIPLY (RGBQUAD rgbqSrc, RGBQUAD rgbqDst)	MultiChannelBlend (rgbqSrc, rgbqDst, ChannelBlend_Multiply)
+#define MultiChannelBlend(rgbqSrc,rgbqDst,blendFunc){\
+	rgbqDst.rgbRed = blendFunc (rgbqSrc.rgbRed, rgbqDst.rgbRed);\
+	rgbqDst.rgbGreen = blendFunc (rgbqSrc.rgbGreen, rgbqDst.rgbGreen);\
+	rgbqDst.rgbBlue = blendFunc (rgbqSrc.rgbBlue, rgbqDst.rgbBlue);\
+	return rgbqDst;}
+
+RGBQUAD CXIMAGEMIXING_ALPHA (RGBQUAD rgbqSrc, RGBQUAD rgbqDst)		MultiChannelAlphaBlend (rgbqSrc, rgbqDst, ChannelBlend_Normal)
+RGBQUAD CXIMAGEMIXING_DARKENING (RGBQUAD rgbqSrc, RGBQUAD rgbqDst)	MultiChannelAlphaBlend (rgbqSrc, rgbqDst, ChannelBlend_Darken)
+RGBQUAD CXIMAGEMIXING_MULTIPLY (RGBQUAD rgbqSrc, RGBQUAD rgbqDst)	MultiChannelAlphaBlend (rgbqSrc, rgbqDst, ChannelBlend_Multiply)
+RGBQUAD CXIMAGEMIXING_SCREEN (RGBQUAD rgbqSrc, RGBQUAD rgbqDst)		MultiChannelAlphaBlend (rgbqSrc, rgbqDst, ChannelBlend_Screen)
+RGBQUAD CXIMAGEMIXING_OVERLAY (RGBQUAD rgbqSrc, RGBQUAD rgbqDst)	MultiChannelBlend (rgbqSrc, rgbqDst, ChannelBlend_Overlay)

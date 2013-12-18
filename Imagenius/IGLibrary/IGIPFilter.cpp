@@ -325,40 +325,13 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 		return pLayer->Filter2();
 
 	case IGIPFILTER_FILTER3:
-		{
-			return pLayer->Duotone(RGB(116, 28, 25), RGB(215, 173, 127));
-
-			// Apply the brush layer with 70% opacity
-			//nAlpha = (int) (255*.70);
-			//layerOutput->AlphaDelete();
-			//layerOutput->AlphaCreate((BYTE)((float)nAlpha *2.55f));
-		}
+		return pLayer->Filter3();		
 
 	case IGIPFILTER_FILTER4:
-		{
-		
-			//return pLayer->Duotone(RGB(60, 60, 60), RGB(163, 163, 163));
-			CxImage duotoneImg(*pLayer);
-			CxImage opacityLyr1(*pLayer);
-			CxImage overlayLyr(*pLayer);
-			CxImage *opacityLyr2(*pLayer);
-
-			duotoneImg.Duotone(RGB(60, 60, 60), RGB(163, 163, 163));
-
-			opacityLyr1.AlphaCreate ((long)(255*.24));
-			opacityLyr1.Mix(duotoneImg);
-
-			opacityLyr2->Overlay(opacityLyr1);
-
-			/*opacityLyr2->Multiply(opacityLyr1);
-
-			opacityLyr2->AlphaCreate((long)(255*.14)); */
-
-			return true;
-		}
-
+		return pLayer->Filter4();
 	}
 
+	return false;
 }
 
 int IGIPFilter::GetFirstParam (IGImageProcMessage& message, CxImage& image) const
@@ -414,10 +387,7 @@ bool IGIPIndex::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 		return pLayer->IndexFaces();
 	case IGIPINDEX_IRIS:	// added by TQ
 		return pLayer->IndexFacenIris();
-//<<<<<<< HEAD
-//=======
-//
-//>>>>>>> New Commit
+
 	}
 
 	return false;
