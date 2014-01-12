@@ -371,6 +371,7 @@
     <None Include="images\blood2.png" />
     <None Include="images\blood3.png" />
     <None Include="images\blood4.png" />
+    <None Include="images\filter2_halo.png" />
     <None Include="images\filter3_brush.png" />
     <None Include="images\filter4_brush.png" />
     <None Include="images\filter4_overlay.png" />
