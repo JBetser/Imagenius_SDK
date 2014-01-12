@@ -372,6 +372,9 @@
     <None Include="images\blood3.png" />
     <None Include="images\blood4.png" />
     <None Include="images\filter3_brush.png" />
+    <None Include="images\filter4_brush.png" />
+    <None Include="images\filter4_overlay.png" />
+    <None Include="images\filter4_screen.png" />
     <None Include="images\paper.png" />
     <None Include="images\pox1.png" />
     <None Include="images\pox2.png" />
