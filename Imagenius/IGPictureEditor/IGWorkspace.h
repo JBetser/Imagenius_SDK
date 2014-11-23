@@ -126,9 +126,11 @@ public:
 	STDMETHODIMP GetFrameProperty (LONG nFrameId, BSTR bstrPropId, VARIANT *pPropVal);
 	STDMETHODIMP GetFrameIds (BSTR *p_bstrIds);
 	STDMETHODIMP GetActiveFrameId (BSTR *p_bstrIds);
+	STDMETHODIMP GetActiveFrameReqGuid (BSTR *p_bstrReqGuid);
 	STDMETHODIMP GetFrameProperties (BSTR *p_bstrFrameProperties);
 	STDMETHODIMP GetFrameStepIds (BSTR *p_bstrFrameStepIds);
 	STDMETHODIMP GetFrameNames (BSTR *p_bstrNames);
+	STDMETHODIMP GetFrameReqGuids (BSTR *p_bstrNames);
 	STDMETHODIMP GetFrameNbLayers (BSTR *p_bstrNbLayers);
 	STDMETHODIMP GetFrameLayerVisibility (BSTR *p_bstrLayerVisibility);
 	STDMETHODIMP SetFrameProperty (LONG nFrameId, BSTR bstrPropId, VARIANT *pPropVal);

@@ -5,8 +5,6 @@ Javascript "Imagenius Web Service API" library
 @version: 1.0 - 2013.02.25
 @author: Jonathan Betser
 \*****************************************************************************/
-var IG_WEBSERVICE_URL = "http://localhost:8080/WebDebug/"
-
 var IGIPFILTER_FACEEFFECT_HAPPY = 200;
 var IGIPFILTER_FACEEFFECT_ANGER = 201;
 var IGIPFILTER_FACEEFFECT_SADNESS = 202;
@@ -48,6 +46,9 @@ function Imagenius() {
         var saveHistory = (options == null ? false : options["SaveHistory"]);
         if (saveHistory)
             IGWS_WORKSPACE_DIV.setAttribute("SaveHistory", "1");
+        var DZDragging = (options == null ? false : options["DZDragging"]);
+        if (DZDragging)
+            IGWS_WORKSPACE_DIV.setAttribute("DZDragging", "1");
         IGWS_DEEPZOOM_DIV = document.createElement("div");
         IGWS_DEEPZOOM_DIV.id = "IG_deepZoomPanel";
         var hidePicturePanel = (options == null ? false : options["PicturePanel"] == "hidden");
@@ -349,6 +350,8 @@ function Imagenius() {
 
         // initialize seadragon deep zoom
         IG_internalGetSeadragon().initSeadragon();
+        if (!DZDragging)
+            IGWS_DEEPZOOM_DIV.Viewer.setMouseNavEnabled(false);
 
         // create the tool box
         IG_internalCreateToolBox();
@@ -372,6 +375,10 @@ function Imagenius() {
 
     this.connectDemo = function (successCallback, errorCallback) {
         IG_internalConnectDemo(successCallback, errorCallback);
+    }
+
+    this.connectBitlUser = function (userEmail, userPwd, successCallback, errorCallback) {
+        IG_internalBitlUser(userEmail, userPwd, successCallback, errorCallback);
     }
 
     this.api = function (functionName, jsonData, successCallback, errorCallback) {
@@ -496,6 +503,10 @@ function Imagenius() {
 
     this.aboutUs = function () {
         IG_internalAbout();
+    }
+
+    this.signUp = function () {
+        IG_internalSignUp();
     }
 
     this.getFaceDescriptor = function () {

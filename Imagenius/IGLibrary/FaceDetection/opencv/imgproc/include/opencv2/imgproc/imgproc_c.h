@@ -43,7 +43,6 @@
 #ifndef __OPENCV_IMGPROC_IMGPROC_C_H__
 #define __OPENCV_IMGPROC_IMGPROC_C_H__
 
-#include "opencv2/core/core_c.h"
 #include "opencv2/imgproc/types_c.h"
 
 #ifdef __cplusplus
@@ -67,7 +66,7 @@ CVAPI(void)  cvMultiplyAcc( const CvArr* image1, const CvArr* image2, CvArr* acc
 /* Adds image to accumulator with weights: acc = acc*(1-alpha) + image*alpha */
 CVAPI(void)  cvRunningAvg( const CvArr* image, CvArr* acc, double alpha,
                           const CvArr* mask CV_DEFAULT(NULL) );
-    
+
 /****************************************************************************************\
 *                                    Image Processing                                    *
 \****************************************************************************************/
@@ -121,15 +120,6 @@ CVAPI(CvMat**) cvCreatePyramid( const CvArr* img, int extra_layers, double rate,
 CVAPI(void)  cvReleasePyramid( CvMat*** pyramid, int extra_layers );
 
 
-/* Splits color or grayscale image into multiple connected components
-   of nearly the same color/brightness using modification of Burt algorithm.
-   comp with contain a pointer to sequence (CvSeq)
-   of connected components (CvConnectedComp) */
-CVAPI(void) cvPyrSegmentation( IplImage* src, IplImage* dst,
-                              CvMemStorage* storage, CvSeq** comp,
-                              int level, double threshold1,
-                              double threshold2 );
-
 /* Filters image using meanshift algorithm */
 CVAPI(void) cvPyrMeanShiftFiltering( const CvArr* src, CvArr* dst,
     double sp, double sr, int max_level CV_DEFAULT(1),
@@ -137,10 +127,6 @@ CVAPI(void) cvPyrMeanShiftFiltering( const CvArr* src, CvArr* dst,
 
 /* Segments image using seed "markers" */
 CVAPI(void) cvWatershed( const CvArr* image, CvArr* markers );
-
-/* Inpaints the selected region in the image */
-CVAPI(void) cvInpaint( const CvArr* src, const CvArr* inpaint_mask,
-                       CvArr* dst, double inpaintRange, int flags );
 
 /* Calculates an image derivative using generalized Sobel
    (aperture_size = 1,3,5,7) or Scharr (aperture_size = -1) operator.
@@ -317,7 +303,7 @@ CVAPI(int)  cvFindContours( CvArr* image, CvMemStorage* storage, CvSeq** first_c
                             int method CV_DEFAULT(CV_CHAIN_APPROX_SIMPLE),
                             CvPoint offset CV_DEFAULT(cvPoint(0,0)));
 
-/* Initalizes contour retrieving process.
+/* Initializes contour retrieving process.
    Calls cvStartFindContours.
    Calls cvFindNextContour until null pointer is returned
    or some other condition becomes true.
@@ -347,106 +333,13 @@ CVAPI(CvSeq*) cvApproxChains( CvSeq* src_seq, CvMemStorage* storage,
                             int  minimal_perimeter CV_DEFAULT(0),
                             int  recursive CV_DEFAULT(0));
 
-/* Initalizes Freeman chain reader.
+/* Initializes Freeman chain reader.
    The reader is used to iteratively get coordinates of all the chain points.
    If the Freeman codes should be read as is, a simple sequence reader should be used */
 CVAPI(void) cvStartReadChainPoints( CvChain* chain, CvChainPtReader* reader );
 
 /* Retrieves the next chain point */
 CVAPI(CvPoint) cvReadChainPoint( CvChainPtReader* reader );
-
-/****************************************************************************************\
-*                              Planar subdivisions                                       *
-\****************************************************************************************/
-
-/* Initializes Delaunay triangulation */
-CVAPI(void)  cvInitSubdivDelaunay2D( CvSubdiv2D* subdiv, CvRect rect );
-
-/* Creates new subdivision */
-CVAPI(CvSubdiv2D*)  cvCreateSubdiv2D( int subdiv_type, int header_size,
-                                      int vtx_size, int quadedge_size,
-                                      CvMemStorage* storage );
-
-/************************* high-level subdivision functions ***************************/
-
-/* Simplified Delaunay diagram creation */
-CV_INLINE  CvSubdiv2D* cvCreateSubdivDelaunay2D( CvRect rect, CvMemStorage* storage )
-{
-    CvSubdiv2D* subdiv = cvCreateSubdiv2D( CV_SEQ_KIND_SUBDIV2D, sizeof(*subdiv),
-                         sizeof(CvSubdiv2DPoint), sizeof(CvQuadEdge2D), storage );
-
-    cvInitSubdivDelaunay2D( subdiv, rect );
-    return subdiv;
-}
-
-
-/* Inserts new point to the Delaunay triangulation */
-CVAPI(CvSubdiv2DPoint*)  cvSubdivDelaunay2DInsert( CvSubdiv2D* subdiv, CvPoint2D32f pt);
-
-/* Locates a point within the Delaunay triangulation (finds the edge
-   the point is left to or belongs to, or the triangulation point the given
-   point coinsides with */
-CVAPI(CvSubdiv2DPointLocation)  cvSubdiv2DLocate(
-                               CvSubdiv2D* subdiv, CvPoint2D32f pt,
-                               CvSubdiv2DEdge* edge,
-                               CvSubdiv2DPoint** vertex CV_DEFAULT(NULL) );
-
-/* Calculates Voronoi tesselation (i.e. coordinates of Voronoi points) */
-CVAPI(void)  cvCalcSubdivVoronoi2D( CvSubdiv2D* subdiv );
-
-
-/* Removes all Voronoi points from the tesselation */
-CVAPI(void)  cvClearSubdivVoronoi2D( CvSubdiv2D* subdiv );
-
-
-/* Finds the nearest to the given point vertex in subdivision. */
-CVAPI(CvSubdiv2DPoint*) cvFindNearestPoint2D( CvSubdiv2D* subdiv, CvPoint2D32f pt );
-
-
-/************ Basic quad-edge navigation and operations ************/
-
-CV_INLINE  CvSubdiv2DEdge  cvSubdiv2DNextEdge( CvSubdiv2DEdge edge )
-{
-    return  CV_SUBDIV2D_NEXT_EDGE(edge);
-}
-
-
-CV_INLINE  CvSubdiv2DEdge  cvSubdiv2DRotateEdge( CvSubdiv2DEdge edge, int rotate )
-{
-    return  (edge & ~3) + ((edge + rotate) & 3);
-}
-
-CV_INLINE  CvSubdiv2DEdge  cvSubdiv2DSymEdge( CvSubdiv2DEdge edge )
-{
-    return edge ^ 2;
-}
-
-CV_INLINE  CvSubdiv2DEdge  cvSubdiv2DGetEdge( CvSubdiv2DEdge edge, CvNextEdgeType type )
-{
-    CvQuadEdge2D* e = (CvQuadEdge2D*)(edge & ~3);
-    edge = e->next[(edge + (int)type) & 3];
-    return  (edge & ~3) + ((edge + ((int)type >> 4)) & 3);
-}
-
-
-CV_INLINE  CvSubdiv2DPoint*  cvSubdiv2DEdgeOrg( CvSubdiv2DEdge edge )
-{
-    CvQuadEdge2D* e = (CvQuadEdge2D*)(edge & ~3);
-    return (CvSubdiv2DPoint*)e->pt[edge & 3];
-}
-
-
-CV_INLINE  CvSubdiv2DPoint*  cvSubdiv2DEdgeDst( CvSubdiv2DEdge edge )
-{
-    CvQuadEdge2D* e = (CvQuadEdge2D*)(edge & ~3);
-    return (CvSubdiv2DPoint*)e->pt[(edge + 2) & 3];
-}
-
-
-CV_INLINE  double  cvTriangleArea( CvPoint2D32f a, CvPoint2D32f b, CvPoint2D32f c )
-{
-    return ((double)b.x - a.x) * ((double)c.y - a.y) - ((double)b.y - a.y) * ((double)c.x - a.x);
-}
 
 
 /****************************************************************************************\
@@ -457,8 +350,8 @@ CV_INLINE  double  cvTriangleArea( CvPoint2D32f a, CvPoint2D32f b, CvPoint2D32f 
    a tree of polygonal curves (contours) */
 CVAPI(CvSeq*)  cvApproxPoly( const void* src_seq,
                              int header_size, CvMemStorage* storage,
-                             int method, double parameter,
-                             int parameter2 CV_DEFAULT(0));
+                             int method, double eps,
+                             int recursive CV_DEFAULT(0));
 
 /* Calculates perimeter of a contour or length of a part of contour */
 CVAPI(double)  cvArcLength( const void* curve,
@@ -471,7 +364,7 @@ CV_INLINE double cvContourPerimeter( const void* contour )
 }
 
 
-/* Calculates contour boundning rectangle (update=1) or
+/* Calculates contour bounding rectangle (update=1) or
    just retrieves pre-calculated rectangle (update=0) */
 CVAPI(CvRect)  cvBoundingRect( CvArr* points, int update CV_DEFAULT(0) );
 
@@ -624,7 +517,8 @@ CVAPI(void)  cvDistTransform( const CvArr* src, CvArr* dst,
                               int distance_type CV_DEFAULT(CV_DIST_L2),
                               int mask_size CV_DEFAULT(3),
                               const float* mask CV_DEFAULT(NULL),
-                              CvArr* labels CV_DEFAULT(NULL));
+                              CvArr* labels CV_DEFAULT(NULL),
+                              int labelType CV_DEFAULT(CV_DIST_LABEL_CCOMP));
 
 
 /* Applies fixed-level threshold to grayscale image.
@@ -678,7 +572,7 @@ CVAPI(void)  cvCornerMinEigenVal( const CvArr* image, CvArr* eigenval,
 
 /* Harris corner detector:
    Calculates det(M) - k*(trace(M)^2), where M is 2x2 gradient covariation matrix for each pixel */
-CVAPI(void)  cvCornerHarris( const CvArr* image, CvArr* harris_responce,
+CVAPI(void)  cvCornerHarris( const CvArr* image, CvArr* harris_response,
                              int block_size, int aperture_size CV_DEFAULT(3),
                              double k CV_DEFAULT(0.04) );
 
@@ -707,7 +601,8 @@ CVAPI(void)  cvGoodFeaturesToTrack( const CvArr* image, CvArr* eig_image,
    param1 ~ srn, param2 ~ stn - for multi-scale */
 CVAPI(CvSeq*)  cvHoughLines2( CvArr* image, void* line_storage, int method,
                               double rho, double theta, int threshold,
-                              double param1 CV_DEFAULT(0), double param2 CV_DEFAULT(0));
+                              double param1 CV_DEFAULT(0), double param2 CV_DEFAULT(0),
+                              double min_theta CV_DEFAULT(0), double max_theta CV_DEFAULT(CV_PI));
 
 /* Finds circles in the image */
 CVAPI(CvSeq*) cvHoughCircles( CvArr* image, void* circle_storage,
@@ -721,60 +616,190 @@ CVAPI(CvSeq*) cvHoughCircles( CvArr* image, void* circle_storage,
 CVAPI(void)  cvFitLine( const CvArr* points, int dist_type, double param,
                         double reps, double aeps, float* line );
 
+/****************************************************************************************\
+*                                     Drawing                                            *
+\****************************************************************************************/
 
-/* Constructs kd-tree from set of feature descriptors */
-CVAPI(struct CvFeatureTree*) cvCreateKDTree(CvMat* desc);
+/****************************************************************************************\
+*       Drawing functions work with images/matrices of arbitrary type.                   *
+*       For color images the channel order is BGR[A]                                     *
+*       Antialiasing is supported only for 8-bit image now.                              *
+*       All the functions include parameter color that means rgb value (that may be      *
+*       constructed with CV_RGB macro) for color images and brightness                   *
+*       for grayscale images.                                                            *
+*       If a drawn figure is partially or completely outside of the image, it is clipped.*
+\****************************************************************************************/
 
-/* Constructs spill-tree from set of feature descriptors */
-CVAPI(struct CvFeatureTree*) cvCreateSpillTree( const CvMat* raw_data,
-                                    const int naive CV_DEFAULT(50),
-                                    const double rho CV_DEFAULT(.7),
-                                    const double tau CV_DEFAULT(.1) );
+#define CV_RGB( r, g, b )  cvScalar( (b), (g), (r), 0 )
+#define CV_FILLED -1
 
-/* Release feature tree */
-CVAPI(void) cvReleaseFeatureTree(struct CvFeatureTree* tr);
+#define CV_AA 16
 
-/* Searches feature tree for k nearest neighbors of given reference points,
-   searching (in case of kd-tree/bbf) at most emax leaves. */
-CVAPI(void) cvFindFeatures(struct CvFeatureTree* tr, const CvMat* query_points,
-                           CvMat* indices, CvMat* dist, int k, int emax CV_DEFAULT(20));
+/* Draws 4-connected, 8-connected or antialiased line segment connecting two points */
+CVAPI(void)  cvLine( CvArr* img, CvPoint pt1, CvPoint pt2,
+                     CvScalar color, int thickness CV_DEFAULT(1),
+                     int line_type CV_DEFAULT(8), int shift CV_DEFAULT(0) );
 
-/* Search feature tree for all points that are inlier to given rect region.
-   Only implemented for kd trees */
-CVAPI(int) cvFindFeaturesBoxed(struct CvFeatureTree* tr,
-                               CvMat* bounds_min, CvMat* bounds_max,
-                               CvMat* out_indices);
+/* Draws a rectangle given two opposite corners of the rectangle (pt1 & pt2),
+   if thickness<0 (e.g. thickness == CV_FILLED), the filled box is drawn */
+CVAPI(void)  cvRectangle( CvArr* img, CvPoint pt1, CvPoint pt2,
+                          CvScalar color, int thickness CV_DEFAULT(1),
+                          int line_type CV_DEFAULT(8),
+                          int shift CV_DEFAULT(0));
+
+/* Draws a rectangle specified by a CvRect structure */
+CVAPI(void)  cvRectangleR( CvArr* img, CvRect r,
+                           CvScalar color, int thickness CV_DEFAULT(1),
+                           int line_type CV_DEFAULT(8),
+                           int shift CV_DEFAULT(0));
 
 
-/* Construct a Locality Sensitive Hash (LSH) table, for indexing d-dimensional vectors of
-   given type. Vectors will be hashed L times with k-dimensional p-stable (p=2) functions. */
-CVAPI(struct CvLSH*) cvCreateLSH(struct CvLSHOperations* ops, int d,
-                                 int L CV_DEFAULT(10), int k CV_DEFAULT(10),
-                                 int type CV_DEFAULT(CV_64FC1), double r CV_DEFAULT(4),
-                                 int64 seed CV_DEFAULT(-1));
+/* Draws a circle with specified center and radius.
+   Thickness works in the same way as with cvRectangle */
+CVAPI(void)  cvCircle( CvArr* img, CvPoint center, int radius,
+                       CvScalar color, int thickness CV_DEFAULT(1),
+                       int line_type CV_DEFAULT(8), int shift CV_DEFAULT(0));
 
-/* Construct in-memory LSH table, with n bins. */
-CVAPI(struct CvLSH*) cvCreateMemoryLSH(int d, int n, int L CV_DEFAULT(10), int k CV_DEFAULT(10),
-                                       int type CV_DEFAULT(CV_64FC1), double r CV_DEFAULT(4),
-                                       int64 seed CV_DEFAULT(-1));
+/* Draws ellipse outline, filled ellipse, elliptic arc or filled elliptic sector,
+   depending on <thickness>, <start_angle> and <end_angle> parameters. The resultant figure
+   is rotated by <angle>. All the angles are in degrees */
+CVAPI(void)  cvEllipse( CvArr* img, CvPoint center, CvSize axes,
+                        double angle, double start_angle, double end_angle,
+                        CvScalar color, int thickness CV_DEFAULT(1),
+                        int line_type CV_DEFAULT(8), int shift CV_DEFAULT(0));
 
-/* Free the given LSH structure. */
-CVAPI(void) cvReleaseLSH(struct CvLSH** lsh);
+CV_INLINE  void  cvEllipseBox( CvArr* img, CvBox2D box, CvScalar color,
+                               int thickness CV_DEFAULT(1),
+                               int line_type CV_DEFAULT(8), int shift CV_DEFAULT(0) )
+{
+    CvSize axes;
+    axes.width = cvRound(box.size.width*0.5);
+    axes.height = cvRound(box.size.height*0.5);
 
-/* Return the number of vectors in the LSH. */
-CVAPI(unsigned int) LSHSize(struct CvLSH* lsh);
+    cvEllipse( img, cvPointFrom32f( box.center ), axes, box.angle,
+               0, 360, color, thickness, line_type, shift );
+}
 
-/* Add vectors to the LSH structure, optionally returning indices. */
-CVAPI(void) cvLSHAdd(struct CvLSH* lsh, const CvMat* data, CvMat* indices CV_DEFAULT(0));
+/* Fills convex or monotonous polygon. */
+CVAPI(void)  cvFillConvexPoly( CvArr* img, const CvPoint* pts, int npts, CvScalar color,
+                               int line_type CV_DEFAULT(8), int shift CV_DEFAULT(0));
 
-/* Remove vectors from LSH, as addressed by given indices. */
-CVAPI(void) cvLSHRemove(struct CvLSH* lsh, const CvMat* indices);
+/* Fills an area bounded by one or more arbitrary polygons */
+CVAPI(void)  cvFillPoly( CvArr* img, CvPoint** pts, const int* npts,
+                         int contours, CvScalar color,
+                         int line_type CV_DEFAULT(8), int shift CV_DEFAULT(0) );
 
-/* Query the LSH n times for at most k nearest points; data is n x d,
-   indices and dist are n x k. At most emax stored points will be accessed. */
-CVAPI(void) cvLSHQuery(struct CvLSH* lsh, const CvMat* query_points,
-                       CvMat* indices, CvMat* dist, int k, int emax);
+/* Draws one or more polygonal curves */
+CVAPI(void)  cvPolyLine( CvArr* img, CvPoint** pts, const int* npts, int contours,
+                         int is_closed, CvScalar color, int thickness CV_DEFAULT(1),
+                         int line_type CV_DEFAULT(8), int shift CV_DEFAULT(0) );
 
+#define cvDrawRect cvRectangle
+#define cvDrawLine cvLine
+#define cvDrawCircle cvCircle
+#define cvDrawEllipse cvEllipse
+#define cvDrawPolyLine cvPolyLine
+
+/* Clips the line segment connecting *pt1 and *pt2
+   by the rectangular window
+   (0<=x<img_size.width, 0<=y<img_size.height). */
+CVAPI(int) cvClipLine( CvSize img_size, CvPoint* pt1, CvPoint* pt2 );
+
+/* Initializes line iterator. Initially, line_iterator->ptr will point
+   to pt1 (or pt2, see left_to_right description) location in the image.
+   Returns the number of pixels on the line between the ending points. */
+CVAPI(int)  cvInitLineIterator( const CvArr* image, CvPoint pt1, CvPoint pt2,
+                                CvLineIterator* line_iterator,
+                                int connectivity CV_DEFAULT(8),
+                                int left_to_right CV_DEFAULT(0));
+
+/* Moves iterator to the next line point */
+#define CV_NEXT_LINE_POINT( line_iterator )                     \
+{                                                               \
+    int _line_iterator_mask = (line_iterator).err < 0 ? -1 : 0; \
+    (line_iterator).err += (line_iterator).minus_delta +        \
+        ((line_iterator).plus_delta & _line_iterator_mask);     \
+    (line_iterator).ptr += (line_iterator).minus_step +         \
+        ((line_iterator).plus_step & _line_iterator_mask);      \
+}
+
+
+/* basic font types */
+#define CV_FONT_HERSHEY_SIMPLEX         0
+#define CV_FONT_HERSHEY_PLAIN           1
+#define CV_FONT_HERSHEY_DUPLEX          2
+#define CV_FONT_HERSHEY_COMPLEX         3
+#define CV_FONT_HERSHEY_TRIPLEX         4
+#define CV_FONT_HERSHEY_COMPLEX_SMALL   5
+#define CV_FONT_HERSHEY_SCRIPT_SIMPLEX  6
+#define CV_FONT_HERSHEY_SCRIPT_COMPLEX  7
+
+/* font flags */
+#define CV_FONT_ITALIC                 16
+
+#define CV_FONT_VECTOR0    CV_FONT_HERSHEY_SIMPLEX
+
+
+/* Font structure */
+typedef struct CvFont
+{
+  const char* nameFont;   //Qt:nameFont
+  CvScalar color;       //Qt:ColorFont -> cvScalar(blue_component, green_component, red\_component[, alpha_component])
+    int         font_face;    //Qt: bool italic         /* =CV_FONT_* */
+    const int*  ascii;      /* font data and metrics */
+    const int*  greek;
+    const int*  cyrillic;
+    float       hscale, vscale;
+    float       shear;      /* slope coefficient: 0 - normal, >0 - italic */
+    int         thickness;    //Qt: weight               /* letters thickness */
+    float       dx;       /* horizontal interval between letters */
+    int         line_type;    //Qt: PointSize
+}
+CvFont;
+
+/* Initializes font structure used further in cvPutText */
+CVAPI(void)  cvInitFont( CvFont* font, int font_face,
+                         double hscale, double vscale,
+                         double shear CV_DEFAULT(0),
+                         int thickness CV_DEFAULT(1),
+                         int line_type CV_DEFAULT(8));
+
+CV_INLINE CvFont cvFont( double scale, int thickness CV_DEFAULT(1) )
+{
+    CvFont font;
+    cvInitFont( &font, CV_FONT_HERSHEY_PLAIN, scale, scale, 0, thickness, CV_AA );
+    return font;
+}
+
+/* Renders text stroke with specified font and color at specified location.
+   CvFont should be initialized with cvInitFont */
+CVAPI(void)  cvPutText( CvArr* img, const char* text, CvPoint org,
+                        const CvFont* font, CvScalar color );
+
+/* Calculates bounding box of text stroke (useful for alignment) */
+CVAPI(void)  cvGetTextSize( const char* text_string, const CvFont* font,
+                            CvSize* text_size, int* baseline );
+
+/* Unpacks color value, if arrtype is CV_8UC?, <color> is treated as
+   packed color value, otherwise the first channels (depending on arrtype)
+   of destination scalar are set to the same value = <color> */
+CVAPI(CvScalar)  cvColorToScalar( double packed_color, int arrtype );
+
+/* Returns the polygon points which make up the given ellipse.  The ellipse is define by
+   the box of size 'axes' rotated 'angle' around the 'center'.  A partial sweep
+   of the ellipse arc can be done by spcifying arc_start and arc_end to be something
+   other than 0 and 360, respectively.  The input array 'pts' must be large enough to
+   hold the result.  The total number of points stored into 'pts' is returned by this
+   function. */
+CVAPI(int) cvEllipse2Poly( CvPoint center, CvSize axes,
+                 int angle, int arc_start, int arc_end, CvPoint * pts, int delta );
+
+/* Draws contour outlines or filled interiors on the image */
+CVAPI(void)  cvDrawContours( CvArr *img, CvSeq* contour,
+                             CvScalar external_color, CvScalar hole_color,
+                             int max_level, int thickness CV_DEFAULT(1),
+                             int line_type CV_DEFAULT(8),
+                             CvPoint offset CV_DEFAULT(cvPoint(0,0)));
 
 #ifdef __cplusplus
 }

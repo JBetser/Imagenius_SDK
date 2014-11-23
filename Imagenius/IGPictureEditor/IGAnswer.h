@@ -30,11 +30,13 @@ typedef enum {	IGANSWER_WORKSPACE_CONNECTED = 3000,
 #define IGANSWER_STEPIDS			L"StepIds"
 #define IGANSWER_FRAMEPROPERTIES	L"FrameProperties"
 #define IGANSWER_FRAMENAMES			L"FrameNames"
+#define IGANSWER_REQGUIDS			L"ReqGuids"
 #define IGANSWER_WORKSPACEPROPERTIES	L"WorkspaceProperties"
 #define IGANSWER_ALLNBLAYERS		L"AllNbLayers"
 #define IGANSWER_ALLLAYERVISIBILITY	L"AllLayerVisibility"
 #define IGANSWER_ALLSTEPIDS			L"AllStepIds"
 #define IGANSWER_SELECTEDFRAMEID	L"SelectedFrameId"
+#define IGANSWER_SELECTEDREQGUID	L"SelectedReqGuid"
 
 class IGAnswer : public IGRequest
 {
@@ -83,20 +85,24 @@ protected:
 		SetParameter (IGREQUEST_RESTOREDFRAMEIDS, m_wsFrameIds);
 		SetParameter (IGANSWER_FRAMEPROPERTIES, m_wsFrameProps);
 		SetParameter (IGANSWER_FRAMENAMES, m_wsFrameNames);
+		SetParameter (IGANSWER_REQGUIDS, m_wsReqGuids);
 		SetParameter (IGANSWER_ALLNBLAYERS, m_wsFrameNbLayers);
 		SetParameter (IGANSWER_ALLLAYERVISIBILITY, m_wsFrameVisibility);
 		SetParameter (IGANSWER_ALLSTEPIDS, m_wsFrameStepIds);
 		SetParameter (IGANSWER_SELECTEDFRAMEID, m_wsActiveFrameId);
+		SetParameter (IGANSWER_SELECTEDREQGUID, m_wsActiveReqGuid);
 		SetParameter (IGANSWER_IMAGELIBRARY, m_wsConvertMiniPictures);
 		SetParameter (IGANSWER_WORKSPACEPROPERTIES, m_wsWorkspaceProperties);
 	}
 	std::wstring	m_wsFrameIds;
 	std::wstring	m_wsFrameProps;
 	std::wstring	m_wsFrameNames;
+	std::wstring	m_wsReqGuids;
 	std::wstring	m_wsFrameNbLayers;
 	std::wstring	m_wsFrameVisibility;
 	std::wstring	m_wsFrameStepIds;
 	std::wstring	m_wsActiveFrameId;
+	std::wstring	m_wsActiveReqGuid;
 	std::wstring	m_wsConvertMiniPictures;
 	std::wstring	m_wsWorkspaceProperties;
 };

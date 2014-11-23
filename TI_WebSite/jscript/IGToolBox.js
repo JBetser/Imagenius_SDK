@@ -176,11 +176,13 @@ IG_ToolBox.toolBoxMouseDrag_faceDesc = function (toolGroup, currentToolSelectedI
             faceDescDragging = true;
         }
         else {
-            var ptStart = divDeepZoomPanel.Viewer.viewport.pointFromPixel(new Point(pixelStartX, pixelStartY));
-            divDeepZoomPanel.Viewer.viewport.panBy(ptStart.minus(divDeepZoomPanel.Viewer.viewport.pointFromPixel(curPt)));
-            var divDeepZoomPanel = IGWS_DEEPZOOM_DIV;
-            divDeepZoomPanel.setAttribute("mousedownX", curPt.x);
-            divDeepZoomPanel.setAttribute("mousedownY", curPt.y);
+            if (divCurrentWorkspace.getAttribute("DZDragging") == "1") {
+                var ptStart = divDeepZoomPanel.Viewer.viewport.pointFromPixel(new Point(pixelStartX, pixelStartY));
+                divDeepZoomPanel.Viewer.viewport.panBy(ptStart.minus(divDeepZoomPanel.Viewer.viewport.pointFromPixel(curPt)));
+                var divDeepZoomPanel = IGWS_DEEPZOOM_DIV;
+                divDeepZoomPanel.setAttribute("mousedownX", curPt.x);
+                divDeepZoomPanel.setAttribute("mousedownY", curPt.y);
+            }
         }
     }
 }
@@ -189,9 +191,11 @@ IG_ToolBox.toolBoxMouseDown_faceDesc = function (toolGroup, currentToolSelectedI
 }
 
 IG_ToolBox.toolBoxMouseScroll_faceDesc = function (toolGroup, currentToolSelectedId, divCurrentWorkspace, divDeepZoomPanel, ctx, curPt, event) {
-    IG_ToolBox.toolBoxMousePaint_faceDesc(toolGroup, currentToolSelectedId, divCurrentWorkspace, divDeepZoomPanel, ctx, event);
-    var zoomFct = (1.0 + Number(event.wheelDelta) / 1000);
-    divDeepZoomPanel.Viewer.viewport.zoomBy(zoomFct, divDeepZoomPanel.Viewer.viewport.pointFromPixel(curPt));
+    if (divCurrentWorkspace.getAttribute("DZDragging") == "1") {
+        IG_ToolBox.toolBoxMousePaint_faceDesc(toolGroup, currentToolSelectedId, divCurrentWorkspace, divDeepZoomPanel, ctx, event);
+        var zoomFct = (1.0 + Number(event.wheelDelta) / 1000);
+        divDeepZoomPanel.Viewer.viewport.zoomBy(zoomFct, divDeepZoomPanel.Viewer.viewport.pointFromPixel(curPt));
+    }
 }
 
 IG_ToolBox.toolBoxSelect_faceDesc = function (toolGroup, currentToolSelectedId, divCurrentWorkspace, divDeepZoomPanel, ctx, event) {
@@ -524,7 +528,8 @@ IG_ToolBox.toolBoxMouseClick_faceDesc = function (toolGroup, currentToolSelected
         if (divCurrentWorkspace.FaceDescriptor.mouseClick(divCurrentWorkspace, pixel, event))
             zoomFct = 1.0;
     }
-    divDeepZoomPanel.Viewer.viewport.zoomBy(zoomFct, divDeepZoomPanel.Viewer.viewport.pointFromPixel(pixel));
+    if (divCurrentWorkspace.getAttribute("DZDragging") == "1")
+        divDeepZoomPanel.Viewer.viewport.zoomBy(zoomFct, divDeepZoomPanel.Viewer.viewport.pointFromPixel(pixel));
 }
 
 var IG_tbox = null;

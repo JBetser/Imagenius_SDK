@@ -1293,258 +1293,6 @@ bool CxImage::ScaleEyeValue (float fScale, RECT rcEye, bool bUseSelect)
 	return true;
 }
 
-bool CxImage::Cartoon(float fDiffusion)
-{
-	if (!pDib) 
-		return false;	
-	if (head.biClrUsed!=0)
-		return false;
-
-	IGSmartLayer sketchLayer;
-	sketchLayer.Copy (*this, true, true);
-	sketchLayer.Sketch();
-
-	if (!Quantize(16))
-		return false;
-
-	long xmin,xmax,ymin,ymax;
-	if (pSelection){
-		xmin = info.rSelectionBox.left; xmax = info.rSelectionBox.right;
-		ymin = info.rSelectionBox.bottom; ymax = info.rSelectionBox.top;
-	} else {
-		xmin = ymin = 0;
-		xmax = head.biWidth - 1; ymax=head.biHeight - 1;
-	}
-
-	for(long y=ymin; y<=ymax; y++){
-		BYTE *pSrc = sketchLayer.GetBits(y);
-		BYTE *pDst = GetBits(y);
-		info.nProgress = (long)(100*(y-ymin)/(ymax-ymin));
-		if (info.nEscape) break;
-		for(long x=xmin; x<=xmax; x++){
-#if CXIMAGE_SUPPORT_SELECTION
-			if (BlindSelectionIsInside(x,y))
-#endif //CXIMAGE_SUPPORT_SELECTION
-			{
-				*pDst++ = (BYTE)(((int)(*pDst) + (int)(*pSrc++)) >> 1);
-				*pDst++ = (BYTE)(((int)(*pDst) + (int)(*pSrc++)) >> 1);
-				*pDst++ = (BYTE)(((int)(*pDst) + (int)(*pSrc++)) >> 1);
-			}
-#if CXIMAGE_SUPPORT_SELECTION
-			else{
-				pDst+=3;
-				pSrc+=3;
-			}
-#endif //CXIMAGE_SUPPORT_SELECTION
-		}
-	}
-	return true;
-}
-
-bool CxImage::WaterPainting(float fDiffusion)
-{
-	if (!pDib) 
-		return false;	
-	if (head.biClrUsed!=0)
-		return false;
-
-	IGSmartLayer paintingLayer;
-	paintingLayer.Copy (*this, true, true);
-	paintingLayer.OilPainting();
-
-	if (!Sketch((int)fDiffusion))
-		return false;
-
-	long xmin,xmax,ymin,ymax;
-	if (pSelection){
-		xmin = info.rSelectionBox.left; xmax = info.rSelectionBox.right;
-		ymin = info.rSelectionBox.bottom; ymax = info.rSelectionBox.top;
-	} else {
-		xmin = ymin = 0;
-		xmax = head.biWidth - 1; ymax=head.biHeight - 1;
-	}
-
-	for(long y=ymin; y<=ymax; y++){
-		BYTE *pSrc = paintingLayer.GetBits(y);
-		BYTE *pDst = GetBits(y);
-		info.nProgress = (long)(100*(y-ymin)/(ymax-ymin));
-		if (info.nEscape) break;
-		for(long x=xmin; x<=xmax; x++){
-#if CXIMAGE_SUPPORT_SELECTION
-			if (BlindSelectionIsInside(x,y))
-#endif //CXIMAGE_SUPPORT_SELECTION
-			{
-				*pDst++ = (BYTE)(((int)(*pDst) + (int)(*pSrc++)) >> 1);
-				*pDst++ = (BYTE)(((int)(*pDst) + (int)(*pSrc++)) >> 1);
-				*pDst++ = (BYTE)(((int)(*pDst) + (int)(*pSrc++)) >> 1);
-			}
-#if CXIMAGE_SUPPORT_SELECTION
-			else{
-				pDst+=3;
-				pSrc+=3;
-			}
-#endif //CXIMAGE_SUPPORT_SELECTION
-		}
-	}
-	return true;
-}
-
-bool CxImage::Sketch(int nDiffusion)
-{
-	if (!Repair (0.25f, 3, 0))
-		return false;
-	if (!Repair (0.25f, 3, 0))
-		return false;
-	if (!GradientMorpho(4))
-		return false;
-	if (!UnsharpMask (5.0f, 0.5f, 0))
-		return false;
-	if (!UnsharpMask (5.0f, 0.5f, 0))
-		return false;
-	return Negative();	
-}
-
-
-bool CxImage::OilPainting(float fDiffusion)
-{
-	if (!GaussianBlur (fDiffusion))
-		return false;
-	IGSmartLayer tmpLayer;
-	tmpLayer.Copy (*this, true, true);
-	int nbRegions = 0;
-	if (tmpLayer.IndexLPE (NULL, nbRegions)){
-		for (int idxReg = 1; idxReg <= nbRegions; idxReg++)
-			tmpLayer.GetRegion(idxReg)->ApplyMedianColor();
-	}
-	long xmin,xmax,ymin,ymax;
-	if (pSelection){
-		xmin = info.rSelectionBox.left; xmax = info.rSelectionBox.right;
-		ymin = info.rSelectionBox.bottom; ymax = info.rSelectionBox.top;
-	} else {
-		xmin = ymin = 0;
-		xmax = head.biWidth - 1; ymax=head.biHeight - 1;
-	}
-	for(long y=ymin; y<=ymax; y++){
-		BYTE *pSrc = tmpLayer.GetBits(y);
-		BYTE *pDst = GetBits(y);
-		info.nProgress = (long)(100*(y-ymin)/(ymax-ymin));
-		if (info.nEscape) break;
-		for(long x=xmin; x<=xmax; x++){
-#if CXIMAGE_SUPPORT_SELECTION
-			if (BlindSelectionIsInside(x,y))
-#endif //CXIMAGE_SUPPORT_SELECTION
-			{
-				*pDst++ = *pSrc++;
-				*pDst++ = *pSrc++;
-				*pDst++ = *pSrc++;
-			}
-#if CXIMAGE_SUPPORT_SELECTION
-			else{
-				pDst+=3;
-				pSrc+=3;
-			}
-#endif //CXIMAGE_SUPPORT_SELECTION
-		}
-	}
-	return true;
-}
-
-//bool CxImage::kmeanClustering(CxImage & sourceImg)
-//bool CxImage::kmeanClustering()
-//{
-//	int size;
-//	
-//	int colorCount = 2; // To find two dominant colors
-//
-//	IGSmartLayer sourceImg;
-//	sourceImg.Copy (*this, true, true);
-//
-//	//CvMat *points;
-//	CvMat *clusters;
-//
-//	CvMat *domColor1 = cvCreateMat((int) sourceImg.head.biHeight, (int) sourceImg.head.biWidth, 3);
-//	CvMat *domColor2 = cvCreateMat((int) sourceImg.head.biHeight, (int) sourceImg.head.biWidth, 3);
-//	CvMat *imgPoints = cvCreateMat ((int) sourceImg.head.biHeight, (int) sourceImg.head.biWidth, CV_32FC3);
-//
-//	size = sourceImg.head.biWidth * sourceImg.head.biHeight;
-//	
-//
-//	// Convert CxImage to CvMat*
-//	for(long y=0, i=0; y<sourceImg.GetWidth()-1; y++){
-//		BYTE *pSrc = sourceImg.GetBits(y);
-//		for(long x=0; x<sourceImg.GetHeight()-1; x++, i++){
-//			imgPoints->data.fl[i * 3 + 0] = (uchar) *pSrc++;
-//			imgPoints->data.fl[i * 3 + 1] = (uchar) *pSrc++;
-//			imgPoints->data.fl[i * 3 + 2] = (uchar) *pSrc++;
-//		}
-//	}
-//
-//	// Apply Kmean Clusterig 
-//	 cvKMeans2 (imgPoints, colorCount, clusters, cvTermCriteria (CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 10, 1.0));
-//
-//	// Cluster two dominat colors
-//	cvSetZero (domColor1);
-//	cvSetZero (domColor2);
-//
-//	for (int i=0; i< imgPoints->rows; i++){
-//		for (int j=0; j< imgPoints->cols; j++){
-//			int idx = clusters->data.fl[clusters->step *j + i + 0];
-//			if (idx ==0)
-//			{
-//				domColor1->data.fl[domColor1->step *j + i + 0]  = 255;
-//				domColor1->data.fl[domColor1->step *j + i + 1]  = 255;
-//				domColor1->data.fl[domColor1->step *j + i + 2]  = 255;
-//			}
-//			else
-//			{
-//				domColor1->data.fl[domColor1->step *j + i + 0]  = 0;
-//				domColor1->data.fl[domColor1->step *j + i + 1]  = 0;
-//				domColor1->data.fl[domColor1->step *j + i + 2]  = 0;
-//			}
-//		}
-//	}
-//
-//	//for (int i = 0; i < size; i++) {
-// //   int idx = clusters->data.i[i];
-//	//if (idx ==0)
-//	//{
-//	//	domColor1->data.fl[idx * 3 + 0] = 0;
-//	//	domColor1->data.fl[idx * 3 + 1] = 0;
-//	//	domColor1->data.fl[idx * 3 + 2] = 255;
-//	//}
-//	//
-//	///*if (idx==1)
-//	//{
-//	//	domColor2->data.fl[idx * 3 + 0] = 0;
-//	//	domColor2->data.fl[idx * 3 + 1] = 255;
-//	//	domColor2->data.fl[idx * 3 + 2] = 0;
-//	//}*/
-// // }
-//
-//	// Convert CvMat* to CxImage
-//
-//	for(long y=0, i=0; y< sourceImg.GetWidth(); y++){
-//		BYTE *pSrc = sourceImg.GetBits(y);
-//		BYTE *pDst1 = GetBits(y);
-//	/*	BYTE *pDst2 = GetBits(y);*/
-//		for(long x=0; x<=sourceImg.GetHeight(); x++, i++){
-//			*pDst1++ = (char) domColor1->data.fl[i * 3 + 0];
-//			*pDst1++ = (char) domColor1->data.fl[i * 3 + 1];
-//			*pDst1++ = (char) domColor1->data.fl[i * 3 + 2];
-//
-//			/**pDst2++ = (char) domColor2->data.fl[i * 3 + 0];
-//			*pDst2++ = (char) domColor2->data.fl[i * 3 + 1];
-//			*pDst2++ = (char) domColor2->data.fl[i * 3 + 2];*/
-//		}
-//	}
-//
-//	cvReleaseMat (&clusters);
-//	cvReleaseMat (&imgPoints);
-//	cvReleaseMat (&domColor2);
-//	cvReleaseMat (&domColor1);
-//	return true;
-//}
-
 bool CxImage::kmeanClustering()
 {
      int i, size, colorCount=2;
@@ -1702,23 +1450,6 @@ bool CxImage::Quantize(int colorCount)
 
   return true;
 }
-
-bool CxImage::Clay()
-{
-	if (!Repair (0.25f, 3, 0))
-		return false;
-	if (!Dither())
-		return false;
-	COLORREF col = 1986710;
-	RGBQUAD rgbq;
-	rgbq.rgbRed = GetRValue (col);
-	rgbq.rgbBlue = GetBValue (col);
-	rgbq.rgbGreen = GetGValue (col);
-	rgbq.rgbReserved = 0x00;
-	rgbq = RGBtoHSL (rgbq);
-	return Colorize (rgbq.rgbRed, rgbq.rgbGreen, rgbq.rgbBlue, 1.0f);
-}
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -3300,8 +3031,8 @@ bool CxImage::FFT2(CxImage* srcReal, CxImage* srcImag, CxImage* dstReal, CxImage
 	}
 
 	//resample for FFT, if necessary 
-	tmpReal->Resample(w,h,0);
-	tmpImag->Resample(w,h,0);
+	tmpReal->Resample(w,h);
+	tmpImag->Resample(w,h);
 
 	//ok, here we have 2 (w x h), grayscale images ready for a FFT
 
@@ -4929,7 +4660,7 @@ bool CxImage::GetEyeCenters (RECT rcLeft, RECT rcRight, POINT& ptCenterLeft, POI
 	return true;
 }
 
-bool CxImage::ChangeEyeColor (RECT rcLeft, RECT rcRight, BYTE hue, BYTE sat, float fStrength, bool bAuto)
+bool CxImage::ChangeEyeColor (RECT rcLeft, RECT rcRight, BYTE hue, BYTE sat, float fStrength)
 {
 	if (!pDib) return false;
 
@@ -4947,26 +4678,10 @@ bool CxImage::ChangeEyeColor (RECT rcLeft, RECT rcRight, BYTE hue, BYTE sat, flo
 
 	fStrength = 1.0f + fStrength / 100.0f; // [1:2]
 
-	long xCtrLeft;
-	long xCtrRight;
-	long yCtrLeft;
-	long yCtrRight;
-	if (bAuto){
-		POINT ptEyeLeftCenter, ptEyeRightCenter;
-		if (!GetEyeCenters (rcLeft, rcRight, ptEyeLeftCenter, ptEyeRightCenter))
-			return false;
-		xCtrLeft = rcLeft.left + ptEyeLeftCenter.x;
-		xCtrRight = rcRight.left + ptEyeRightCenter.x;
-		yCtrLeft = rcLeft.top + ptEyeLeftCenter.y;
-		yCtrRight = rcRight.top + ptEyeRightCenter.y;
-	}
-	else{
-		xCtrLeft = (rcLeft.left + rcLeft.right) / 2;
-		xCtrRight = (rcRight.left + rcRight.right) / 2;
-		yCtrLeft = (rcLeft.top + rcLeft.bottom) / 2;
-		yCtrRight = (rcRight.top + rcRight.bottom) / 2;
-	}
-
+	long xCtrLeft = (rcLeft.left + rcLeft.right) / 2;
+	long xCtrRight = (rcRight.left + rcRight.right) / 2;
+	long yCtrLeft = (rcLeft.top + rcLeft.bottom) / 2;
+	long yCtrRight = (rcRight.top + rcRight.bottom) / 2;
 	long sizeLeft = min (abs (rcLeft.right - rcLeft.left), abs (rcLeft.top - rcLeft.bottom));
 	long sizeRight = min (abs (rcRight.right - rcRight.left), abs (rcRight.top - rcRight.bottom));
 
@@ -5534,7 +5249,7 @@ bool CxImage::AdaptiveThreshold(long method, long nBoxSize, CxImage* pContrastMa
 		}
 	}
 
-	mask.Resample(mw*nBoxSize,mh*nBoxSize,0);
+	mask.Resample(mw*nBoxSize,mh*nBoxSize);
 	mask.Crop(0,head.biHeight,head.biWidth,0);
 
 	if(!Threshold(&mask))

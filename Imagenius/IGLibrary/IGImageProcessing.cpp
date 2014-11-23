@@ -562,7 +562,7 @@ bool IGImageProcessing::GenerateOutput (CxImage& image, IGCommunicationBase& req
 	{
 		CxImage curLayer (*image.GetLayer(idxLayer), true, false, false);
 		computeOutputSizeAndRatio (nImageWidth, nImageHeight, curLayer.GetWidth(), curLayer.GetHeight());
-		curLayer.Resample2 (nImageWidth, nImageHeight);
+		curLayer.Resample (nImageWidth, nImageHeight);
 		wsLayerOutputPath = wsOutputPath + L"L";		
 		_itow (idxLayer, wLayPos, 10);
 		wsLayerOutputPath += wLayPos;

@@ -895,6 +895,8 @@ bool IGSmartLayer::LPE_FAH (IGMarker **ppMarkers, int& nNbMarkers, bool bShowMar
 {
 	if (nNbMarkers < 1)
 		return false;
+	if (nNbMarkers == 1)
+		return true;
 	if (bShowGradient)
 	{
 		int nSize = head.biWidth * head.biHeight;

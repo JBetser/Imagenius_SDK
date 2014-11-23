@@ -48,6 +48,20 @@
 
 #include "precomp.hpp"
 
+#if defined WIN32 || defined WINCE
+    #include <windows.h>
+    #undef small
+    #undef min
+    #undef max
+    #undef abs
+#else
+    #include <pthread.h>
+#endif
+
+#if defined __SSE2__ || (defined _M_IX86_FP && 2 == _M_IX86_FP)
+    #include "emmintrin.h"
+#endif
+
 namespace cv
 {
 
@@ -153,7 +167,7 @@ randi_( T* arr, int len, uint64* state, const DivStruct* p )
         v1 = t1 - v1*p[i+1].d + p[i+1].delta;
         arr[i] = saturate_cast<T>((int)v0);
         arr[i+1] = saturate_cast<T>((int)v1);
-        
+
         temp = RNG_NEXT(temp);
         t0 = (unsigned)temp;
         temp = RNG_NEXT(temp);
@@ -181,7 +195,7 @@ randi_( T* arr, int len, uint64* state, const DivStruct* p )
     *state = temp;
 }
 
-    
+
 #define DEF_RANDI_FUNC(suffix, type) \
 static void randBits_##suffix(type* arr, int len, uint64* state, \
                               const Vec2i* p, bool small_flag) \
@@ -196,33 +210,54 @@ DEF_RANDI_FUNC(8s, schar)
 DEF_RANDI_FUNC(16u, ushort)
 DEF_RANDI_FUNC(16s, short)
 DEF_RANDI_FUNC(32s, int)
-    
+
 static void randf_32f( float* arr, int len, uint64* state, const Vec2f* p, bool )
 {
     uint64 temp = *state;
-    int i;
+    int i = 0;
 
-    for( i = 0; i <= len - 4; i += 4 )
+    for( ; i <= len - 4; i += 4 )
     {
-        float f0, f1;
+        float f[4];
+        f[0] = (float)(int)(temp = RNG_NEXT(temp));
+        f[1] = (float)(int)(temp = RNG_NEXT(temp));
+        f[2] = (float)(int)(temp = RNG_NEXT(temp));
+        f[3] = (float)(int)(temp = RNG_NEXT(temp));
 
-        temp = RNG_NEXT(temp);
-        f0 = (int)temp*p[i][0] + p[i][1];
-        temp = RNG_NEXT(temp);
-        f1 = (int)temp*p[i+1][0] + p[i+1][1];
-        arr[i] = f0; arr[i+1] = f1;
+        // handwritten SSE is required not for performance but for numerical stability!
+        // both 32-bit gcc and MSVC compilers trend to generate double precision SSE
+        // while 64-bit compilers generate single precision SIMD instructions
+        // so manual vectorisation forces all compilers to the single precision
+#if defined __SSE2__ || (defined _M_IX86_FP && 2 == _M_IX86_FP)
+        __m128 q0 = _mm_loadu_ps((const float*)(p + i));
+        __m128 q1 = _mm_loadu_ps((const float*)(p + i + 2));
 
-        temp = RNG_NEXT(temp);
-        f0 = (int)temp*p[i+2][0] + p[i+2][1];
-        temp = RNG_NEXT(temp);
-        f1 = (int)temp*p[i+3][0] + p[i+3][1];
-        arr[i+2] = f0; arr[i+3] = f1;
+        __m128 q01l = _mm_unpacklo_ps(q0, q1);
+        __m128 q01h = _mm_unpackhi_ps(q0, q1);
+
+        __m128 p0 = _mm_unpacklo_ps(q01l, q01h);
+        __m128 p1 = _mm_unpackhi_ps(q01l, q01h);
+
+        _mm_storeu_ps(arr + i, _mm_add_ps(_mm_mul_ps(_mm_loadu_ps(f), p0), p1));
+#else
+        arr[i+0] = f[0]*p[i+0][0] + p[i+0][1];
+        arr[i+1] = f[1]*p[i+1][0] + p[i+1][1];
+        arr[i+2] = f[2]*p[i+2][0] + p[i+2][1];
+        arr[i+3] = f[3]*p[i+3][0] + p[i+3][1];
+#endif
     }
 
     for( ; i < len; i++ )
     {
         temp = RNG_NEXT(temp);
+#if defined __SSE2__ || (defined _M_IX86_FP && 2 == _M_IX86_FP)
+        _mm_store_ss(arr + i, _mm_add_ss(
+                _mm_mul_ss(_mm_set_ss((float)(int)temp), _mm_set_ss(p[i][0])),
+                _mm_set_ss(p[i][1]))
+                );
+#else
         arr[i] = (int)temp*p[i][0] + p[i][1];
+#endif
     }
 
     *state = temp;
@@ -267,9 +302,9 @@ randf_64f( double* arr, int len, uint64* state, const Vec2d* p, bool )
     *state = temp;
 }
 
-typedef void (*RandFunc)(uchar* arr, int len, uint64* state, const void* p, bool small_flag);    
+typedef void (*RandFunc)(uchar* arr, int len, uint64* state, const void* p, bool small_flag);
 
-    
+
 static RandFunc randTab[][8] =
 {
     {
@@ -280,8 +315,8 @@ static RandFunc randTab[][8] =
         (RandFunc)randBits_8u, (RandFunc)randBits_8s, (RandFunc)randBits_16u, (RandFunc)randBits_16s,
         (RandFunc)randBits_32s, 0, 0, 0
     }
-};    
-    
+};
+
 /*
    The code below implements the algorithm described in
    "The Ziggurat Method for Generating Random Variables"
@@ -297,23 +332,23 @@ randn_0_1_32f( float* arr, int len, uint64* state )
     uint64 temp = *state;
     static bool initialized=false;
     int i;
-    
+
     if( !initialized )
     {
         const double m1 = 2147483648.0;
         double dn = 3.442619855899, tn = dn, vn = 9.91256303526217e-3;
-        
+
         // Set up the tables
         double q = vn/std::exp(-.5*dn*dn);
         kn[0] = (unsigned)((dn/q)*m1);
         kn[1] = 0;
-        
+
         wn[0] = (float)(q/m1);
         wn[127] = (float)(dn/m1);
-        
+
         fn[0] = 1.f;
         fn[127] = (float)std::exp(-.5*dn*dn);
-        
+
         for(i=126;i>=1;i--)
         {
             dn = std::sqrt(-2.*std::log(vn/dn+std::exp(-.5*dn*dn)));
@@ -324,7 +359,7 @@ randn_0_1_32f( float* arr, int len, uint64* state )
         }
         initialized = true;
     }
-    
+
     for( i = 0; i < len; i++ )
     {
         float x, y;
@@ -362,7 +397,7 @@ randn_0_1_32f( float* arr, int len, uint64* state )
     *state = temp;
 }
 
-    
+
 double RNG::gaussian(double sigma)
 {
     float temp;
@@ -370,7 +405,7 @@ double RNG::gaussian(double sigma)
     return temp*sigma;
 }
 
-    
+
 template<typename T, typename PT> static void
 randnScale_( const float* src, T* dst, int len, int cn, const PT* mean, const PT* stddev, bool stdmtx )
 {
@@ -404,7 +439,7 @@ randnScale_( const float* src, T* dst, int len, int cn, const PT* mean, const PT
         }
     }
 }
-    
+
 static void randnScale_8u( const float* src, uchar* dst, int len, int cn,
                             const float* mean, const float* stddev, bool stdmtx )
 { randnScale_(src, dst, len, cn, mean, stddev, stdmtx); }
@@ -440,10 +475,11 @@ static RandnScaleFunc randnScaleTab[] =
 {
     (RandnScaleFunc)randnScale_8u, (RandnScaleFunc)randnScale_8s, (RandnScaleFunc)randnScale_16u,
     (RandnScaleFunc)randnScale_16s, (RandnScaleFunc)randnScale_32s, (RandnScaleFunc)randnScale_32f,
-    (RandnScaleFunc)randnScale_64f, 0 
+    (RandnScaleFunc)randnScale_64f, 0
 };
-    
-void RNG::fill( InputOutputArray _mat, int disttype, InputArray _param1arg, InputArray _param2arg )
+
+void RNG::fill( InputOutputArray _mat, int disttype,
+                InputArray _param1arg, InputArray _param2arg, bool saturateRange )
 {
     Mat mat = _mat.getMat(), _param1 = _param1arg.getMat(), _param2 = _param2arg.getMat();
     int depth = mat.depth(), cn = mat.channels();
@@ -451,16 +487,16 @@ void RNG::fill( InputOutputArray _mat, int disttype, InputArray _param1arg, Inpu
     int j, k, fast_int_mode = 0, smallFlag = 1;
     RandFunc func = 0;
     RandnScaleFunc scaleFunc = 0;
-    
+
     CV_Assert(_param1.channels() == 1 && (_param1.rows == 1 || _param1.cols == 1) &&
               (_param1.rows + _param1.cols - 1 == cn || _param1.rows + _param1.cols - 1 == 1 ||
                (_param1.size() == Size(1, 4) && _param1.type() == CV_64F && cn <= 4)));
     CV_Assert( _param2.channels() == 1 &&
-               (((_param2.rows == 1 || _param2.cols == 1) && 
+               (((_param2.rows == 1 || _param2.cols == 1) &&
                 (_param2.rows + _param2.cols - 1 == cn || _param2.rows + _param2.cols - 1 == 1 ||
                 (_param1.size() == Size(1, 4) && _param1.type() == CV_64F && cn <= 4))) ||
                 (_param2.rows == cn && _param2.cols == cn && disttype == NORMAL)));
-    
+
     Vec2i* ip = 0;
     Vec2d* dp = 0;
     Vec2f* fp = 0;
@@ -475,9 +511,9 @@ void RNG::fill( InputOutputArray _mat, int disttype, InputArray _param1arg, Inpu
     {
         _parambuf.allocate(cn*8 + n1 + n2);
         double* parambuf = _parambuf;
-        double* p1 = (double*)_param1.data;
-        double* p2 = (double*)_param2.data;
-        
+        double* p1 = _param1.ptr<double>();
+        double* p2 = _param2.ptr<double>();
+
         if( !_param1.isContinuous() || _param1.type() != CV_64F || n1 != cn )
         {
             Mat tmp(_param1.size(), CV_64F, parambuf);
@@ -487,7 +523,7 @@ void RNG::fill( InputOutputArray _mat, int disttype, InputArray _param1arg, Inpu
                 for( j = n1; j < cn; j++ )
                     p1[j] = p1[j-n1];
         }
-        
+
         if( !_param2.isContinuous() || _param2.type() != CV_64F || n2 != cn )
         {
             Mat tmp(_param2.size(), CV_64F, parambuf + cn);
@@ -497,14 +533,21 @@ void RNG::fill( InputOutputArray _mat, int disttype, InputArray _param1arg, Inpu
                 for( j = n2; j < cn; j++ )
                     p2[j] = p2[j-n2];
         }
-        
+
         if( depth <= CV_32S )
         {
             ip = (Vec2i*)(parambuf + cn*2);
             for( j = 0, fast_int_mode = 1; j < cn; j++ )
             {
-                double a = min(p1[j], p2[j]);
-                double b = max(p1[j], p2[j]);
+                double a = std::min(p1[j], p2[j]);
+                double b = std::max(p1[j], p2[j]);
+                if( saturateRange )
+                {
+                    a = std::max(a, depth == CV_8U || depth == CV_16U ? 0. :
+                            depth == CV_8S ? -128. : depth == CV_16S ? -32768. : (double)INT_MIN);
+                    b = std::min(b, depth == CV_8U ? 256. : depth == CV_16U ? 65536. :
+                            depth == CV_8S ? 128. : depth == CV_16S ? 32768. : (double)INT_MAX);
+                }
                 ip[j][1] = cvCeil(a);
                 int idiff = ip[j][0] = cvFloor(b) - ip[j][1] - 1;
                 double diff = b - a;
@@ -512,8 +555,15 @@ void RNG::fill( InputOutputArray _mat, int disttype, InputArray _param1arg, Inpu
                 fast_int_mode &= diff <= 4294967296. && (idiff & (idiff+1)) == 0;
                 if( fast_int_mode )
                     smallFlag &= idiff <= 255;
+                else
+                {
+                    if( diff > INT_MAX )
+                        ip[j][0] = INT_MAX;
+                    if( a < INT_MIN/2 )
+                        ip[j][1] = INT_MIN/2;
+                }
             }
-            
+
             if( !fast_int_mode )
             {
                 ds = (DivStruct*)(ip + cn);
@@ -525,11 +575,11 @@ void RNG::fill( InputOutputArray _mat, int disttype, InputArray _param1arg, Inpu
                     while(((uint64)1 << l) < d)
                         l++;
                     ds[j].M = (unsigned)(((uint64)1 << 32)*(((uint64)1 << l) - d)/d) + 1;
-                    ds[j].sh1 = min(l, 1);
-                    ds[j].sh2 = max(l - 1, 0);
-                }            
+                    ds[j].sh1 = std::min(l, 1);
+                    ds[j].sh2 = std::max(l - 1, 0);
+                }
             }
-            
+
             func = randTab[fast_int_mode][depth];
         }
         else
@@ -537,6 +587,7 @@ void RNG::fill( InputOutputArray _mat, int disttype, InputArray _param1arg, Inpu
             double scale = depth == CV_64F ?
                 5.4210108624275221700372640043497e-20 : // 2**-64
                 2.3283064365386962890625e-10;           // 2**-32
+            double maxdiff = saturateRange ? (double)FLT_MAX : DBL_MAX;
 
             // for each channel i compute such dparam[0][i] & dparam[1][i],
             // so that a signed 32/64-bit integer X is transformed to
@@ -547,7 +598,7 @@ void RNG::fill( InputOutputArray _mat, int disttype, InputArray _param1arg, Inpu
                 fp = (Vec2f*)(parambuf + cn*2);
                 for( j = 0; j < cn; j++ )
                 {
-                    fp[j][0] = (float)((p2[j] - p1[j])*scale);
+                    fp[j][0] = (float)(std::min(maxdiff, p2[j] - p1[j])*scale);
                     fp[j][1] = (float)((p2[j] + p1[j])*0.5);
                 }
             }
@@ -556,12 +607,12 @@ void RNG::fill( InputOutputArray _mat, int disttype, InputArray _param1arg, Inpu
                 dp = (Vec2d*)(parambuf + cn*2);
                 for( j = 0; j < cn; j++ )
                 {
-                    dp[j][0] = ((p2[j] - p1[j])*scale);
+                    dp[j][0] = std::min(DBL_MAX, p2[j] - p1[j])*scale;
                     dp[j][1] = ((p2[j] + p1[j])*0.5);
                 }
             }
-            
-            func = randTab[0][depth];                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+
+            func = randTab[0][depth];
         }
         CV_Assert( func != 0 );
     }
@@ -569,36 +620,36 @@ void RNG::fill( InputOutputArray _mat, int disttype, InputArray _param1arg, Inpu
     {
         _parambuf.allocate(MAX(n1, cn) + MAX(n2, cn));
         double* parambuf = _parambuf;
-        
+
         int ptype = depth == CV_64F ? CV_64F : CV_32F;
         int esz = (int)CV_ELEM_SIZE(ptype);
-        
+
         if( _param1.isContinuous() && _param1.type() == ptype )
-            mean = _param1.data;
+            mean = _param1.ptr();
         else
         {
             Mat tmp(_param1.size(), ptype, parambuf);
             _param1.convertTo(tmp, ptype);
             mean = (uchar*)parambuf;
         }
-        
+
         if( n1 < cn )
             for( j = n1*esz; j < cn*esz; j++ )
                 mean[j] = mean[j - n1*esz];
-        
+
         if( _param2.isContinuous() && _param2.type() == ptype )
-            stddev = _param2.data;
+            stddev = _param2.ptr();
         else
         {
             Mat tmp(_param2.size(), ptype, parambuf + cn);
             _param2.convertTo(tmp, ptype);
             stddev = (uchar*)(parambuf + cn);
         }
-        
+
         if( n1 < cn )
             for( j = n1*esz; j < cn*esz; j++ )
                 stddev[j] = stddev[j - n1*esz];
-        
+
         stdmtx = _param2.rows == cn && _param2.cols == cn;
         scaleFunc = randnScaleTab[depth];
         CV_Assert( scaleFunc != 0 );
@@ -614,12 +665,12 @@ void RNG::fill( InputOutputArray _mat, int disttype, InputArray _param1arg, Inpu
     AutoBuffer<double> buf;
     uchar* param = 0;
     float* nbuf = 0;
-    
+
     if( disttype == UNIFORM )
     {
         buf.allocate(blockSize*cn*4);
         param = (uchar*)(double*)buf;
-        
+
         if( ip )
         {
             if( ds )
@@ -657,13 +708,13 @@ void RNG::fill( InputOutputArray _mat, int disttype, InputArray _param1arg, Inpu
         buf.allocate((blockSize*cn+1)/2);
         nbuf = (float*)(double*)buf;
     }
-    
+
     for( size_t i = 0; i < it.nplanes; i++, ++it )
     {
         for( j = 0; j < total; j += blockSize )
         {
             int len = std::min(total - j, blockSize);
-            
+
             if( disttype == CV_RAND_UNI )
                 func( ptr, len*cn, &state, param, smallFlag != 0 );
             else
@@ -676,66 +727,13 @@ void RNG::fill( InputOutputArray _mat, int disttype, InputArray _param1arg, Inpu
     }
 }
 
-#ifdef WIN32
-#ifdef WINCE
-#	define TLS_OUT_OF_INDEXES ((DWORD)0xFFFFFFFF)
-#endif
-static DWORD tlsRNGKey = TLS_OUT_OF_INDEXES;
+}
 
-void deleteThreadRNGData()
+cv::RNG& cv::theRNG()
 {
-    if( tlsRNGKey != TLS_OUT_OF_INDEXES )
-        delete (RNG*)TlsGetValue( tlsRNGKey );
+    return coreTlsData.get()->rng;
 }
 
-RNG& theRNG()
-{
-    if( tlsRNGKey == TLS_OUT_OF_INDEXES )
-    {
-        tlsRNGKey = TlsAlloc();
-        CV_Assert(tlsRNGKey != TLS_OUT_OF_INDEXES);
-    }
-    RNG* rng = (RNG*)TlsGetValue( tlsRNGKey );
-    if( !rng )
-    {
-        rng = new RNG;
-        TlsSetValue( tlsRNGKey, rng );
-    }
-    return *rng;
-}
-
-#else
-
-static pthread_key_t tlsRNGKey = 0;
-static pthread_once_t tlsRNGKeyOnce = PTHREAD_ONCE_INIT;
-
-static void deleteRNG(void* data)
-{
-    delete (RNG*)data;
-}
-
-static void makeRNGKey()
-{
-	int errcode = pthread_key_create(&tlsRNGKey, deleteRNG);
-	CV_Assert(errcode == 0);
-}
-
-RNG& theRNG()
-{
-    pthread_once(&tlsRNGKeyOnce, makeRNGKey);
-    RNG* rng = (RNG*)pthread_getspecific(tlsRNGKey);
-    if( !rng )
-    {
-        rng = new RNG;
-        pthread_setspecific(tlsRNGKey, rng);
-    }
-    return *rng;
-}
-
-#endif
-
-}
-    
 void cv::randu(InputOutputArray dst, InputArray low, InputArray high)
 {
     theRNG().fill(dst, RNG::UNIFORM, low, high);
@@ -744,8 +742,8 @@ void cv::randu(InputOutputArray dst, InputArray low, InputArray high)
 void cv::randn(InputOutputArray dst, InputArray mean, InputArray stddev)
 {
     theRNG().fill(dst, RNG::NORMAL, mean, stddev);
-}    
- 
+}
+
 namespace cv
 {
 
@@ -755,7 +753,7 @@ randShuffle_( Mat& _arr, RNG& rng, double iterFactor )
     int sz = _arr.rows*_arr.cols, iters = cvRound(iterFactor*sz);
     if( _arr.isContinuous() )
     {
-        T* arr = (T*)_arr.data;
+        T* arr = _arr.ptr<T>();
         for( int i = 0; i < iters; i++ )
         {
             int j = (unsigned)rng % sz, k = (unsigned)rng % sz;
@@ -764,7 +762,7 @@ randShuffle_( Mat& _arr, RNG& rng, double iterFactor )
     }
     else
     {
-        uchar* data = _arr.data;
+        uchar* data = _arr.ptr();
         size_t step = _arr.step;
         int cols = _arr.cols;
         for( int i = 0; i < iters; i++ )
@@ -780,7 +778,7 @@ randShuffle_( Mat& _arr, RNG& rng, double iterFactor )
 typedef void (*RandShuffleFunc)( Mat& dst, RNG& rng, double iterFactor );
 
 }
-    
+
 void cv::randShuffle( InputOutputArray _dst, double iterFactor, RNG* _rng )
 {
     RandShuffleFunc tab[] =
@@ -803,7 +801,7 @@ void cv::randShuffle( InputOutputArray _dst, double iterFactor, RNG* _rng )
         0, 0, 0, 0, 0, 0, 0,
         randShuffle_<Vec<int,8> > // 32
     };
-    
+
     Mat dst = _dst.getMat();
     RNG& rng = _rng ? *_rng : theRNG();
     CV_Assert( dst.elemSize() <= 32 );
@@ -828,5 +826,130 @@ CV_IMPL void cvRandShuffle( CvArr* arr, CvRNG* _rng, double iter_factor )
     cv::RNG& rng = _rng ? (cv::RNG&)*_rng : cv::theRNG();
     cv::randShuffle( dst, iter_factor, &rng );
 }
+
+// Mersenne Twister random number generator.
+// Inspired by http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/MT2002/CODES/mt19937ar.c
+
+/*
+   A C-program for MT19937, with initialization improved 2002/1/26.
+   Coded by Takuji Nishimura and Makoto Matsumoto.
+
+   Before using, initialize the state by using init_genrand(seed)
+   or init_by_array(init_key, key_length).
+
+   Copyright (C) 1997 - 2002, Makoto Matsumoto and Takuji Nishimura,
+   All rights reserved.
+
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+
+     1. Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+
+     2. Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in the
+        documentation and/or other materials provided with the distribution.
+
+     3. The names of its contributors may not be used to endorse or promote
+        products derived from this software without specific prior written
+        permission.
+
+   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+   A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+   CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+   EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+   PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+   PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+   Any feedback is very welcome.
+   http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html
+   email: m-mat @ math.sci.hiroshima-u.ac.jp (remove space)
+*/
+
+cv::RNG_MT19937::RNG_MT19937(unsigned s) { seed(s); }
+
+cv::RNG_MT19937::RNG_MT19937() { seed(5489U); }
+
+void cv::RNG_MT19937::seed(unsigned s)
+{
+    state[0]= s;
+    for (mti = 1; mti < N; mti++)
+    {
+        /* See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier. */
+        state[mti] = (1812433253U * (state[mti - 1] ^ (state[mti - 1] >> 30)) + mti);
+    }
+}
+
+unsigned cv::RNG_MT19937::next()
+{
+    /* mag01[x] = x * MATRIX_A  for x=0,1 */
+    static unsigned mag01[2] = { 0x0U, /*MATRIX_A*/ 0x9908b0dfU};
+
+    const unsigned UPPER_MASK = 0x80000000U;
+    const unsigned LOWER_MASK = 0x7fffffffU;
+
+    /* generate N words at one time */
+    if (mti >= N)
+    {
+        int kk = 0;
+
+        for (; kk < N - M; ++kk)
+        {
+            unsigned y = (state[kk] & UPPER_MASK) | (state[kk + 1] & LOWER_MASK);
+            state[kk] = state[kk + M] ^ (y >> 1) ^ mag01[y & 0x1U];
+        }
+
+        for (; kk < N - 1; ++kk)
+        {
+            unsigned y = (state[kk] & UPPER_MASK) | (state[kk + 1] & LOWER_MASK);
+            state[kk] = state[kk + (M - N)] ^ (y >> 1) ^ mag01[y & 0x1U];
+        }
+
+        unsigned y = (state[N - 1] & UPPER_MASK) | (state[0] & LOWER_MASK);
+        state[N - 1] = state[M - 1] ^ (y >> 1) ^ mag01[y & 0x1U];
+
+        mti = 0;
+    }
+
+    unsigned y = state[mti++];
+
+    /* Tempering */
+    y ^= (y >> 11);
+    y ^= (y <<  7) & 0x9d2c5680U;
+    y ^= (y << 15) & 0xefc60000U;
+    y ^= (y >> 18);
+
+    return y;
+}
+
+cv::RNG_MT19937::operator unsigned() { return next(); }
+
+cv::RNG_MT19937::operator int() { return (int)next();}
+
+cv::RNG_MT19937::operator float() { return next() * (1.f / 4294967296.f); }
+
+cv::RNG_MT19937::operator double()
+{
+    unsigned a = next() >> 5;
+    unsigned b = next() >> 6;
+    return (a * 67108864.0 + b) * (1.0 / 9007199254740992.0);
+}
+
+int cv::RNG_MT19937::uniform(int a, int b) { return (int)(next() % (b - a) + a); }
+
+float cv::RNG_MT19937::uniform(float a, float b) { return ((float)*this)*(b - a) + a; }
+
+double cv::RNG_MT19937::uniform(double a, double b) { return ((double)*this)*(b - a) + a; }
+
+unsigned cv::RNG_MT19937::operator ()(unsigned b) { return next() % b; }
+
+unsigned cv::RNG_MT19937::operator ()() { return next(); }
 
 /* End of file. */

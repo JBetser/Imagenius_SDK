@@ -64,7 +64,7 @@ private:
         int ts;
         int dist;
         TWeight weight;
-        uchar t; 
+        uchar t;
     };
     class Edge
     {
@@ -174,7 +174,7 @@ TWeight GCGraph<TWeight>::maxFlow()
             v->t = v->weight < 0;
         }
         else
-            v->parent = 0;        
+            v->parent = 0;
     }
     first = first->next;
     last->next = nilNode;
@@ -241,7 +241,7 @@ TWeight GCGraph<TWeight>::maxFlow()
 
         // find the minimum edge weight along the path
         minWeight = edgePtr[e0].weight;
-        assert( minWeight > 0 );
+        CV_Assert( minWeight > 0 );
         // k = 1: source tree, k = 0: destination tree
         for( int k = 1; k >= 0; k-- )
         {
@@ -251,11 +251,11 @@ TWeight GCGraph<TWeight>::maxFlow()
                     break;
                 weight = edgePtr[ei^k].weight;
                 minWeight = MIN(minWeight, weight);
-                assert( minWeight > 0 );
+                CV_Assert( minWeight > 0 );
             }
             weight = fabs(v->weight);
             minWeight = MIN(minWeight, weight);
-            assert( minWeight > 0 );
+            CV_Assert( minWeight > 0 );
         }
 
         // modify weights of the edges along the path and collect orphans
@@ -290,14 +290,14 @@ TWeight GCGraph<TWeight>::maxFlow()
         curr_ts++;
         while( !orphans.empty() )
         {
-            Vtx* v = orphans.back();
+            Vtx* v2 = orphans.back();
             orphans.pop_back();
 
             int d, minDist = INT_MAX;
             e0 = 0;
-            vt = v->t;
+            vt = v2->t;
 
-            for( ei = v->first; ei != 0; ei = edgePtr[ei].next )
+            for( ei = v2->first; ei != 0; ei = edgePtr[ei].next )
             {
                 if( edgePtr[ei^(vt^1)].weight == 0 )
                     continue;
@@ -344,16 +344,16 @@ TWeight GCGraph<TWeight>::maxFlow()
                 }
             }
 
-            if( (v->parent = e0) > 0 )
+            if( (v2->parent = e0) > 0 )
             {
-                v->ts = curr_ts;
-                v->dist = minDist;
+                v2->ts = curr_ts;
+                v2->dist = minDist;
                 continue;
             }
 
             /* no parent is found */
-            v->ts = 0;
-            for( ei = v->first; ei != 0; ei = edgePtr[ei].next )
+            v2->ts = 0;
+            for( ei = v2->first; ei != 0; ei = edgePtr[ei].next )
             {
                 u = vtxPtr+edgePtr[ei].dst;
                 ej = u->parent;
@@ -364,7 +364,7 @@ TWeight GCGraph<TWeight>::maxFlow()
                     u->next = nilNode;
                     last = last->next = u;
                 }
-                if( ej > 0 && vtxPtr+edgePtr[ej].dst == v )
+                if( ej > 0 && vtxPtr+edgePtr[ej].dst == v2 )
                 {
                     orphans.push_back(u);
                     u->parent = ORPHAN;
@@ -380,6 +380,6 @@ bool GCGraph<TWeight>::inSourceSegment( int i )
 {
     CV_Assert( i>=0 && i<(int)vtcs.size() );
     return vtcs[i].t == 0;
-};
+}
 
 #endif

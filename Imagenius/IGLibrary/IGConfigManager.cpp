@@ -834,11 +834,12 @@ void IGConfigManager::garbageFolder (const wchar_t *pcwFolder) const
 	if (!pcwFolder)
 		return;
 	wchar_t twGarbageFolder[_MAX_PATH];
+	int nRetry = 10;
 	do
-	{		
+	{
 		::_swprintf_p (twGarbageFolder, _MAX_PATH, L"%s@@GARBAGE@@(%d)", pcwFolder, rand());
 	}
-	while (_wrename (pcwFolder, twGarbageFolder) != 0);
+	while (_wrename (pcwFolder, twGarbageFolder) != 0 && (--nRetry > 0));
 }
 
 HRESULT IGConfigManager::loadDeepZoomConfig (HINSTANCE hInstance, LPCWSTR pcwDeepZoomConfigRes)

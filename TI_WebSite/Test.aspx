@@ -96,6 +96,13 @@
                     "Params": { "Param": force * 250000 }
                 });
             }
+
+            function OnPython(scriptId) {
+                scripts = ['test1', 'test2', 'test3']
+                IG.api("FilterImage", { "FilterId": IGIPFILTER_PYTHON,
+                    "Params": { "Script": scripts[scriptId-1] }
+                });
+            }
             function OnRandom() {
                 IG.api("FilterImage", { "FaceEffectId": IGIPFACE_EFFECT_RANDOM });
             }
@@ -103,7 +110,31 @@
                 IG.api("FilterImage", { "FaceEffectId": IGIPFACE_EFFECT_SHARPEN });
             }
             function OnCartoon() {
-                IG.api("FilterImage", { "FaceEffectId": IGIPFACE_EFFECT_CARTOON });
+                IG.api("FilterImage", { "FilterId": IGIPFILTER_CARTOON });
+            }
+            function OnPaper() {
+                IG.api("FilterImage", { "FilterId": IGIPFILTER_PAPER });
+            }
+            function OnWaterPainting() {
+                IG.api("FilterImage", { "FilterId": IGIPFILTER_WATERPAINTING });
+            }
+            function OnSepia() {
+                IG.api("FilterImage", { "FilterId": IGIPFILTER_SEPIA });
+            }
+            function OnHaloSepia() {
+                IG.api("FilterImage", { "FilterId": IGIPFILTER_HALOSEPIA });
+            }
+            function OnOilPainting() {
+                IG.api("FilterImage", { "FilterId": IGIPFILTER_OILPAINTING });
+            }
+            function OnBlackWhite() {
+                IG.api("FilterImage", { "FilterId": IGIPFILTER_BW });
+            }
+            function OnVintage() {
+                IG.api("FilterImage", { "FilterId": IGIPFILTER_VINTAGE });
+            }
+            function OnClay() {
+                IG.api("FilterImage", { "FilterId": IGIPFILTER_CLAY });
             }
         </script>
 	</head>
@@ -114,37 +145,30 @@
 			        <a onclick="OnOpenImage()" href="#">Load Image</a>
                     <input id="inputImage" type="text" value="couple1.jpg"/>
 			    </div>
-			    <div>
-			        <a onclick="OnHappy(1)" href="#">HAPPY1</a>
-                    <a onclick="OnSadness(1)" style="margin-left:6em" href="#">SAD1</a>
-                    <a onclick="OnAnger(1)" style="margin-left:6em" href="#">ANGRY1</a>                    
-                    <a onclick="OnSurprised(1)" style="margin-left:6em" href="#">SURPRISED1</a>
-                    <a onclick="OnUgly(1)" style="margin-left:6em" href="#">STUPID1</a>
-                    <a onclick="OnSick(1)" style="margin-left:6em" href="#">SICK1</a>
-                    <a onclick="OnHooligan(1)" style="margin-left:6em" href="#">HOOLIGAN1</a>                    
-			    </div>
                 <div>
-			        <a onclick="OnHappy(2)" href="#">HAPPY2</a>
-                    <a onclick="OnSadness(2)" style="margin-left:6em" href="#">SAD2</a>
-                    <a onclick="OnAnger(2)" style="margin-left:6em" href="#">ANGRY2</a>                    
-                    <a onclick="OnSurprised(2)" style="margin-left:6em" href="#">SURPRISED2</a>
-                    <a onclick="OnUgly(2)" style="margin-left:6em" href="#">STUPID2</a>
-                    <a onclick="OnSick(2)" style="margin-left:6em" href="#">SICK2</a>
-                    <a onclick="OnHooligan(2)" style="margin-left:6em" href="#">HOOLIGAN2</a>
-			    </div>
-                <div>
-			        <a onclick="OnHappy(3)" href="#">HAPPY3</a>
-                    <a onclick="OnSadness(3)" style="margin-left:6em" href="#">SAD3</a>
-                    <a onclick="OnAnger(3)" style="margin-left:6em" href="#">ANGRY3</a>                    
-                    <a onclick="OnSurprised(3)" style="margin-left:6em" href="#">SURPRISED3</a>
-                    <a onclick="OnUgly(3)" style="margin-left:6em" href="#">STUPID3</a>
-                    <a onclick="OnSick(3)" style="margin-left:6em" href="#">SICK3</a>
-                    <a onclick="OnHooligan(3)" style="margin-left:6em" href="#">HOOLIGAN3</a>                    
+			        <a onclick="OnHappy(3)" href="#">HAPPY</a>
+                    <a onclick="OnSadness(3)" style="margin-left:4em" href="#">SAD</a>
+                    <a onclick="OnAnger(3)" style="margin-left:4em" href="#">ANGRY</a>                    
+                    <a onclick="OnSurprised(3)" style="margin-left:4em" href="#">SURPRISED</a>
+                    <a onclick="OnUgly(3)" style="margin-left:4em" href="#">STUPID</a>
+                    <a onclick="OnSick(3)" style="margin-left:4em" href="#">SICK</a>
+                    <a onclick="OnHooligan(3)" style="margin-left:4em" href="#">HOOLIGAN</a>
+                    <a onclick="OnRandom()" style="margin-left:4em" href="#">RANDOM</a>                
 			    </div>                    
+                <div>  
+                    <a onclick="OnPython(3)" href="#">PYTHON</a>                     
+                    <a onclick="OnSharpen(100,100,100)" style="margin-left:4em" href="#">SHARPEN</a>
+                    <a onclick="OnCartoon()" style="margin-left:4em" href="#">CARTOON</a>
+                    <a onclick="OnPaper()" style="margin-left:4em" href="#">PAPER</a>
+                    <a onclick="OnWaterPainting()" style="margin-left:4em" href="#">WATER</a>
+                    <a onclick="OnOilPainting()" style="margin-left:4em" href="#">OIL</a>
+                    <a onclick="OnClay()" style="margin-left:4em" href="#">CLAY</a>
+                    <a onclick="OnVintage()" style="margin-left:4em" href="#">VINTAGE</a>                    
+                </div>
                 <div>
-                    <a onclick="OnRandom()" href="#">RANDOM</a>
-                    <a onclick="OnSharpen(100,100,100)" style="margin-left:6em" href="#">SHARPEN</a>
-                    <a onclick="OnCartoon()" style="margin-left:6em" href="#">CARTOON</a>
+                    <a onclick="OnBlackWhite()" href="#">BLACK WHITE</a>
+                    <a onclick="OnSepia()" style="margin-left:4em" href="#">SEPIA</a>
+                    <a onclick="OnHaloSepia()" style="margin-left:4em" href="#">H-SEPIA</a>                    
                 </div>
 			</div>	
 		</div>

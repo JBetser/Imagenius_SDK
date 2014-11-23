@@ -12,7 +12,7 @@ function IG_Seadragon() {
     this.initSeadragon = function () {
         // Start the viewer
         var viewer = new Seadragon.Viewer(IGWS_DEEPZOOM_DIV);
-        viewer.addEventListener("animationfinish", function(viewer) {
+        viewer.addEventListener("animationfinish", function (viewer) {
             var center = viewer.viewport.getCenter();
             var zoom = viewer.viewport.getZoom();
             if (!center.x || !center.y || !zoom)
@@ -63,6 +63,10 @@ function IG_Seadragon() {
             divDeepZoomPanel.Started = true;
             IG_seadragon.dzOpen();
             IG_internalOnResize();
+            if (divDeepZoomPanel.Viewer) {
+                if (divDeepZoomPanel.Viewer.viewport)
+                    divDeepZoomPanel.Viewer.viewport.goHome();
+            }
         });
 
         var divDeepZoomPanel = IGWS_DEEPZOOM_DIV;

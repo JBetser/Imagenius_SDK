@@ -42,7 +42,24 @@
 
 #include "precomp.hpp"
 
+#ifdef _MSC_VER
+# if _MSC_VER >= 1700
+#  pragma warning(disable:4447) // Disable warning 'main' signature found without threading model
+# endif
+#endif
+
 #if defined WIN32 || defined _WIN32 || defined WINCE
+#ifndef _WIN32_WINNT           // This is needed for the declaration of TryEnterCriticalSection in winbase.h with Visual Studio 2005 (and older?)
+  #define _WIN32_WINNT 0x0400  // http://msdn.microsoft.com/en-us/library/ms686857(VS.85).aspx
+#endif
+#include <windows.h>
+#if (_WIN32_WINNT >= 0x0602)
+  #include <synchapi.h>
+#endif
+#undef small
+#undef min
+#undef max
+#undef abs
 #include <tchar.h>
 #if defined _MSC_VER
   #if _MSC_VER >= 1400
@@ -67,6 +84,61 @@
     }
   #endif
 #endif
+
+#ifdef HAVE_WINRT
+#include <wrl/client.h>
+#ifndef __cplusplus_winrt
+#include <windows.storage.h>
+#pragma comment(lib, "runtimeobject.lib")
+#endif
+
+std::wstring GetTempPathWinRT()
+{
+#ifdef __cplusplus_winrt
+    return std::wstring(Windows::Storage::ApplicationData::Current->TemporaryFolder->Path->Data());
+#else
+    Microsoft::WRL::ComPtr<ABI::Windows::Storage::IApplicationDataStatics> appdataFactory;
+    Microsoft::WRL::ComPtr<ABI::Windows::Storage::IApplicationData> appdataRef;
+    Microsoft::WRL::ComPtr<ABI::Windows::Storage::IStorageFolder> storagefolderRef;
+    Microsoft::WRL::ComPtr<ABI::Windows::Storage::IStorageItem> storageitemRef;
+    HSTRING str;
+    HSTRING_HEADER hstrHead;
+    std::wstring wstr;
+    if (FAILED(WindowsCreateStringReference(RuntimeClass_Windows_Storage_ApplicationData,
+                                            (UINT32)wcslen(RuntimeClass_Windows_Storage_ApplicationData), &hstrHead, &str)))
+        return wstr;
+    if (FAILED(RoGetActivationFactory(str, IID_PPV_ARGS(appdataFactory.ReleaseAndGetAddressOf()))))
+        return wstr;
+    if (FAILED(appdataFactory->get_Current(appdataRef.ReleaseAndGetAddressOf())))
+        return wstr;
+    if (FAILED(appdataRef->get_TemporaryFolder(storagefolderRef.ReleaseAndGetAddressOf())))
+        return wstr;
+    if (FAILED(storagefolderRef.As(&storageitemRef)))
+        return wstr;
+    str = NULL;
+    if (FAILED(storageitemRef->get_Path(&str)))
+        return wstr;
+    wstr = WindowsGetStringRawBuffer(str, NULL);
+    WindowsDeleteString(str);
+    return wstr;
+#endif
+}
+
+std::wstring GetTempFileNameWinRT(std::wstring prefix)
+{
+    wchar_t guidStr[40];
+    GUID g;
+    CoCreateGuid(&g);
+    wchar_t* mask = L"%08x_%04x_%04x_%02x%02x_%02x%02x%02x%02x%02x%02x";
+    swprintf(&guidStr[0], sizeof(guidStr)/sizeof(wchar_t), mask,
+             g.Data1, g.Data2, g.Data3, UINT(g.Data4[0]), UINT(g.Data4[1]),
+             UINT(g.Data4[2]), UINT(g.Data4[3]), UINT(g.Data4[4]),
+             UINT(g.Data4[5]), UINT(g.Data4[6]), UINT(g.Data4[7]));
+
+    return prefix + std::wstring(guidStr);
+}
+
+#endif
 #else
 #include <pthread.h>
 #include <sys/time.h>
@@ -85,12 +157,27 @@
 
 #include <stdarg.h>
 
+#if defined __linux__ || defined __APPLE__ || defined __EMSCRIPTEN__
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/types.h>
+#if defined ANDROID
+#include <sys/sysconf.h>
+#else
+#include <sys/sysctl.h>
+#endif
+#endif
+
+#ifdef ANDROID
+# include <android/log.h>
+#endif
+
 namespace cv
 {
 
 Exception::Exception() { code = 0; line = 0; }
 
-Exception::Exception(int _code, const string& _err, const string& _func, const string& _file, int _line)
+Exception::Exception(int _code, const String& _err, const String& _func, const String& _file, int _line)
 : code(_code), err(_err), func(_func), file(_file), line(_line)
 {
     formatMessage();
@@ -100,7 +187,7 @@ Exception::~Exception() throw() {}
 
 /*!
  \return the error description and the context as a text string.
- */ 
+ */
 const char* Exception::what() const throw() { return msg.c_str(); }
 
 void Exception::formatMessage()
@@ -110,7 +197,7 @@ void Exception::formatMessage()
     else
         msg = format("%s:%d: error: (%d) %s\n", file.c_str(), line, code, err.c_str());
 }
-    
+
 struct HWFeatures
 {
     enum { MAX_FEATURE = CV_HARDWARE_MAX_FEATURE };
@@ -163,7 +250,7 @@ struct HWFeatures
             f.have[CV_CPU_SSE4_1] = (cpuid_data[2] & (1<<19)) != 0;
             f.have[CV_CPU_SSE4_2] = (cpuid_data[2] & (1<<20)) != 0;
             f.have[CV_CPU_POPCNT] = (cpuid_data[2] & (1<<23)) != 0;
-            f.have[CV_CPU_AVX]    = (cpuid_data[2] & (1<<28)) != 0;
+            f.have[CV_CPU_AVX]    = (((cpuid_data[2] & (1<<28)) != 0)&&((cpuid_data[2] & (1<<27)) != 0));//OS uses XSAVE_XRSTORE and CPU support AVX
         }
 
         return f;
@@ -182,20 +269,27 @@ bool checkHardwareSupport(int feature)
     return currentFeatures->have[feature];
 }
 
-#ifdef HAVE_IPP
-volatile bool useOptimizedFlag = true;
 
+volatile bool useOptimizedFlag = true;
+#ifdef HAVE_IPP
 struct IPPInitializer
 {
-    IPPInitializer(void) { ippStaticInit(); }
+    IPPInitializer(void)
+    {
+#if IPP_VERSION_MAJOR >= 8
+        ippInit();
+#else
+        ippStaticInit();
+#endif
+    }
 };
 
 IPPInitializer ippInitializer;
-#else
-volatile bool useOptimizedFlag = false;
 #endif
 
-volatile bool USE_SSE2 = false;
+volatile bool USE_SSE2 = featuresEnabled.have[CV_CPU_SSE2];
+volatile bool USE_SSE4_2 = featuresEnabled.have[CV_CPU_SSE4_2];
+volatile bool USE_AVX = featuresEnabled.have[CV_CPU_AVX];
 
 void setUseOptimized( bool flag )
 {
@@ -303,94 +397,127 @@ int64 getCPUTickCount(void)
 
 #else
 
-#ifdef HAVE_IPP
-int64 getCPUTickCount(void)
-{
-    return ippGetCpuClocks();
-}
-#else
+//#ifdef HAVE_IPP
+//int64 getCPUTickCount(void)
+//{
+//    return ippGetCpuClocks();
+//}
+//#else
 int64 getCPUTickCount(void)
 {
     return getTickCount();
 }
-#endif
+//#endif
 
 #endif
 
-
-static int numThreads = 0;
-static int numProcs   = 0;
-
-int getNumThreads(void)
+const String& getBuildInformation()
 {
-    if( !numProcs )
-        setNumThreads(0);
-    return numThreads;
+    static String build_info =
+#include "version_string.inc"
+    ;
+    return build_info;
 }
 
-void setNumThreads( int
-#ifdef _OPENMP
-                             threads
-#endif
-                  )
+String format( const char* fmt, ... )
 {
-    if( !numProcs )
+    AutoBuffer<char, 1024> buf;
+
+    for ( ; ; )
     {
-#ifdef _OPENMP
-        numProcs = omp_get_num_procs();
-#else
-        numProcs = 1;
+        va_list va;
+        va_start(va, fmt);
+        int bsize = static_cast<int>(buf.size()),
+                len = vsnprintf((char *)buf, bsize, fmt, va);
+        va_end(va);
+
+        if (len < 0 || len >= bsize)
+        {
+            buf.resize(std::max(bsize << 1, len + 1));
+            continue;
+        }
+        return String((char *)buf, len);
+    }
+}
+
+String tempfile( const char* suffix )
+{
+    String fname;
+#ifndef HAVE_WINRT
+    const char *temp_dir = getenv("OPENCV_TEMP_PATH");
 #endif
+
+#if defined WIN32 || defined _WIN32
+#ifdef HAVE_WINRT
+    RoInitialize(RO_INIT_MULTITHREADED);
+    std::wstring temp_dir = L"";
+    const wchar_t* opencv_temp_dir = GetTempPathWinRT().c_str();
+    if (opencv_temp_dir)
+        temp_dir = std::wstring(opencv_temp_dir);
+
+    std::wstring temp_file;
+    temp_file = GetTempFileNameWinRT(L"ocv");
+    if (temp_file.empty())
+        return String();
+
+    temp_file = temp_dir + std::wstring(L"\\") + temp_file;
+    DeleteFileW(temp_file.c_str());
+
+    char aname[MAX_PATH];
+    size_t copied = wcstombs(aname, temp_file.c_str(), MAX_PATH);
+    CV_Assert((copied != MAX_PATH) && (copied != (size_t)-1));
+    fname = String(aname);
+    RoUninitialize();
+#else
+    char temp_dir2[MAX_PATH] = { 0 };
+    char temp_file[MAX_PATH] = { 0 };
+
+    if (temp_dir == 0 || temp_dir[0] == 0)
+    {
+        ::GetTempPathA(sizeof(temp_dir2), temp_dir2);
+        temp_dir = temp_dir2;
+    }
+    if(0 == ::GetTempFileNameA(temp_dir, "ocv", 0, temp_file))
+        return String();
+
+    DeleteFileA(temp_file);
+
+    fname = temp_file;
+#endif
+# else
+#  ifdef ANDROID
+    //char defaultTemplate[] = "/mnt/sdcard/__opencv_temp.XXXXXX";
+    char defaultTemplate[] = "/data/local/tmp/__opencv_temp.XXXXXX";
+#  else
+    char defaultTemplate[] = "/tmp/__opencv_temp.XXXXXX";
+#  endif
+
+    if (temp_dir == 0 || temp_dir[0] == 0)
+        fname = defaultTemplate;
+    else
+    {
+        fname = temp_dir;
+        char ech = fname[fname.size() - 1];
+        if(ech != '/' && ech != '\\')
+            fname = fname + "/";
+        fname = fname + "__opencv_temp.XXXXXX";
     }
 
-#ifdef _OPENMP
-    if( threads <= 0 )
-        threads = numProcs;
-    else
-        threads = MIN( threads, numProcs );
+    const int fd = mkstemp((char*)fname.c_str());
+    if (fd == -1) return String();
 
-    numThreads = threads;
-#else
-    numThreads = 1;
-#endif
-}
+    close(fd);
+    remove(fname.c_str());
+# endif
 
-
-int getThreadNum(void)
-{
-#ifdef _OPENMP
-    return omp_get_thread_num();
-#else
-    return 0;
-#endif
-}
-
-
-string format( const char* fmt, ... )
-{
-    char buf[1 << 16];
-    va_list args;
-    va_start( args, fmt );
-    vsprintf( buf, fmt, args );
-    return string(buf);
-}
-
-string tempfile( const char* suffix )
-{
-    char buf[L_tmpnam];
-    char* name = 0;
-#if ANDROID
-    strcpy(buf, "/sdcard/__opencv_temp_XXXXXX");
-    name = mktemp(buf);
-#else
-    name = tmpnam(buf);
-#endif
-    if (*name == '\\')
-        ++name;
-    string n(name);
-    if (suffix != 0)
-        n += (n[n.size()-1] == '.' && suffix[0] == '.' ? suffix + 1 : suffix);
-    return n;
+    if (suffix)
+    {
+        if (suffix[0] != '.')
+            return fname + "." + suffix;
+        else
+            return fname + suffix;
+    }
+    return fname;
 }
 
 static CvErrorCallback customErrorCallback = 0;
@@ -419,6 +546,9 @@ void error( const Exception& exc )
             exc.func.c_str() : "unknown function", exc.file.c_str(), exc.line );
         fprintf( stderr, "%s\n", buf );
         fflush( stderr );
+#  ifdef __ANDROID__
+        __android_log_print(ANDROID_LOG_ERROR, "cv::error()", "%s", buf);
+#  endif
     }
 
     if(breakOnError)
@@ -428,6 +558,11 @@ void error( const Exception& exc )
     }
 
     throw exc;
+}
+
+void error(int _code, const String& _err, const char* _func, const char* _file, int _line)
+{
+    error(cv::Exception(_code, _err, _func, _file, _line));
 }
 
 CvErrorCallback
@@ -445,40 +580,6 @@ redirectError( CvErrorCallback errCallback, void* userdata, void** prevUserdata)
 }
 
 }
-
-/*CV_IMPL int
-cvGuiBoxReport( int code, const char *func_name, const char *err_msg,
-                const char *file, int line, void* )
-{
-#if (!defined WIN32 && !defined _WIN32) || defined WINCE
-    return cvStdErrReport( code, func_name, err_msg, file, line, 0 );
-#else
-    if( code != CV_StsBackTrace && code != CV_StsAutoTrace )
-    {
-        size_t msg_len = strlen(err_msg ? err_msg : "") + 1024;
-        char* message = (char*)alloca(msg_len);
-        char title[100];
-
-        wsprintf( message, "%s (%s)\nin function %s, %s(%d)\n\n"
-                  "Press \"Abort\" to terminate application.\n"
-                  "Press \"Retry\" to debug (if the app is running under debugger).\n"
-                  "Press \"Ignore\" to continue (this is not safe).\n",
-                  cvErrorStr(code), err_msg ? err_msg : "no description",
-                  func_name, file, line );
-
-        wsprintf( title, "OpenCV GUI Error Handler" );
-
-        int answer = MessageBox( NULL, message, title, MB_ICONERROR|MB_ABORTRETRYIGNORE|MB_SYSTEMMODAL );
-
-        if( answer == IDRETRY )
-        {
-            CV_DBG_BREAK();
-        }
-        return answer != IDIGNORE;
-    }
-    return 0;
-#endif
-}*/
 
 CV_IMPL int cvCheckHardwareSupport(int feature)
 {
@@ -502,22 +603,6 @@ CV_IMPL double cvGetTickFrequency(void)
 {
     return cv::getTickFrequency()*1e-6;
 }
-
-CV_IMPL void cvSetNumThreads(int nt)
-{
-    cv::setNumThreads(nt);
-}
-
-CV_IMPL int cvGetNumThreads()
-{
-    return cv::getNumThreads();
-}
-
-CV_IMPL int cvGetThreadNum()
-{
-    return cv::getThreadNum();
-}
-
 
 CV_IMPL CvErrorCallback
 cvRedirectError( CvErrorCallback errCallback, void* userdata, void** prevUserdata)
@@ -583,9 +668,10 @@ CV_IMPL const char* cvErrorStr( int status )
     case CV_StsNotImplemented :      return "The function/feature is not implemented";
     case CV_StsBadMemBlock :         return "Memory block has been corrupted";
     case CV_StsAssert :              return "Assertion failed";
-    case CV_GpuNotSupported : return "No GPU support";
-    case CV_GpuApiCallError : return "Gpu Api call";
-    case CV_GpuNppCallError : return "Npp Api call";
+    case CV_GpuNotSupported :        return "No CUDA support";
+    case CV_GpuApiCallError :        return "Gpu API call";
+    case CV_OpenGlNotSupported :     return "No OpenGL support";
+    case CV_OpenGlApiCallError :     return "OpenGL API call";
     };
 
     sprintf(buf, "Unknown %s code %d", status >= 0 ? "status":"error", status);
@@ -651,136 +737,355 @@ cvErrorFromIppStatus( int status )
     }
 }
 
-static CvModuleInfo cxcore_info = { 0, "cxcore", CV_VERSION, 0 };
-
-CvModuleInfo* CvModule::first = 0, *CvModule::last = 0;
-
-CvModule::CvModule( CvModuleInfo* _info )
-{
-    cvRegisterModule( _info );
-    info = last;
+namespace cv {
+bool __termination = false;
 }
 
-CvModule::~CvModule(void)
+namespace cv
 {
-    if( info )
+
+#if defined WIN32 || defined _WIN32 || defined WINCE
+
+struct Mutex::Impl
+{
+    Impl()
     {
-        CvModuleInfo* p = first;
-        for( ; p != 0 && p->next != info; p = p->next )
-            ;
-
-        if( p )
-            p->next = info->next;
-
-        if( first == info )
-            first = info->next;
-
-        if( last == info )
-            last = p;
-
-        free( info );
-        info = 0;
+#if (_WIN32_WINNT >= 0x0600)
+        ::InitializeCriticalSectionEx(&cs, 1000, 0);
+#else
+        ::InitializeCriticalSection(&cs);
+#endif
+        refcount = 1;
     }
-}
+    ~Impl() { DeleteCriticalSection(&cs); }
 
-CV_IMPL int
-cvRegisterModule( const CvModuleInfo* module )
+    void lock() { EnterCriticalSection(&cs); }
+    bool trylock() { return TryEnterCriticalSection(&cs) != 0; }
+    void unlock() { LeaveCriticalSection(&cs); }
+
+    CRITICAL_SECTION cs;
+    int refcount;
+};
+
+#else
+
+struct Mutex::Impl
 {
-    CV_Assert( module != 0 && module->name != 0 && module->version != 0 );
-
-    size_t name_len = strlen(module->name);
-    size_t version_len = strlen(module->version);
-
-    CvModuleInfo* module_copy = (CvModuleInfo*)malloc( sizeof(*module_copy) +
-                                name_len + 1 + version_len + 1 );
-
-    *module_copy = *module;
-    module_copy->name = (char*)(module_copy + 1);
-    module_copy->version = (char*)(module_copy + 1) + name_len + 1;
-
-    memcpy( (void*)module_copy->name, module->name, name_len + 1 );
-    memcpy( (void*)module_copy->version, module->version, version_len + 1 );
-    module_copy->next = 0;
-
-    if( CvModule::first == 0 )
-        CvModule::first = module_copy;
-    else
-        CvModule::last->next = module_copy;
-
-    CvModule::last = module_copy;
-
-    return 0;
-}
-
-CvModule cxcore_module( &cxcore_info );
-
-CV_IMPL void
-cvGetModuleInfo( const char* name, const char **version, const char **plugin_list )
-{
-    static char joint_verinfo[1024]   = "";
-    static char plugin_list_buf[1024] = "";
-
-    if( version )
-        *version = 0;
-
-    if( plugin_list )
-        *plugin_list = 0;
-
-    CvModuleInfo* module;
-
-    if( version )
+    Impl()
     {
-        if( name )
+        pthread_mutexattr_t attr;
+        pthread_mutexattr_init(&attr);
+        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+        pthread_mutex_init(&mt, &attr);
+        pthread_mutexattr_destroy(&attr);
+
+        refcount = 1;
+    }
+    ~Impl() { pthread_mutex_destroy(&mt); }
+
+    void lock() { pthread_mutex_lock(&mt); }
+    bool trylock() { return pthread_mutex_trylock(&mt) == 0; }
+    void unlock() { pthread_mutex_unlock(&mt); }
+
+    pthread_mutex_t mt;
+    int refcount;
+};
+
+#endif
+
+Mutex::Mutex()
+{
+    impl = new Mutex::Impl;
+}
+
+Mutex::~Mutex()
+{
+    if( CV_XADD(&impl->refcount, -1) == 1 )
+        delete impl;
+    impl = 0;
+}
+
+Mutex::Mutex(const Mutex& m)
+{
+    impl = m.impl;
+    CV_XADD(&impl->refcount, 1);
+}
+
+Mutex& Mutex::operator = (const Mutex& m)
+{
+    CV_XADD(&m.impl->refcount, 1);
+    if( CV_XADD(&impl->refcount, -1) == 1 )
+        delete impl;
+    impl = m.impl;
+    return *this;
+}
+
+void Mutex::lock() { impl->lock(); }
+void Mutex::unlock() { impl->unlock(); }
+bool Mutex::trylock() { return impl->trylock(); }
+
+
+//////////////////////////////// thread-local storage ////////////////////////////////
+
+class TLSStorage
+{
+    std::vector<void*> tlsData_;
+public:
+    TLSStorage() { tlsData_.reserve(16); }
+    ~TLSStorage();
+    inline void* getData(int key) const
+    {
+        CV_DbgAssert(key >= 0);
+        return (key < (int)tlsData_.size()) ? tlsData_[key] : NULL;
+    }
+    inline void setData(int key, void* data)
+    {
+        CV_DbgAssert(key >= 0);
+        if (key >= (int)tlsData_.size())
         {
-            size_t i, name_len = strlen(name);
+            tlsData_.resize(key + 1, NULL);
+        }
+        tlsData_[key] = data;
+    }
 
-            for( module = CvModule::first; module != 0; module = module->next )
-            {
-                if( strlen(module->name) == name_len )
-                {
-                    for( i = 0; i < name_len; i++ )
-                    {
-                        int c0 = toupper(module->name[i]), c1 = toupper(name[i]);
-                        if( c0 != c1 )
-                            break;
-                    }
-                    if( i == name_len )
-                        break;
-                }
-            }
-            if( !module )
-                CV_Error( CV_StsObjectNotFound, "The module is not found" );
+    inline static TLSStorage* get();
+};
 
-            *version = module->version;
+#ifdef WIN32
+#ifdef _MSC_VER
+#pragma warning(disable:4505) // unreferenced local function has been removed
+#endif
+
+#ifdef HAVE_WINRT
+    // using C++11 thread attribute for local thread data
+    static __declspec( thread ) TLSStorage* g_tlsdata = NULL;
+
+    static void deleteThreadData()
+    {
+        if (g_tlsdata)
+        {
+            delete g_tlsdata;
+            g_tlsdata = NULL;
+        }
+    }
+
+    inline TLSStorage* TLSStorage::get()
+    {
+        if (!g_tlsdata)
+        {
+            g_tlsdata = new TLSStorage;
+        }
+        return g_tlsdata;
+    }
+#else
+#ifdef WINCE
+#   define TLS_OUT_OF_INDEXES ((DWORD)0xFFFFFFFF)
+#endif
+    static DWORD tlsKey = TLS_OUT_OF_INDEXES;
+
+    static void deleteThreadData()
+    {
+        if(tlsKey != TLS_OUT_OF_INDEXES)
+        {
+            delete (TLSStorage*)TlsGetValue(tlsKey);
+            TlsSetValue(tlsKey, NULL);
+        }
+    }
+
+    inline TLSStorage* TLSStorage::get()
+    {
+        if (tlsKey == TLS_OUT_OF_INDEXES)
+        {
+            tlsKey = TlsAlloc();
+            CV_Assert(tlsKey != TLS_OUT_OF_INDEXES);
+        }
+        TLSStorage* d = (TLSStorage*)TlsGetValue(tlsKey);
+        if (!d)
+        {
+            d = new TLSStorage;
+            TlsSetValue(tlsKey, d);
+        }
+        return d;
+    }
+#endif //HAVE_WINRT
+
+#if defined CVAPI_EXPORTS && defined WIN32 && !defined WINCE
+#ifdef HAVE_WINRT
+    #pragma warning(disable:4447) // Disable warning 'main' signature found without threading model
+#endif
+
+extern "C"
+BOOL WINAPI DllMain(HINSTANCE, DWORD fdwReason, LPVOID lpReserved)
+{
+    if (fdwReason == DLL_THREAD_DETACH || fdwReason == DLL_PROCESS_DETACH)
+    {
+        if (lpReserved != NULL) // called after ExitProcess() call
+        {
+            cv::__termination = true;
         }
         else
         {
-            char* ptr = joint_verinfo;
-
-            for( module = CvModule::first; module != 0; module = module->next )
-            {
-                sprintf( ptr, "%s: %s%s", module->name, module->version, module->next ? ", " : "" );
-                ptr += strlen(ptr);
-            }
-
-            *version = joint_verinfo;
+            // Not allowed to free resources if lpReserved is non-null
+            // http://msdn.microsoft.com/en-us/library/windows/desktop/ms682583.aspx
+            cv::deleteThreadAllocData();
+            cv::deleteThreadData();
         }
-    }
-
-    if( plugin_list )
-        *plugin_list = plugin_list_buf;
-}
-
-#if defined BUILD_SHARED_LIBS && defined CVAPI_EXPORTS && defined WIN32 && !defined WINCE
-BOOL WINAPI DllMain( HINSTANCE, DWORD  fdwReason, LPVOID )
-{
-    if( fdwReason == DLL_THREAD_DETACH || fdwReason == DLL_PROCESS_DETACH )
-    {
-        cv::deleteThreadAllocData();
-        cv::deleteThreadRNGData();
     }
     return TRUE;
 }
 #endif
+
+#else
+    static pthread_key_t tlsKey = 0;
+    static pthread_once_t tlsKeyOnce = PTHREAD_ONCE_INIT;
+
+    static void deleteTLSStorage(void* data)
+    {
+        delete (TLSStorage*)data;
+    }
+
+    static void makeKey()
+    {
+        int errcode = pthread_key_create(&tlsKey, deleteTLSStorage);
+        CV_Assert(errcode == 0);
+    }
+
+    inline TLSStorage* TLSStorage::get()
+    {
+        pthread_once(&tlsKeyOnce, makeKey);
+        TLSStorage* d = (TLSStorage*)pthread_getspecific(tlsKey);
+        if( !d )
+        {
+            d = new TLSStorage;
+            pthread_setspecific(tlsKey, d);
+        }
+        return d;
+    }
+#endif
+
+class TLSContainerStorage
+{
+    cv::Mutex mutex_;
+    std::vector<TLSDataContainer*> tlsContainers_;
+public:
+    TLSContainerStorage() { }
+    ~TLSContainerStorage()
+    {
+        for (size_t i = 0; i < tlsContainers_.size(); i++)
+        {
+            CV_DbgAssert(tlsContainers_[i] == NULL); // not all keys released
+            tlsContainers_[i] = NULL;
+        }
+    }
+
+    int allocateKey(TLSDataContainer* pContainer)
+    {
+        cv::AutoLock lock(mutex_);
+        tlsContainers_.push_back(pContainer);
+        return (int)tlsContainers_.size() - 1;
+    }
+    void releaseKey(int id, TLSDataContainer* pContainer)
+    {
+        cv::AutoLock lock(mutex_);
+        CV_Assert(tlsContainers_[id] == pContainer);
+        tlsContainers_[id] = NULL;
+        // currently, we don't go into thread's TLSData and release data for this key
+    }
+
+    void destroyData(int key, void* data)
+    {
+        cv::AutoLock lock(mutex_);
+        TLSDataContainer* k = tlsContainers_[key];
+        if (!k)
+            return;
+        try
+        {
+            k->deleteDataInstance(data);
+        }
+        catch (...)
+        {
+            CV_DbgAssert(k == NULL); // Debug this!
+        }
+    }
+};
+
+// This is a wrapper function that will ensure 'tlsContainerStorage' is constructed on first use.
+// For more information: http://www.parashift.com/c++-faq/static-init-order-on-first-use.html
+static TLSContainerStorage& getTLSContainerStorage()
+{
+    static TLSContainerStorage *tlsContainerStorage = new TLSContainerStorage();
+    return *tlsContainerStorage;
+}
+
+TLSDataContainer::TLSDataContainer()
+    : key_(-1)
+{
+    key_ = getTLSContainerStorage().allocateKey(this);
+}
+
+TLSDataContainer::~TLSDataContainer()
+{
+    getTLSContainerStorage().releaseKey(key_, this);
+    key_ = -1;
+}
+
+void* TLSDataContainer::getData() const
+{
+    CV_Assert(key_ >= 0);
+    TLSStorage* tlsData = TLSStorage::get();
+    void* data = tlsData->getData(key_);
+    if (!data)
+    {
+        data = this->createDataInstance();
+        CV_DbgAssert(data != NULL);
+        tlsData->setData(key_, data);
+    }
+    return data;
+}
+
+TLSStorage::~TLSStorage()
+{
+    for (int i = 0; i < (int)tlsData_.size(); i++)
+    {
+        void*& data = tlsData_[i];
+        if (data)
+        {
+            getTLSContainerStorage().destroyData(i, data);
+            data = NULL;
+        }
+    }
+    tlsData_.clear();
+}
+
+TLSData<CoreTLSData> coreTlsData;
+
+namespace ipp
+{
+
+static int ippStatus = 0; // 0 - all is ok, -1 - IPP functions failed
+static const char * funcname = NULL, * filename = NULL;
+static int linen = 0;
+
+void setIppStatus(int status, const char * const _funcname, const char * const _filename, int _line)
+{
+    ippStatus = status;
+    funcname = _funcname;
+    filename = _filename;
+    linen = _line;
+}
+
+int getIppStatus()
+{
+    return ippStatus;
+}
+
+String getIppErrorLocation()
+{
+    return format("%s:%d %s", filename ? filename : "", linen, funcname ? funcname : "");
+}
+
+} // namespace ipp
+
+} // namespace cv
 
 /* End of file. */

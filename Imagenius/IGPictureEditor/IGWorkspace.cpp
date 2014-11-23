@@ -473,6 +473,7 @@ STDMETHODIMP CIGWorkspace::DisconnectUser (VARIANT_BOOL bSaveAllToTemp)
 		}
 		RemoveFrame (0);
 	}
+	m_spFrameMgr->Reset();
 	m_spConfigMgr->DisconnectUser();
 	return S_OK;
 }
@@ -536,6 +537,17 @@ STDMETHODIMP CIGWorkspace::GetActiveFrameId (BSTR *p_bstrId)
 	return S_OK;
 }
 
+STDMETHODIMP CIGWorkspace::GetActiveFrameReqGuid (BSTR *p_bstrReqGuid)
+{
+	std::wstring wsId;
+	IGLibrary::IGSmartPtr <IGLibrary::IGFrame> spFrame;
+	if (m_spFrameMgr->GetFrame (m_spFrameMgr->GetNbFrames() - 1, spFrame))
+		wsId = spFrame->GetLastReqGuid();
+	CComBSTR spbstrId (wsId.c_str());
+	*p_bstrReqGuid = spbstrId.Detach();
+	return S_OK;
+}
+
 STDMETHODIMP CIGWorkspace::GetFrameNames (BSTR *p_bstrNames)
 {
 	std::wstring wsNames;
@@ -553,6 +565,25 @@ STDMETHODIMP CIGWorkspace::GetFrameNames (BSTR *p_bstrNames)
 	}
 	CComBSTR spbstrNames (wsNames.c_str());
 	*p_bstrNames = spbstrNames.Detach();
+	return S_OK;
+}
+
+STDMETHODIMP CIGWorkspace::GetFrameReqGuids (BSTR *p_bstrReqGuids)
+{
+	std::wstring wsReqGuids;
+	for (int nIterItem = 0; nIterItem < m_spFrameMgr->GetNbFrames(); nIterItem++)
+	{
+		IGLibrary::IGSmartPtr <IGLibrary::IGFrame> spFrame;
+		if (m_spFrameMgr->GetFrame (nIterItem, spFrame))
+		{
+			std::wstring wsLastReqGuids = spFrame->GetLastReqGuid();
+			wsReqGuids += wsLastReqGuids;
+			if (nIterItem < m_spFrameMgr->GetNbFrames() - 1)
+				wsReqGuids += L",";
+		}
+	}
+	CComBSTR spbstrReqGuids (wsReqGuids.c_str());
+	*p_bstrReqGuids = spbstrReqGuids.Detach();
 	return S_OK;
 }
 

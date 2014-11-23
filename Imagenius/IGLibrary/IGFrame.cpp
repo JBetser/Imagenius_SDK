@@ -801,6 +801,11 @@ HRESULT IGFrame::InternalSave (const TCHAR* filename, DWORD imagetype, bool bClo
 	return (Save (filename, imagetype) == 1) ? S_OK : E_FAIL;
 }
 
+bool IGFrame::Resample (long newx, long newy)
+{
+	return CxImage::Resample (newx, newy);
+}
+
 HRESULT IGFrame::Resample (long newx, long newy, IGFRAMEPROPERTY_STRETCHING_ENUM eStretchMode)
 {
 	// Request thread access
@@ -884,7 +889,7 @@ HRESULT IGFrame::resampleBicubic (long newx, long newy)
 		pCurrentLayer = GetLayer (idxLayer);
 		int nCurLayerWidth = (int)((float)pCurrentLayer->head.biWidth * fRatioX);
 		int nCurLayerHeight = (int)((float)pCurrentLayer->head.biHeight * fRatioY);
-		if (pCurrentLayer->Resample2 (nCurLayerWidth, nCurLayerHeight))
+		if (pCurrentLayer->Resample (nCurLayerWidth, nCurLayerHeight))
 		{
 			pCurrentLayer->info.xOffset = (int)(fRatioX * (float)pCurrentLayer->info.xOffset);
 			pCurrentLayer->info.yOffset = (int)(fRatioY * (float)pCurrentLayer->info.yOffset);
@@ -1156,8 +1161,17 @@ bool IGFrame::StartFaceEffect (int nFaceEffectId, COLORREF col1, COLORREF col2, 
 		pImage1 = new CxImage(imageFile1, GetImageType(imageFile1));
 	if (imageFile2 != NULL)
 		pImage2 = new CxImage(imageFile1, GetImageType(imageFile2));
-	IGIPFilter *pFilterImageProcessing = new IGIPFilter (this, 
-		new IGIPFaceEffectMessage ((IGIPFACE_EFFECT)nFaceEffectId, col1, col2, dParam1, dParam2, dParam3, pImage1, pImage2));
+	IGIPFaceEffectMessage *pMessage = NULL;
+	switch(nFaceEffectId){
+	case IGIPFACE_EFFECT_REDEYE:
+	case IGIPFACE_EFFECT_EYE_COLOR:
+		pMessage = new IGIPFaceEffectMessage ((IGIPFACE_EFFECT)nFaceEffectId, tr1::bind(&IndexIris,tr1::placeholders::_1), col1, col2, dParam1, dParam2, dParam3, pImage1, pImage2);
+		break;
+	default:
+		pMessage = new IGIPFaceEffectMessage ((IGIPFACE_EFFECT)nFaceEffectId, col1, col2, dParam1, dParam2, dParam3, pImage1, pImage2);
+		break;
+	}
+	IGIPFilter *pFilterImageProcessing = new IGIPFilter (this, pMessage);
 	return pFilterImageProcessing->Start();
 }
 

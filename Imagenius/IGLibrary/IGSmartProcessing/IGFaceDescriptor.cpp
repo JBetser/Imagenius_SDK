@@ -13,7 +13,6 @@
 #define FACEDETECTION_DIRECTORY	L"C:\\Imagenius\\IGServer\\IGFaceDetector\\"
 #endif
 #define FACEDETECTION_COMMAND	L"IGFaceDetector.exe"
-#define FACEDETECTIONCLIENT_DLL   L"IGFaceDetectorIceClient.dll"
 #define FACEDETECTOR_OUTPUT_FILE L"Result"
 #define FACEDETECTOR_ROTATION_INTERVAL	15
 
@@ -27,10 +26,6 @@ IGFaceDescriptor::IGFaceDescriptor() :
 	m_nWidth (-1),
 	m_nHeight (-1)
 {
-	wstring wsFaceDetectClient (FACEDETECTION_DIRECTORY);
-	wsFaceDetectClient += FACEDETECTIONCLIENT_DLL;
-	HMODULE mod = ::LoadLibraryW (wsFaceDetectClient.c_str());
-	m_pDetectFaces = (PDETECTFACES)::GetProcAddress (mod, "iceClientDetectFaces");
 }
 
 IGFaceDescriptor::IGFaceDescriptor(const IGSmartLayer& smartLayer, const std::wstring& wsDescriptor) : 
@@ -39,11 +34,6 @@ IGFaceDescriptor::IGFaceDescriptor(const IGSmartLayer& smartLayer, const std::ws
 	m_nWidth (-1),
 	m_nHeight (-1)
 {
-	wstring wsFaceDetectClient (FACEDETECTION_DIRECTORY);
-	wsFaceDetectClient += FACEDETECTIONCLIENT_DLL;
-	m_pDetectFaces = (PDETECTFACES)::GetProcAddress(GetModuleHandle(wsFaceDetectClient.c_str()), 
-													"iceClientDetectFaces");
-
 	wstring wsCurDescriptor (wsDescriptor);
 	int nIdx = wsCurDescriptor.find (L"&");
 	m_nWidth = ::_wtoi (wsCurDescriptor.substr (0, nIdx).c_str());
@@ -112,7 +102,7 @@ PROCESS_INFORMATION IGFaceDescriptor::launchDetectProcess(const wstring& wsPictu
 
 void IGFaceDescriptor::launchDetectIce(const wstring& wsPictureId, const wstring& wsPictureName, int nRot)
 {
-	m_pDetectFaces (wsPictureId.c_str(), wsPictureName.c_str(), nRot);
+	iceClientDetectFaces (wsPictureId.c_str(), wsPictureName.c_str(), nRot);
 }
 
 void IGFaceDescriptor::getPermutations (int offset, vector <Face>& combinations, list <FaceList>& lFl) {
@@ -252,7 +242,7 @@ int IGFaceDescriptor::Detect(int nLayerWidth, int nLayerHeight, IGSmartLayer& sa
 			sampledLayerScale.Clear(255);
 			int nSampledScaleWidth = sampledLayerScale.GetWidth();
 			int nSampledScaleHeight = (int)(fRatio * (float)sampledLayerScale.GetHeight());
-			if (sampledLayerScale.Resample2 (nSampledScaleWidth, nSampledScaleHeight)){
+			if (sampledLayerScale.Resample (nSampledScaleWidth, nSampledScaleHeight)){
 
 				sampledLayerScale.Mix (sampledLayer);
 				
@@ -582,4 +572,19 @@ int IGFaceDescriptor::evalDetectFaces(const wstring& wsPictureId, int idxRot)
 			nScore = 0;
 	}
 	return nScore;
+}
+
+void IGFaceDescriptor::rotatePt (int nRot, int nPtCtrX, int nPtCtrY, int nPtX, int nPtY, int& nRotatedX, int& nRotatedY)
+{
+	// change of vectorial space, set the origin to the center
+	int nX = nPtX - nPtCtrX;
+	int nY = nPtY - nPtCtrY;
+	// rotate
+	float fXTr = cosf((float)nRot * PI / 180.0f);
+	float fYTr = sinf((float)nRot * PI / 180.0f);
+	nRotatedX = (int)(nX * fXTr + nY * fYTr);
+	nRotatedY = (int)(-nX * fYTr + nY * fXTr);
+	// change of vectorial space, back to the origin
+	nRotatedX = nRotatedX + nPtCtrX;
+	nRotatedY = nRotatedY + nPtCtrY;
 }

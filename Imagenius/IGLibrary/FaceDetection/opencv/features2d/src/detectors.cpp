@@ -41,10 +41,9 @@
 
 #include "precomp.hpp"
 
-using namespace std;
-
 namespace cv
 {
+
 /*
  *  FeatureDetector
  */
@@ -52,7 +51,7 @@ namespace cv
 FeatureDetector::~FeatureDetector()
 {}
 
-void FeatureDetector::detect( const Mat& image, vector<KeyPoint>& keypoints, const Mat& mask ) const
+void FeatureDetector::detect( InputArray image, std::vector<KeyPoint>& keypoints, InputArray mask ) const
 {
     keypoints.clear();
 
@@ -64,566 +63,99 @@ void FeatureDetector::detect( const Mat& image, vector<KeyPoint>& keypoints, con
     detectImpl( image, keypoints, mask );
 }
 
-void FeatureDetector::detect(const vector<Mat>& imageCollection, vector<vector<KeyPoint> >& pointCollection, const vector<Mat>& masks ) const
+void FeatureDetector::detect(InputArrayOfArrays _imageCollection, std::vector<std::vector<KeyPoint> >& pointCollection,
+                             InputArrayOfArrays _masks ) const
 {
+    if (_imageCollection.isUMatVector())
+    {
+        std::vector<UMat> uimageCollection, umasks;
+        _imageCollection.getUMatVector(uimageCollection);
+        _masks.getUMatVector(umasks);
+
+        pointCollection.resize( uimageCollection.size() );
+        for( size_t i = 0; i < uimageCollection.size(); i++ )
+            detect( uimageCollection[i], pointCollection[i], umasks.empty() ? noArray() : umasks[i] );
+
+        return;
+    }
+
+    std::vector<Mat> imageCollection, masks;
+    _imageCollection.getMatVector(imageCollection);
+    _masks.getMatVector(masks);
+
     pointCollection.resize( imageCollection.size() );
     for( size_t i = 0; i < imageCollection.size(); i++ )
-        detect( imageCollection[i], pointCollection[i], masks.empty() ? Mat() : masks[i] );
+        detect( imageCollection[i], pointCollection[i], masks.empty() ? noArray() : masks[i] );
 }
 
-void FeatureDetector::read( const FileNode& )
+/*void FeatureDetector::read( const FileNode& )
 {}
 
 void FeatureDetector::write( FileStorage& ) const
-{}
+{}*/
 
 bool FeatureDetector::empty() const
 {
     return false;
 }
 
-void FeatureDetector::removeInvalidPoints( const Mat& mask, vector<KeyPoint>& keypoints )
+void FeatureDetector::removeInvalidPoints( const Mat& mask, std::vector<KeyPoint>& keypoints )
 {
     KeyPointsFilter::runByPixelsMask( keypoints, mask );
 }
 
-Ptr<FeatureDetector> FeatureDetector::create( const string& detectorType )
+Ptr<FeatureDetector> FeatureDetector::create( const String& detectorType )
 {
-    FeatureDetector* fd = 0;
-    size_t pos = 0;
-
-    if( !detectorType.compare( "FAST" ) )
+    if( detectorType.compare( "HARRIS" ) == 0 )
     {
-        fd = new FastFeatureDetector();
-    }
-    else if( !detectorType.compare( "STAR" ) )
-    {
-        fd = new StarFeatureDetector();
-    }
-    else if( !detectorType.compare( "SIFT" ) )
-    {
-        fd = new SiftFeatureDetector();
-    }
-    else if( !detectorType.compare( "SURF" ) )
-    {
-        fd = new SurfFeatureDetector();
-    }
-    else if( !detectorType.compare( "ORB" ) )
-    {
-        fd = new OrbFeatureDetector();
-    }
-    else if( !detectorType.compare( "MSER" ) )
-    {
-        fd = new MserFeatureDetector();
-    }
-    else if( !detectorType.compare( "GFTT" ) )
-    {
-        fd = new GoodFeaturesToTrackDetector();
-    }
-    else if( !detectorType.compare( "HARRIS" ) )
-    {
-        GoodFeaturesToTrackDetector::Params params;
-        params.useHarrisDetector = true;
-        fd = new GoodFeaturesToTrackDetector(params);
-    }
-    else if( (pos=detectorType.find("Grid")) == 0 )
-    {
-        pos += string("Grid").size();
-        fd = new GridAdaptedFeatureDetector( FeatureDetector::create(detectorType.substr(pos)) );
-    }
-    else if( (pos=detectorType.find("Pyramid")) == 0 )
-    {
-        pos += string("Pyramid").size();
-        fd = new PyramidAdaptedFeatureDetector( FeatureDetector::create(detectorType.substr(pos)) );
-    }
-    else if( (pos=detectorType.find("Dynamic")) == 0 )
-    {
-        pos += string("Dynamic").size();
-        fd = new DynamicAdaptedFeatureDetector( AdjusterAdapter::create(detectorType.substr(pos)) );
+        Ptr<FeatureDetector> fd = FeatureDetector::create("GFTT");
+        fd->set("useHarrisDetector", true);
+        return fd;
     }
 
-    return fd;
+    return Algorithm::create<FeatureDetector>("Feature2D." + detectorType);
 }
 
-/*
- *   FastFeatureDetector
- */
-FastFeatureDetector::FastFeatureDetector( int _threshold, bool _nonmaxSuppression )
-  : threshold(_threshold), nonmaxSuppression(_nonmaxSuppression)
-{}
 
-void FastFeatureDetector::read (const FileNode& fn)
-{
-    threshold = fn["threshold"];
-    nonmaxSuppression = (int)fn["nonmaxSuppression"] ? true : false;
-}
-
-void FastFeatureDetector::write (FileStorage& fs) const
-{
-    fs << "threshold" << threshold;
-    fs << "nonmaxSuppression" << nonmaxSuppression;
-}
-
-void FastFeatureDetector::detectImpl( const Mat& image, vector<KeyPoint>& keypoints, const Mat& mask ) const
-{
-    Mat grayImage = image;
-    if( image.type() != CV_8U ) cvtColor( image, grayImage, CV_BGR2GRAY );
-    FAST( grayImage, keypoints, threshold, nonmaxSuppression );
-    KeyPointsFilter::runByPixelsMask( keypoints, mask );
-}
-
-/*
- *  GoodFeaturesToTrackDetector
- */
-GoodFeaturesToTrackDetector::Params::Params( int _maxCorners, double _qualityLevel, double _minDistance,
-                                             int _blockSize, bool _useHarrisDetector, double _k ) :
-    maxCorners(_maxCorners), qualityLevel(_qualityLevel), minDistance(_minDistance),
+GFTTDetector::GFTTDetector( int _nfeatures, double _qualityLevel,
+                            double _minDistance, int _blockSize,
+                            bool _useHarrisDetector, double _k )
+    : nfeatures(_nfeatures), qualityLevel(_qualityLevel), minDistance(_minDistance),
     blockSize(_blockSize), useHarrisDetector(_useHarrisDetector), k(_k)
-{}
-
-void GoodFeaturesToTrackDetector::Params::read (const FileNode& fn)
 {
-    maxCorners = fn["maxCorners"];
-    qualityLevel = fn["qualityLevel"];
-    minDistance = fn["minDistance"];
-    blockSize = fn["blockSize"];
-    useHarrisDetector = (int)fn["useHarrisDetector"] != 0;
-    k = fn["k"];
 }
 
-void GoodFeaturesToTrackDetector::Params::write (FileStorage& fs) const
+void GFTTDetector::detectImpl( InputArray _image, std::vector<KeyPoint>& keypoints, InputArray _mask) const
 {
-    fs << "maxCorners" << maxCorners;
-    fs << "qualityLevel" << qualityLevel;
-    fs << "minDistance" << minDistance;
-    fs << "blockSize" << blockSize;
-    fs << "useHarrisDetector" << useHarrisDetector;
-    fs << "k" << k;
-}
+    std::vector<Point2f> corners;
 
-GoodFeaturesToTrackDetector::GoodFeaturesToTrackDetector( const Params& _params ) : params(_params)
-{}
+    if (_image.isUMat())
+    {
+        UMat ugrayImage;
+        if( _image.type() != CV_8U )
+            cvtColor( _image, ugrayImage, COLOR_BGR2GRAY );
+        else
+            ugrayImage = _image.getUMat();
 
-GoodFeaturesToTrackDetector::GoodFeaturesToTrackDetector( int maxCorners, double qualityLevel,
-                                                          double minDistance, int blockSize,
-                                                          bool useHarrisDetector, double k )
-{
-    params = Params( maxCorners, qualityLevel, minDistance, blockSize, useHarrisDetector, k );
-}
+        goodFeaturesToTrack( ugrayImage, corners, nfeatures, qualityLevel, minDistance, _mask,
+                             blockSize, useHarrisDetector, k );
+    }
+    else
+    {
+        Mat image = _image.getMat(), grayImage = image;
+        if( image.type() != CV_8U )
+            cvtColor( image, grayImage, COLOR_BGR2GRAY );
 
-void GoodFeaturesToTrackDetector::read (const FileNode& fn)
-{
-    params.read(fn);
-}
+        goodFeaturesToTrack( grayImage, corners, nfeatures, qualityLevel, minDistance, _mask,
+                             blockSize, useHarrisDetector, k );
+    }
 
-void GoodFeaturesToTrackDetector::write (FileStorage& fs) const
-{
-    params.write(fs);
-}
-
-void GoodFeaturesToTrackDetector::detectImpl( const Mat& image, vector<KeyPoint>& keypoints, const Mat& mask) const
-{
-    Mat grayImage = image;
-    if( image.type() != CV_8U ) cvtColor( image, grayImage, CV_BGR2GRAY );
-
-    vector<Point2f> corners;
-    goodFeaturesToTrack( grayImage, corners, params.maxCorners, params.qualityLevel, params.minDistance, mask,
-                         params.blockSize, params.useHarrisDetector, params.k );
     keypoints.resize(corners.size());
-    vector<Point2f>::const_iterator corner_it = corners.begin();
-    vector<KeyPoint>::iterator keypoint_it = keypoints.begin();
+    std::vector<Point2f>::const_iterator corner_it = corners.begin();
+    std::vector<KeyPoint>::iterator keypoint_it = keypoints.begin();
     for( ; corner_it != corners.end(); ++corner_it, ++keypoint_it )
-    {
-        *keypoint_it = KeyPoint( *corner_it, (float)params.blockSize );
-    }
-}
+        *keypoint_it = KeyPoint( *corner_it, (float)blockSize );
 
-/*
- *  MserFeatureDetector
- */
-MserFeatureDetector::MserFeatureDetector( int delta, int minArea, int maxArea,
-                                          double maxVariation, double minDiversity,
-                                          int maxEvolution, double areaThreshold,
-                                          double minMargin, int edgeBlurSize )
-  : mser( delta, minArea, maxArea, maxVariation, minDiversity,
-          maxEvolution, areaThreshold, minMargin, edgeBlurSize )
-{}
-
-MserFeatureDetector::MserFeatureDetector( CvMSERParams params )
-  : mser( params.delta, params.minArea, params.maxArea, params.maxVariation, params.minDiversity,
-          params.maxEvolution, params.areaThreshold, params.minMargin, params.edgeBlurSize )
-{}
-
-void MserFeatureDetector::read (const FileNode& fn)
-{
-    int delta = fn["delta"];
-    int minArea = fn["minArea"];
-    int maxArea = fn["maxArea"];
-    float maxVariation = fn["maxVariation"];
-    float minDiversity = fn["minDiversity"];
-    int maxEvolution = fn["maxEvolution"];
-    double areaThreshold = fn["areaThreshold"];
-    double minMargin = fn["minMargin"];
-    int edgeBlurSize = fn["edgeBlurSize"];
-
-    mser = MSER( delta, minArea, maxArea, maxVariation, minDiversity,
-              maxEvolution, areaThreshold, minMargin, edgeBlurSize );
-}
-
-void MserFeatureDetector::write (FileStorage& fs) const
-{
-    //fs << "algorithm" << getAlgorithmName ();
-
-    fs << "delta" << mser.delta;
-    fs << "minArea" << mser.minArea;
-    fs << "maxArea" << mser.maxArea;
-    fs << "maxVariation" << mser.maxVariation;
-    fs << "minDiversity" << mser.minDiversity;
-    fs << "maxEvolution" << mser.maxEvolution;
-    fs << "areaThreshold" << mser.areaThreshold;
-    fs << "minMargin" << mser.minMargin;
-    fs << "edgeBlurSize" << mser.edgeBlurSize;
-}
-
-
-void MserFeatureDetector::detectImpl( const Mat& image, vector<KeyPoint>& keypoints, const Mat& mask ) const
-{
-    vector<vector<Point> > msers;
-
-    mser(image, msers, mask);
-
-    vector<vector<Point> >::const_iterator contour_it = msers.begin();
-    for( ; contour_it != msers.end(); ++contour_it )
-    {
-        // TODO check transformation from MSER region to KeyPoint
-        RotatedRect rect = fitEllipse(Mat(*contour_it));
-        float diam = sqrt(rect.size.height*rect.size.width);
-
-        if( diam > std::numeric_limits<float>::epsilon() )
-            keypoints.push_back( KeyPoint( rect.center, diam, rect.angle) );
-    }
-}
-
-/*
- *  StarFeatureDetector
- */
-
-StarFeatureDetector::StarFeatureDetector( const CvStarDetectorParams& params )
-    : star( params.maxSize, params.responseThreshold, params.lineThresholdProjected,
-            params.lineThresholdBinarized, params.suppressNonmaxSize)
-{}
-
-StarFeatureDetector::StarFeatureDetector(int maxSize, int responseThreshold,
-                                         int lineThresholdProjected,
-                                         int lineThresholdBinarized,
-                                         int suppressNonmaxSize)
-  : star( maxSize, responseThreshold, lineThresholdProjected,
-          lineThresholdBinarized, suppressNonmaxSize)
-{}
-
-void StarFeatureDetector::read (const FileNode& fn)
-{
-    int maxSize = fn["maxSize"];
-    int responseThreshold = fn["responseThreshold"];
-    int lineThresholdProjected = fn["lineThresholdProjected"];
-    int lineThresholdBinarized = fn["lineThresholdBinarized"];
-    int suppressNonmaxSize = fn["suppressNonmaxSize"];
-
-    star = StarDetector( maxSize, responseThreshold, lineThresholdProjected,
-              lineThresholdBinarized, suppressNonmaxSize);
-}
-
-void StarFeatureDetector::write (FileStorage& fs) const
-{
-    //fs << "algorithm" << getAlgorithmName ();
-
-    fs << "maxSize" << star.maxSize;
-    fs << "responseThreshold" << star.responseThreshold;
-    fs << "lineThresholdProjected" << star.lineThresholdProjected;
-    fs << "lineThresholdBinarized" << star.lineThresholdBinarized;
-    fs << "suppressNonmaxSize" << star.suppressNonmaxSize;
-}
-
-void StarFeatureDetector::detectImpl( const Mat& image, vector<KeyPoint>& keypoints, const Mat& mask ) const
-{
-    Mat grayImage = image;
-    if( image.type() != CV_8U ) cvtColor( image, grayImage, CV_BGR2GRAY );
-
-    star(grayImage, keypoints);
-    KeyPointsFilter::runByPixelsMask( keypoints, mask );
-}
-
-/*
- *   SiftFeatureDetector
- */
-SiftFeatureDetector::SiftFeatureDetector( const SIFT::DetectorParams &detectorParams,
-                                          const SIFT::CommonParams &commonParams )
-    : sift(detectorParams.threshold, detectorParams.edgeThreshold,
-           commonParams.nOctaves, commonParams.nOctaveLayers, commonParams.firstOctave, commonParams.angleMode)
-{
-}
-
-SiftFeatureDetector::SiftFeatureDetector( double threshold, double edgeThreshold,
-                                          int nOctaves, int nOctaveLayers, int firstOctave, int angleMode ) :
-    sift(threshold, edgeThreshold, nOctaves, nOctaveLayers, firstOctave, angleMode)
-{
-}
-
-void SiftFeatureDetector::read( const FileNode& fn )
-{
-    double threshold = fn["threshold"];
-    double edgeThreshold = fn["edgeThreshold"];
-    int nOctaves = fn["nOctaves"];
-    int nOctaveLayers = fn["nOctaveLayers"];
-    int firstOctave = fn["firstOctave"];
-    int angleMode = fn["angleMode"];
-
-    sift = SIFT(threshold, edgeThreshold, nOctaves, nOctaveLayers, firstOctave, angleMode);
-}
-
-void SiftFeatureDetector::write (FileStorage& fs) const
-{
-    //fs << "algorithm" << getAlgorithmName ();
-
-    SIFT::CommonParams commParams = sift.getCommonParams ();
-    SIFT::DetectorParams detectorParams = sift.getDetectorParams ();
-    fs << "threshold" << detectorParams.threshold;
-    fs << "edgeThreshold" << detectorParams.edgeThreshold;
-    fs << "nOctaves" << commParams.nOctaves;
-    fs << "nOctaveLayers" << commParams.nOctaveLayers;
-    fs << "firstOctave" << commParams.firstOctave;
-    fs << "angleMode" << commParams.angleMode;
-}
-
-
-void SiftFeatureDetector::detectImpl( const Mat& image, vector<KeyPoint>& keypoints, const Mat& mask ) const
-{
-    Mat grayImage = image;
-    if( image.type() != CV_8U ) cvtColor( image, grayImage, CV_BGR2GRAY );
-
-    sift(grayImage, mask, keypoints);
-}
-
-/*
- *  SurfFeatureDetector
- */
-SurfFeatureDetector::SurfFeatureDetector( double hessianThreshold, int octaves, int octaveLayers, bool upright )
-    : surf(hessianThreshold, octaves, octaveLayers, false, upright)
-{}
-
-void SurfFeatureDetector::read (const FileNode& fn)
-{
-    double hessianThreshold = fn["hessianThreshold"];
-    int octaves = fn["octaves"];
-    int octaveLayers = fn["octaveLayers"];
-    bool upright = (int)fn["upright"] != 0;
-
-    surf = SURF( hessianThreshold, octaves, octaveLayers, false, upright );
-}
-
-void SurfFeatureDetector::write (FileStorage& fs) const
-{
-    //fs << "algorithm" << getAlgorithmName ();
-
-    fs << "hessianThreshold" << surf.hessianThreshold;
-    fs << "octaves" << surf.nOctaves;
-    fs << "octaveLayers" << surf.nOctaveLayers;
-    fs << "upright" << surf.upright;
-}
-
-void SurfFeatureDetector::detectImpl( const Mat& image, vector<KeyPoint>& keypoints, const Mat& mask ) const
-{
-    Mat grayImage = image;
-    if( image.type() != CV_8U ) cvtColor( image, grayImage, CV_BGR2GRAY );
-
-    surf(grayImage, mask, keypoints);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void ORB::CommonParams::read(const FileNode& fn)
-{
-  scale_factor_ = fn["scaleFactor"];
-  n_levels_ = int(fn["nLevels"]);
-  first_level_ = int(fn["firsLevel"]);
-  edge_threshold_ = fn["edgeThreshold"];
-  patch_size_ = fn["patchSize"];
-}
-
-void ORB::CommonParams::write(FileStorage& fs) const
-{
-  fs << "scaleFactor" << scale_factor_;
-  fs << "nLevels" << int(n_levels_);
-  fs << "firsLevel" << int(first_level_);
-  fs << "edgeThreshold" << int(edge_threshold_);
-  fs << "patchSize" << int(patch_size_);
-}
-
-/** Default constructor
- * @param n_features the number of desired features
- */
-OrbFeatureDetector::OrbFeatureDetector(size_t n_features, ORB::CommonParams params) :
-  params_(params)
-{
-  orb_ = ORB(n_features, params);
-}
-
-void OrbFeatureDetector::read(const FileNode& fn)
-{
-  params_.read(fn);
-  n_features_ = int(fn["nFeatures"]);
-}
-
-void OrbFeatureDetector::write(FileStorage& fs) const
-{
-  params_.write(fs);
-  fs << "nFeatures" << int(n_features_);
-}
-
-void OrbFeatureDetector::detectImpl(const cv::Mat& image, std::vector<cv::KeyPoint>& keypoints, const cv::Mat& mask) const
-{
-  orb_(image, mask, keypoints);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/*
- *  DenseFeatureDetector
- */
-DenseFeatureDetector::Params::Params( float _initFeatureScale, int _featureScaleLevels, 
-									  float _featureScaleMul, int _initXyStep, 
-									  int _initImgBound, bool _varyXyStepWithScale, 
-									  bool _varyImgBoundWithScale ) :
-	initFeatureScale(_initFeatureScale), featureScaleLevels(_featureScaleLevels),
-	featureScaleMul(_featureScaleMul), initXyStep(_initXyStep), initImgBound(_initImgBound),
-	varyXyStepWithScale(_varyXyStepWithScale), varyImgBoundWithScale(_varyImgBoundWithScale)
-{}
-
-DenseFeatureDetector::DenseFeatureDetector(const DenseFeatureDetector::Params &_params) : params(_params)
-{}
-
-void DenseFeatureDetector::detectImpl( const Mat& image, vector<KeyPoint>& keypoints, const Mat& mask ) const
-{
-    float curScale = params.initFeatureScale;
-    int curStep = params.initXyStep;
-    int curBound = params.initImgBound;
-    for( int curLevel = 0; curLevel < params.featureScaleLevels; curLevel++ )
-    {
-        for( int x = curBound; x < image.cols - curBound; x += curStep )
-        {
-            for( int y = curBound; y < image.rows - curBound; y += curStep )
-            {
-                keypoints.push_back( KeyPoint(static_cast<float>(x), static_cast<float>(y), curScale) );
-            }
-        }
-
-        curScale = curScale * params.featureScaleMul;
-        if( params.varyXyStepWithScale ) curStep = static_cast<int>( curStep * params.featureScaleMul + 0.5f );
-        if( params.varyImgBoundWithScale ) curBound = static_cast<int>( curBound * params.featureScaleMul + 0.5f );
-    }
-
-    KeyPointsFilter::runByPixelsMask( keypoints, mask );
-}
-
-/*
- *  GridAdaptedFeatureDetector
- */
-GridAdaptedFeatureDetector::GridAdaptedFeatureDetector( const Ptr<FeatureDetector>& _detector,
-                                                        int _maxTotalKeypoints, int _gridRows, int _gridCols )
-    : detector(_detector), maxTotalKeypoints(_maxTotalKeypoints), gridRows(_gridRows), gridCols(_gridCols)
-{}
-
-bool GridAdaptedFeatureDetector::empty() const
-{
-    return detector.empty() || (FeatureDetector*)detector->empty();
-}
-
-struct ResponseComparator
-{
-    bool operator() (const KeyPoint& a, const KeyPoint& b)
-    {
-        return std::abs(a.response) > std::abs(b.response);
-    }
-};
-
-void keepStrongest( int N, vector<KeyPoint>& keypoints )
-{
-    if( (int)keypoints.size() > N )
-    {
-        vector<KeyPoint>::iterator nth = keypoints.begin() + N;
-        std::nth_element( keypoints.begin(), nth, keypoints.end(), ResponseComparator() );
-        keypoints.erase( nth, keypoints.end() );
-    }
-}
-
-void GridAdaptedFeatureDetector::detectImpl( const Mat& image, vector<KeyPoint>& keypoints, const Mat& mask ) const
-{
-    keypoints.reserve(maxTotalKeypoints);
-
-    int maxPerCell = maxTotalKeypoints / (gridRows * gridCols);
-    for( int i = 0; i < gridRows; ++i )
-    {
-        Range row_range((i*image.rows)/gridRows, ((i+1)*image.rows)/gridRows);
-        for( int j = 0; j < gridCols; ++j )
-        {
-            Range col_range((j*image.cols)/gridCols, ((j+1)*image.cols)/gridCols);
-            Mat sub_image = image(row_range, col_range);
-            Mat sub_mask;
-            if( !mask.empty() )
-                sub_mask = mask(row_range, col_range);
-
-            vector<KeyPoint> sub_keypoints;
-            detector->detect( sub_image, sub_keypoints, sub_mask );
-            keepStrongest( maxPerCell, sub_keypoints );
-            for( std::vector<cv::KeyPoint>::iterator it = sub_keypoints.begin(), end = sub_keypoints.end();
-                 it != end; ++it )
-            {
-                it->pt.x += col_range.start;
-                it->pt.y += row_range.start;
-            }
-
-            keypoints.insert( keypoints.end(), sub_keypoints.begin(), sub_keypoints.end() );
-        }
-    }
-}
-
-/*
- *  PyramidAdaptedFeatureDetector
- */
-PyramidAdaptedFeatureDetector::PyramidAdaptedFeatureDetector( const Ptr<FeatureDetector>& _detector, int _maxLevel )
-    : detector(_detector), maxLevel(_maxLevel)
-{}
-
-bool PyramidAdaptedFeatureDetector::empty() const
-{
-    return detector.empty() || (FeatureDetector*)detector->empty();
-}
-
-void PyramidAdaptedFeatureDetector::detectImpl( const Mat& image, vector<KeyPoint>& keypoints, const Mat& mask ) const
-{
-    Mat src = image;
-    for( int l = 0, multiplier = 1; l <= maxLevel; ++l, multiplier *= 2 )
-    {
-        // Detect on current level of the pyramid
-        vector<KeyPoint> new_pts;
-        detector->detect( src, new_pts, mask );
-        for( vector<KeyPoint>::iterator it = new_pts.begin(), end = new_pts.end(); it != end; ++it)
-        {
-            it->pt.x *= multiplier;
-            it->pt.y *= multiplier;
-            it->size *= multiplier;
-            it->octave = l;
-        }
-        keypoints.insert( keypoints.end(), new_pts.begin(), new_pts.end() );
-
-        // Downsample
-        if( l < maxLevel )
-        {
-            Mat dst;
-            pyrDown(src, dst);
-            src = dst;
-        }
-    }
 }
 
 }

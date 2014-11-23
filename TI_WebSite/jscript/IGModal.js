@@ -26,11 +26,18 @@ function IG_Modal() {
     this.tOptions = {};
 
     this.popOut = function (tParams) {
-        this.title = tParams[0];
-        this.callback = tParams[1];
-        this.successCallback = tParams[2];
-        this.errorCallback = tParams[3];
-        var nbParams = tParams[4];
+        var idxParam = 1;
+        if (typeof tParams[0] === 'string')
+            this.title = tParams[0];
+        else {
+            this.tOptions = tParams[0];
+            this.title = tParams[1];
+            idxParam = 2;
+        }
+        this.callback = tParams[idxParam++];
+        this.successCallback = tParams[idxParam++];
+        this.errorCallback = tParams[idxParam++];
+        var nbParams = tParams[idxParam++];
         this.overdiv = document.createElement("div");
         this.overdiv.className = "overlay";
         this.overdiv.id = "IG_Modal";
@@ -50,7 +57,7 @@ function IG_Modal() {
         this.square.appendChild(msg);
 
         var tableParams = document.createElement("table");
-        var curIdx = 5;
+        var curIdx = idxParam;
         for (var idxParam = 0; idxParam < nbParams; idxParam++) {
             var nextField = null;
             var curType = tParams[curIdx++];
@@ -129,7 +136,7 @@ function IG_Modal() {
             if (modal.callback)
                 modal.callback(IGMODALRETURN_OK, modal.tOptions, this.successCallback, this.errorCallback);
         }
-        okBtn.innerHTML = (tParams[3] == IGMODALTYPE_IFRAME ? "Close" : "OK");
+        okBtn.innerHTML = (this.tOptions['OK'] != null ? this.tOptions['OK'] : (tParams[3] == IGMODALTYPE_IFRAME ? "Close" : "OK"));
         lastRowCurCol.appendChild(okBtn);
 
         if (this.title == "Error" || this.title == "error") {

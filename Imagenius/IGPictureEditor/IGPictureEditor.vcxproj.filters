@@ -130,6 +130,9 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IGAutoKill.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_IIGDockPanelEvents_CP.h">
@@ -271,6 +274,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGAutoKill.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -590,6 +596,18 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="images\filter3_brush.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\filter4_brush.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\filter4_overlay.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\filter4_screen.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="images\filter2_halo.png">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

@@ -28,60 +28,48 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *************************************************************************/
 
-#ifndef _OPENCV_DATASET_H_
-#define _OPENCV_DATASET_H_
+#ifndef OPENCV_FLANN_DATASET_H_
+#define OPENCV_FLANN_DATASET_H_
 
 #include <stdio.h>
 
-#include "opencv2/flann/general.h"
+#include "general.h"
 
-
-namespace cvflann 
+namespace cvflann
 {
 
 /**
-* Class that implements a simple rectangular matrix stored in a memory buffer and
-* provides convenient matrix-like access using the [] operators.
-*/
+ * Class that implements a simple rectangular matrix stored in a memory buffer and
+ * provides convenient matrix-like access using the [] operators.
+ */
 template <typename T>
-class Matrix {
+class Matrix
+{
 public:
+    typedef T type;
+
     size_t rows;
     size_t cols;
+    size_t stride;
     T* data;
 
-    Matrix() : rows(0), cols(0), data(NULL)
+    Matrix() : rows(0), cols(0), stride(0), data(NULL)
     {
     }
 
-    Matrix(T* data_, long rows_, long cols_) :
-    	 rows(rows_), cols(cols_), data(data_)
-	{
-	}
+    Matrix(T* data_, size_t rows_, size_t cols_, size_t stride_ = 0) :
+        rows(rows_), cols(cols_),  stride(stride_), data(data_)
+    {
+        if (stride==0) stride = cols;
+    }
 
+    
     /**
-     * Convenience function for deallocating the storage data.
+     * Operator that return a (pointer to a) row of the data.
      */
-    void release()
-    {
-        if (data!=NULL) delete[] data;
-    }
-
-	~Matrix()
-	{
-	}
-
-    /**
-    * Operator that return a (pointer to a) row of the data.
-    */
-    T* operator[](size_t index)
-    {
-        return data+index*cols;
-    }
-
     T* operator[](size_t index) const
     {
-        return data+index*cols;
+        return data+index*stride;
     }
 };
 
@@ -95,7 +83,7 @@ public:
     flann_datatype_t type;
 
     UntypedMatrix(void* data_, long rows_, long cols_) :
-    	 rows(rows_), cols(cols_), data(data_)
+        rows(rows_), cols(cols_), data(data_)
     {
     }
 
@@ -113,6 +101,6 @@ public:
 
 
 
-} // namespace cvflann
+}
 
-#endif //_OPENCV_DATASET_H_
+#endif //OPENCV_FLANN_DATASET_H_

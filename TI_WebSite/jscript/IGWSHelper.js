@@ -13,6 +13,7 @@ var IGWS_WORKSPACE_DIV = null;
 var IGWS_DEEPZOOM_DIV = null;
 var IGBM_APPID = "480781025322684";
 var IG_PIXEL_SELECTOR_PRECISION = 1000000;
+var IG_WEBSERVICE_URL = "http://localhost:8080/WebDebug/";
 
 function IG_internalContactUs(subject) {
     var modal = new IG_Modal();
@@ -27,6 +28,28 @@ function IG_internalContactUs(subject) {
     tParams[idxParam++] = 500;
     tParams[idxParam++] = 400;
     tParams[idxParam++] = IG.urlAppli + "ContactUs.aspx" + (subject ? "?Subject=" + subject : "");
+    modal.popOut(tParams);
+}
+
+function IG_internalSignUp(subject) {
+    var modal = new IG_Modal();
+    var idxParam = 0;
+    var tParams = {};
+    tParams[idxParam++] = { 'OK': 'Connect' }
+    tParams[idxParam++] = "Login to BITL";
+    tParams[idxParam++] = function (result, tOptions, successCallback, errorCallback) {
+        if (result == IGMODALRETURN_OK) {
+            var jsonData = {}
+            IG_publicAPI("ConnectBitlUser", jsonData, successCallback, errorCallback);
+        }
+    };
+    tParams[idxParam++] = null;
+    tParams[idxParam++] = null;
+    tParams[idxParam++] = 1;
+    tParams[idxParam++] = IGMODALTYPE_IFRAME;
+    tParams[idxParam++] = 500;
+    tParams[idxParam++] = 450;
+    tParams[idxParam++] = IG.urlAppli + "CreateAccount.aspx";
     modal.popOut(tParams);
 }
 
@@ -834,3 +857,4 @@ function IG_internalGetFileName(url) {
     //return
     return url;
 }
+

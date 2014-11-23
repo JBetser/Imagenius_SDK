@@ -9,8 +9,6 @@
 
 namespace IGLibrary
 {
-	typedef void (__cdecl *PDETECTFACES)(const wchar_t* pcwPictureId, const wchar_t* pcwPictureName, int rotationIndex);	
-
 	class FaceList{
 public:
 		std::list <Face> _lFaces;
@@ -152,6 +150,56 @@ public:
 		int GetHeight(){
 			return m_nHeight;
 		}
+		inline void GetScaledPt(int nX, int nY, int& nScaledX, int& nScaledY, int nRot = 0){
+			rotatePt (nRot, m_nWidth / 2, m_nHeight / 2, (int)((float)nX /  ((float)m_nLayerWidth / (float)m_nWidth)), 
+									(int)((float)nY / ((float)m_nLayerHeight / (float)m_nHeight)), nScaledX, nScaledY);
+		}
+		inline void GetUnscaledPt(int nX, int nY, int& nUnscaledX, int& nUnscaledY, int nRot = 0){
+			rotatePt (nRot, m_nWidth / 2, m_nHeight / 2, nX, nY, nUnscaledX, nUnscaledY);
+			nUnscaledX = (int)((float)nUnscaledX /  ((float)m_nWidth / (float)m_nLayerWidth));
+			nUnscaledY = (int)((float)nUnscaledY /  ((float)m_nHeight / (float)m_nLayerHeight));
+		}
+		inline void GetScaledRect(RECT rc, RECT& rcScaled, int nRot = 0){
+			int nTopLeftX, nTopRightX, nBottomLeftX, nBottomRightX, nTopLeftY, nTopRightY, nBottomLeftY, nBottomRightY;
+			GetScaledPt(rc.left, rc.top, nTopLeftX, nTopLeftY, nRot);
+			GetScaledPt(rc.right, rc.top, nTopRightX, nTopRightY, nRot);
+			GetScaledPt(rc.left, rc.bottom, nBottomLeftX, nBottomLeftY, nRot);
+			GetScaledPt(rc.right, rc.bottom, nBottomRightX, nBottomRightY, nRot);
+			rcScaled.left = min(min(nTopLeftX, nTopRightX), min(nBottomLeftX, nBottomRightX));
+			rcScaled.right = max(max(nTopLeftX, nTopRightX), max(nBottomLeftX, nBottomRightX));
+			rcScaled.top = min(min(nTopLeftY, nTopRightY), min(nBottomLeftY, nBottomRightY));
+			rcScaled.bottom = max(max(nTopLeftY, nTopRightY), max(nBottomLeftY, nBottomRightY));
+		}
+		inline void GetUnscaledRect(RECT rc, RECT& rcUnscaled, int nRot = 0){
+			int nTopLeftX, nTopRightX, nBottomLeftX, nBottomRightX, nTopLeftY, nTopRightY, nBottomLeftY, nBottomRightY;
+			GetUnscaledPt(rc.left, rc.top, nTopLeftX, nTopLeftY, nRot);
+			GetUnscaledPt(rc.right, rc.top, nTopRightX, nTopRightY, nRot);
+			GetUnscaledPt(rc.left, rc.bottom, nBottomLeftX, nBottomLeftY, nRot);
+			GetUnscaledPt(rc.right, rc.bottom, nBottomRightX, nBottomRightY, nRot);
+			rcUnscaled.left = min(min(nTopLeftX, nTopRightX), min(nBottomLeftX, nBottomRightX));
+			rcUnscaled.right = max(max(nTopLeftX, nTopRightX), max(nBottomLeftX, nBottomRightX));
+			rcUnscaled.top = min(min(nTopLeftY, nTopRightY), min(nBottomLeftY, nBottomRightY));
+			rcUnscaled.bottom = max(max(nTopLeftY, nTopRightY), max(nBottomLeftY, nBottomRightY));
+		}
+		inline void GetFaceScaledPt(const Face& face, int nX, int nY, int& nScaledX, int& nScaledY){
+			GetScaledPt(nX, nY, nScaledX, nScaledY, -face.getRotation());
+		}
+		inline void GetFaceUnscaledPt(const Face& face, int nX, int nY, int& nUnscaledX, int& nUnscaledY){
+			GetScaledPt(nX, nY, nUnscaledX, nUnscaledY, face.getRotation());
+		}
+		inline void GetFaceScaledRect(const Face& face, RECT rc, RECT& rcUnscaled){
+			GetScaledRect(rc, rcUnscaled, -face.getRotation());
+		}
+		inline void GetFaceUnscaledRect(const Face& face, RECT rc, RECT& rcUnscaled){
+			GetUnscaledRect(rc, rcUnscaled, face.getRotation());
+		}
+		inline IGSmartLayer GetScaledPicture(const Face& face, const IGSmartLayer& layer){
+			int nRot = face.getRotation();
+			IGSmartLayer copyLayer ((CxImage&)layer);
+			copyLayer.Resample();
+			copyLayer.RotateAndResize (cosf((float)nRot * PI / 180.0f), sinf((float)-nRot * PI / 180.0f), 1.0f, true);
+			return copyLayer;
+		}
 
 	private:
 		void filterSmallAndRotatedFaces();
@@ -163,6 +211,7 @@ public:
 		PROCESS_INFORMATION launchDetectProcess(const std::wstring& wsPictureId, const std::wstring& wsPictureName, int nRot);
 		void launchDetectIce(const std::wstring& wsPictureId, const std::wstring& wsPictureName, int nRot);
 		void getPermutations (int offset, std::vector <Face>& combinations, std::list <FaceList>& lFl);
+		void rotatePt (int nRot, int nPtCtrX, int nPtCtrY, int nPtX, int nPtY, int& nRotatedX, int& nRotatedY);
 
 		std::list <Face> m_lFaces;
 		std::vector <Face> m_vFaces;
@@ -170,6 +219,5 @@ public:
 		int m_nHeight;
 		int m_nLayerWidth;
 		int m_nLayerHeight;
-		PDETECTFACES m_pDetectFaces;
 	};	
 }

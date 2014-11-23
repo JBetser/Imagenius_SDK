@@ -43,17 +43,17 @@
 #ifndef __OPENCV_PRECOMP_H__
 #define __OPENCV_PRECOMP_H__
 
-#if _MSC_VER >= 1200
-#pragma warning( disable: 4251 4512 4710 4711 4514 4996 )
-#endif
+#include "opencv2/features2d.hpp"
+#include "opencv2/imgproc.hpp"
 
-#ifdef HAVE_CVCONFIG_H 
-#include "cvconfig.h"
-#endif
+#include "opencv2/core/utility.hpp"
+#include "opencv2/core/private.hpp"
+#include "opencv2/core/ocl.hpp"
 
-#include "opencv2/features2d/features2d.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/imgproc/imgproc_c.h"
-#include "opencv2/core/internal.hpp"
+#include <algorithm>
+
+#ifdef HAVE_TEGRA_OPTIMIZATION
+#include "opencv2/features2d/features2d_tegra.hpp"
+#endif
 
 #endif

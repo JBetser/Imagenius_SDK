@@ -119,7 +119,7 @@ double GMM::operator()( int ci, const Vec3d color ) const
     double res = 0;
     if( coefs[ci] > 0 )
     {
-		CV_Assert( covDeterms[ci] > std::numeric_limits<double>::epsilon() );
+        CV_Assert( covDeterms[ci] > std::numeric_limits<double>::epsilon() );
         Vec3d diff = color;
         double* m = mean + 3*ci;
         diff[0] -= m[0]; diff[1] -= m[1]; diff[2] -= m[2];
@@ -138,7 +138,7 @@ int GMM::whichComponent( const Vec3d color ) const
 
     for( int ci = 0; ci < componentsCount; ci++ )
     {
-		double p = (*this)( ci, color );
+        double p = (*this)( ci, color );
         if( p > max )
         {
             k = ci;
@@ -230,7 +230,7 @@ void GMM::calcInverseCovAndDeterm( int ci )
   Calculate beta - parameter of GrabCut algorithm.
   beta = 1/(2*avg(sqr(||color[i] - color[j]||)))
 */
-double calcBeta( const Mat& img )
+static double calcBeta( const Mat& img )
 {
     double beta = 0;
     for( int y = 0; y < img.rows; y++ )
@@ -272,7 +272,7 @@ double calcBeta( const Mat& img )
   Calculate weights of noterminal vertices of graph.
   beta and gamma - parameters of GrabCut algorithm.
  */
-void calcNWeights( const Mat& img, Mat& leftW, Mat& upleftW, Mat& upW, Mat& uprightW, double beta, double gamma )
+static void calcNWeights( const Mat& img, Mat& leftW, Mat& upleftW, Mat& upW, Mat& uprightW, double beta, double gamma )
 {
     const double gammaDivSqrt2 = gamma / std::sqrt(2.0f);
     leftW.create( img.rows, img.cols, CV_64FC1 );
@@ -305,7 +305,7 @@ void calcNWeights( const Mat& img, Mat& leftW, Mat& upleftW, Mat& upW, Mat& upri
             }
             else
                 upW.at<double>(y,x) = 0;
-            if( x+1<img.cols-1 && y-1>=0 ) // upright
+            if( x+1<img.cols && y-1>=0 ) // upright
             {
                 Vec3d diff = color - (Vec3d)img.at<Vec3b>(y-1,x+1);
                 uprightW.at<double>(y,x) = gammaDivSqrt2 * exp(-beta*diff.dot(diff));
@@ -319,7 +319,7 @@ void calcNWeights( const Mat& img, Mat& leftW, Mat& upleftW, Mat& upW, Mat& upri
 /*
   Check size, type and element values of mask matrix.
  */
-void checkMask( const Mat& img, const Mat& mask )
+static void checkMask( const Mat& img, const Mat& mask )
 {
     if( mask.empty() )
         CV_Error( CV_StsBadArg, "mask is empty" );
@@ -342,15 +342,15 @@ void checkMask( const Mat& img, const Mat& mask )
 /*
   Initialize mask using rectangular.
 */
-void initMaskWithRect( Mat& mask, Size imgSize, Rect rect )
+static void initMaskWithRect( Mat& mask, Size imgSize, Rect rect )
 {
     mask.create( imgSize, CV_8UC1 );
     mask.setTo( GC_BGD );
 
-    rect.x = max(0, rect.x);
-    rect.y = max(0, rect.y);
-    rect.width = min(rect.width, imgSize.width-rect.x);
-    rect.height = min(rect.height, imgSize.height-rect.y);
+    rect.x = std::max(0, rect.x);
+    rect.y = std::max(0, rect.y);
+    rect.width = std::min(rect.width, imgSize.width-rect.x);
+    rect.height = std::min(rect.height, imgSize.height-rect.y);
 
     (mask(rect)).setTo( Scalar(GC_PR_FGD) );
 }
@@ -358,13 +358,13 @@ void initMaskWithRect( Mat& mask, Size imgSize, Rect rect )
 /*
   Initialize GMM background and foreground models using kmeans algorithm.
 */
-void initGMMs( const Mat& img, const Mat& mask, GMM& bgdGMM, GMM& fgdGMM )
+static void initGMMs( const Mat& img, const Mat& mask, GMM& bgdGMM, GMM& fgdGMM )
 {
     const int kMeansItCount = 10;
     const int kMeansType = KMEANS_PP_CENTERS;
 
     Mat bgdLabels, fgdLabels;
-    vector<Vec3f> bgdSamples, fgdSamples;
+    std::vector<Vec3f> bgdSamples, fgdSamples;
     Point p;
     for( p.y = 0; p.y < img.rows; p.y++ )
     {
@@ -398,7 +398,7 @@ void initGMMs( const Mat& img, const Mat& mask, GMM& bgdGMM, GMM& fgdGMM )
 /*
   Assign GMMs components for each pixel.
 */
-void assignGMMsComponents( const Mat& img, const Mat& mask, const GMM& bgdGMM, const GMM& fgdGMM, Mat& compIdxs )
+static void assignGMMsComponents( const Mat& img, const Mat& mask, const GMM& bgdGMM, const GMM& fgdGMM, Mat& compIdxs )
 {
     Point p;
     for( p.y = 0; p.y < img.rows; p.y++ )
@@ -406,7 +406,7 @@ void assignGMMsComponents( const Mat& img, const Mat& mask, const GMM& bgdGMM, c
         for( p.x = 0; p.x < img.cols; p.x++ )
         {
             Vec3d color = img.at<Vec3b>(p);
-			compIdxs.at<int>(p) = mask.at<uchar>(p) == GC_BGD || mask.at<uchar>(p) == GC_PR_BGD ?
+            compIdxs.at<int>(p) = mask.at<uchar>(p) == GC_BGD || mask.at<uchar>(p) == GC_PR_BGD ?
                 bgdGMM.whichComponent(color) : fgdGMM.whichComponent(color);
         }
     }
@@ -415,7 +415,7 @@ void assignGMMsComponents( const Mat& img, const Mat& mask, const GMM& bgdGMM, c
 /*
   Learn GMMs parameters.
 */
-void learnGMMs( const Mat& img, const Mat& mask, const Mat& compIdxs, GMM& bgdGMM, GMM& fgdGMM )
+static void learnGMMs( const Mat& img, const Mat& mask, const Mat& compIdxs, GMM& bgdGMM, GMM& fgdGMM )
 {
     bgdGMM.initLearning();
     fgdGMM.initLearning();
@@ -443,7 +443,7 @@ void learnGMMs( const Mat& img, const Mat& mask, const Mat& compIdxs, GMM& bgdGM
 /*
   Construct GCGraph
 */
-void constructGCGraph( const Mat& img, const Mat& mask, const GMM& bgdGMM, const GMM& fgdGMM, double lambda,
+static void constructGCGraph( const Mat& img, const Mat& mask, const GMM& bgdGMM, const GMM& fgdGMM, double lambda,
                        const Mat& leftW, const Mat& upleftW, const Mat& upW, const Mat& uprightW,
                        GCGraph<double>& graph )
 {
@@ -506,7 +506,7 @@ void constructGCGraph( const Mat& img, const Mat& mask, const GMM& bgdGMM, const
 /*
   Estimate segmentation using MaxFlow algorithm
 */
-void estimateSegmentation( GCGraph<double>& graph, Mat& mask )
+static void estimateSegmentation( GCGraph<double>& graph, Mat& mask )
 {
     graph.maxFlow();
     Point p;
@@ -533,7 +533,7 @@ void cv::grabCut( InputArray _img, InputOutputArray _mask, Rect rect,
     Mat& mask = _mask.getMatRef();
     Mat& bgdModel = _bgdModel.getMatRef();
     Mat& fgdModel = _fgdModel.getMatRef();
-    
+
     if( img.empty() )
         CV_Error( CV_StsBadArg, "image is empty" );
     if( img.type() != CV_8UC3 )

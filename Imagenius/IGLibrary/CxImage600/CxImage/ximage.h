@@ -451,9 +451,8 @@ public:
                 bool const optimizeRightAngles=true, bool const bKeepOriginalSize=false);
 	bool Rotate180(CxImage* iDst = NULL);
 	virtual bool AutoRotate() { return false; }
-	bool Resample(long newx, long newy, int mode = 0, CxImage* iDst = NULL);
 	bool Resample(const CxImage& iDst);
-	bool Resample2(long newx, long newy, InterpolationMethod const inMethod=IM_BICUBIC2,
+	bool Resample(long newx, long newy, InterpolationMethod const inMethod=IM_BICUBIC2,
 				OverflowMethod const ofMethod=OM_REPEAT, CxImage* const iDst = NULL,
 				bool const disableAveraging=false);
 	bool DecreaseBpp(DWORD nbit, bool errordiffusion, RGBQUAD* ppal = 0, DWORD clrimportant = 0);
@@ -469,7 +468,7 @@ public:
 	bool Thumbnail(long newx, long newy, RGBQUAD canvascolor, CxImage* iDst = 0);
 	bool CircleTransform(int type,long rmax=0,float Koeff=1.0f);
 	bool RedEyeRemove(RECT rcLeft, RECT rcRight, float strength = 0.8f);
-	bool ChangeEyeColor (RECT rcLeft, RECT rcRight, BYTE hue, BYTE sat, float fStrength, bool bAuto = true);
+	bool ChangeEyeColor (RECT rcLeft, RECT rcRight, BYTE hue, BYTE sat, float fStrength);
 	bool GetEyeCenters (RECT rcLeft, RECT rcRight, POINT& ptCenterLeft, POINT& ptCenterRight);
 	POINT GetEyeCenter();
 	bool QIShrink(long newx, long newy, CxImage* const iDst = NULL, bool bChangeBpp = false);
@@ -482,12 +481,14 @@ public:
 	bool AddEyeSaturation (short sat, RECT rcEye, bool bUseSelect = false);
 	bool AddEyeValue (short val, RECT rcEye, bool bUseSelect = false);
 	bool ScaleEyeValue (float fScale, RECT rcEye, bool bUseSelect = false);
+	// advanced transformations
 	bool Cartoon(float fDiffusion = 5.0f);
 	bool Sketch(int nDiffusion = 4);
 	bool OilPainting(float fDiffusion = 5.0f);
 	bool WaterPainting(float fDiffusion = 5.0f);
 	bool Quantize(int colorCount = 256);
 	bool Clay();
+	bool ExecutePythonScript (const std::wstring& wsPythonScript);
 	virtual bool Update() {return true;}
 	virtual void SetSize(int nWidth, int nHeight);
 //@}
@@ -517,7 +518,7 @@ public:
 	bool Threshold2(BYTE level, bool bDirection, RGBQUAD nBkgndColor, bool bSetAlpha = false);
 	bool Colorize(BYTE hue, BYTE sat, BYTE val, float blend, bool bMixVal = false);
 	bool Light(long brightness, long contrast = 0);
-	//bool InOutLight(long brightness, long contrast_IN = 0, long contrast_OUT = 0);
+	bool Vibrance(long strength);
 	float Mean();
 	bool Filter(long* kernel, long Ksize, long Kfactor, long Koffset);
 	bool GradientMorpho(long nDiam, bool bHSV = false);

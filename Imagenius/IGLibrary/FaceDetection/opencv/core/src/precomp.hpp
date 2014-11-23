@@ -43,18 +43,17 @@
 #ifndef __OPENCV_PRECOMP_H__
 #define __OPENCV_PRECOMP_H__
 
-#if defined _MSC_VER && _MSC_VER >= 1200
-    // disable warnings related to inline functions
-    #pragma warning( disable: 4251 4711 4710 4514 )
-#endif
-
-#ifdef HAVE_CVCONFIG_H 
+#include "opencv2/opencv_modules.hpp"
 #include "cvconfig.h"
-#endif
 
-#include "opencv2/core/core.hpp"
+#include "opencv2/core/utility.hpp"
 #include "opencv2/core/core_c.h"
-#include "opencv2/core/internal.hpp"
+#include "opencv2/core/cuda.hpp"
+#include "opencv2/core/opengl.hpp"
+
+#include "opencv2/core/private.hpp"
+#include "opencv2/core/private.cuda.hpp"
+#include "opencv2/core/ocl.hpp"
 
 #include <assert.h>
 #include <ctype.h>
@@ -65,8 +64,33 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef HAVE_TEGRA_OPTIMIZATION
+#include "opencv2/core/core_tegra.hpp"
+#else
+#define GET_OPTIMIZED(func) (func)
+#endif
+
 namespace cv
 {
+
+typedef void (*BinaryFunc)(const uchar* src1, size_t step1,
+                       const uchar* src2, size_t step2,
+                       uchar* dst, size_t step, Size sz,
+                       void*);
+
+BinaryFunc getConvertFunc(int sdepth, int ddepth);
+BinaryFunc getCopyMaskFunc(size_t esz);
+
+/* default memory block for sparse array elements */
+#define  CV_SPARSE_MAT_BLOCK     (1<<12)
+
+/* initial hash table size */
+#define  CV_SPARSE_HASH_SIZE0    (1<<10)
+
+/* maximal average node_count/hash_size ratio beyond which hash table is resized */
+#define  CV_SPARSE_HASH_RATIO    3
+
+
 
 // -128.f ... 255.f
 extern const float g_8x32fTab[];
@@ -74,8 +98,6 @@ extern const float g_8x32fTab[];
 
 extern const ushort g_8x16uSqrTab[];
 #define CV_SQR_8U(x)  cv::g_8x16uSqrTab[(x)+255]
-
-extern const char* g_HersheyGlyphs[];
 
 extern const uchar g_Saturate8u[];
 #define CV_FAST_CAST_8U(t)   (assert(-256 <= (t) && (t) <= 512), cv::g_Saturate8u[(t)+256])
@@ -85,7 +107,6 @@ extern const uchar g_Saturate8u[];
 
 #if defined WIN32 || defined _WIN32
 void deleteThreadAllocData();
-void deleteThreadRNGData();
 #endif
 
 template<typename T1, typename T2=T1, typename T3=T1> struct OpAdd
@@ -93,7 +114,7 @@ template<typename T1, typename T2=T1, typename T3=T1> struct OpAdd
     typedef T1 type1;
     typedef T2 type2;
     typedef T3 rtype;
-    T3 operator ()(T1 a, T2 b) const { return saturate_cast<T3>(a + b); }
+    T3 operator ()(const T1 a, const T2 b) const { return saturate_cast<T3>(a + b); }
 };
 
 template<typename T1, typename T2=T1, typename T3=T1> struct OpSub
@@ -101,7 +122,7 @@ template<typename T1, typename T2=T1, typename T3=T1> struct OpSub
     typedef T1 type1;
     typedef T2 type2;
     typedef T3 rtype;
-    T3 operator ()(T1 a, T2 b) const { return saturate_cast<T3>(a - b); }
+    T3 operator ()(const T1 a, const T2 b) const { return saturate_cast<T3>(a - b); }
 };
 
 template<typename T1, typename T2=T1, typename T3=T1> struct OpRSub
@@ -109,7 +130,7 @@ template<typename T1, typename T2=T1, typename T3=T1> struct OpRSub
     typedef T1 type1;
     typedef T2 type2;
     typedef T3 rtype;
-    T3 operator ()(T1 a, T2 b) const { return saturate_cast<T3>(b - a); }
+    T3 operator ()(const T1 a, const T2 b) const { return saturate_cast<T3>(b - a); }
 };
 
 template<typename T> struct OpMin
@@ -117,7 +138,7 @@ template<typename T> struct OpMin
     typedef T type1;
     typedef T type2;
     typedef T rtype;
-    T operator ()(T a, T b) const { return std::min(a, b); }
+    T operator ()(const T a, const T b) const { return std::min(a, b); }
 };
 
 template<typename T> struct OpMax
@@ -125,7 +146,7 @@ template<typename T> struct OpMax
     typedef T type1;
     typedef T type2;
     typedef T rtype;
-    T operator ()(T a, T b) const { return std::max(a, b); }
+    T operator ()(const T a, const T b) const { return std::max(a, b); }
 };
 
 inline Size getContinuousSize( const Mat& m1, int widthScale=1 )
@@ -169,44 +190,75 @@ struct NoVec
 };
 
 extern volatile bool USE_SSE2;
-
-typedef void (*BinaryFunc)(const uchar* src1, size_t step1,
-                           const uchar* src2, size_t step2,
-                           uchar* dst, size_t step, Size sz,
-                           void*);
-
-BinaryFunc getConvertFunc(int sdepth, int ddepth);
-BinaryFunc getConvertScaleFunc(int sdepth, int ddepth);
-BinaryFunc getCopyMaskFunc(size_t esz);
+extern volatile bool USE_SSE4_2;
+extern volatile bool USE_AVX;
 
 enum { BLOCK_SIZE = 1024 };
 
-#ifdef HAVE_IPP
-static inline IppiSize ippiSize(int width, int height) { IppiSize sz = { width, height}; return sz; }
-static inline IppiSize ippiSize(Size _sz)              { IppiSize sz = { _sz.width, _sz.height}; return sz; }
-#endif
-
 #if defined HAVE_IPP && (IPP_VERSION_MAJOR >= 7)
 #define ARITHM_USE_IPP 1
-#define IF_IPP(then_call, else_call) then_call
 #else
 #define ARITHM_USE_IPP 0
-#define IF_IPP(then_call, else_call) else_call
 #endif
 
 inline bool checkScalar(const Mat& sc, int atype, int sckind, int akind)
 {
-    if( sc.dims > 2 || (sc.cols != 1 && sc.rows != 1) || !sc.isContinuous() )
+    if( sc.dims > 2 || !sc.isContinuous() )
+        return false;
+    Size sz = sc.size();
+    if(sz.width != 1 && sz.height != 1)
         return false;
     int cn = CV_MAT_CN(atype);
     if( akind == _InputArray::MATX && sckind != _InputArray::MATX )
         return false;
-    return sc.size() == Size(1, 1) || sc.size() == Size(1, cn) || sc.size() == Size(cn, 1) ||
-           (sc.size() == Size(1, 4) && sc.type() == CV_64F && cn <= 4);
+    return sz == Size(1, 1) || sz == Size(1, cn) || sz == Size(cn, 1) ||
+           (sz == Size(1, 4) && sc.type() == CV_64F && cn <= 4);
 }
-    
+
+inline bool checkScalar(InputArray sc, int atype, int sckind, int akind)
+{
+    if( sc.dims() > 2 || !sc.isContinuous() )
+        return false;
+    Size sz = sc.size();
+    if(sz.width != 1 && sz.height != 1)
+        return false;
+    int cn = CV_MAT_CN(atype);
+    if( akind == _InputArray::MATX && sckind != _InputArray::MATX )
+        return false;
+    return sz == Size(1, 1) || sz == Size(1, cn) || sz == Size(cn, 1) ||
+           (sz == Size(1, 4) && sc.type() == CV_64F && cn <= 4);
+}
+
 void convertAndUnrollScalar( const Mat& sc, int buftype, uchar* scbuf, size_t blocksize );
-    
+
+struct CoreTLSData
+{
+    CoreTLSData() : device(0), useOpenCL(-1)
+    {}
+
+    RNG rng;
+    int device;
+    ocl::Queue oclQueue;
+    int useOpenCL; // 1 - use, 0 - do not use, -1 - auto/not initialized
+};
+
+extern TLSData<CoreTLSData> coreTlsData;
+
+#if defined(BUILD_SHARED_LIBS)
+#if defined WIN32 || defined _WIN32 || defined WINCE
+#define CL_RUNTIME_EXPORT __declspec(dllexport)
+#elif defined __GNUC__ && __GNUC__ >= 4
+#define CL_RUNTIME_EXPORT __attribute__ ((visibility ("default")))
+#else
+#define CL_RUNTIME_EXPORT
+#endif
+#else
+#define CL_RUNTIME_EXPORT
+#endif
+
+extern bool __termination; // skip some cleanups, because process is terminating
+                           // (for example, if ExitProcess() was already called)
+
 }
 
 #endif /*_CXCORE_INTERNAL_H_*/

@@ -57,9 +57,9 @@ var DZ_OFFSETY = WORKSPACE_OFFSETY + 130;
 var MANAGERS_WIDTH = 150;
 var TOOLBOX_WIDTH = 60;
 
-var GENERIC_ERROR = 'Aie aie aie something serious happened. Please reload the page or press F5 to refresh. If this happens again please notify the problem below and we will fix it very shorty. Thanks! '
 var ACCESS_ERROR = 'You are currently running a demo version. Please create an account for free or login with facebook to use that feature';
-var CONNECTION_ERROR = 'Connection failed. The service might be temporarily down or servers are currently too busy. Please try again later';
+var GENERIC_ERROR = 'Connection failed. Please note that only one connection per computer is allowed. Or the servers are currently too busy. Please try again later';
+var SSO_ERROR = 'Connection failed. Please note that only one connection per computer is allowed. Please restart the app';
 function IG_internalAPI(functionName, jsonData, successCallback, errorCallback) {
     if (jsonData == null)
         jsonData = {};
@@ -115,6 +115,8 @@ function IG_internalAPI(functionName, jsonData, successCallback, errorCallback) 
         case "ConnectDemo":
         case "ConnectUser":
         case "ConnectFbGuest":
+        case "ConnectTwitterGuest":
+		case "ConnectBitlUser":            
         case "DisconnectUser":
             asmxName = "ImageniusPublicWS.asmx/";
             break;
@@ -181,6 +183,12 @@ function IG_publicAPI(functionName, jsonData, successCallback, errorCallback) {
             return;
         case "ConnectFbGuest":
             IG_internalConnectFbGuest(jsonData, successCallback, errorCallback);
+            return;
+		case "ConnectBitlUser":
+            IG_internalBitlUser(jsonData, successCallback, errorCallback);
+            return;
+        case "ConnectTwitterGuest":
+            IG_internalConnectTwGuest(jsonData, successCallback, errorCallback);
             return;
         case "CloseImage":
             if (jsonData == null)
@@ -339,8 +347,24 @@ function IG_internalConnectDemo(successCallback, errorCallback) {
            if (errorCallback)
                errorCallback(status, jqXHR);
            else
-               IG_internalAlertClient(CONNECTION_ERROR, true);
+               IG_internalAlertClient(GENERIC_ERROR, true);
        }
+    );
+}
+
+function IG_internalBitlUser(successCallback, errorCallback) {
+    if (userEmail == null || userEmail == "") {
+        IG_internalAlertClient('Please specify a valid user email', true);
+        return;
+    }
+    if (userPwd == null || userPwd == "") {
+        IG_internalAlertClient('Please specify the password', true);
+        return;
+    }
+    IG_internalAPI("InitConnection", null,
+        function (data) {
+            IG_internalAPI("ConnectBitlUser", {}, successCallback, errorCallback);
+        }, errorCallback
     );
 }
 
@@ -368,7 +392,7 @@ function IG_internalReconnectUser(demo, successCallback, errorCallback) {
                if (errorCallback)
                    errorCallback(status, jqXHR);
                else
-                   IG_internalAlertClient(CONNECTION_ERROR, true);
+                   IG_internalAlertClient(GENERIC_ERROR, true);
            }
         );
     }
@@ -469,6 +493,10 @@ function IG_internalOnUserConnected(data) {
             if (divCurrentWorkspace.getAttribute("currentView") != "Workspace")
                 IG_internalShowWorkspace(null);
             IG_internalOnResize();            
+            if (IGWS_DEEPZOOM_DIV.Viewer) {
+                if (IGWS_DEEPZOOM_DIV.Viewer.viewport)
+                    IGWS_DEEPZOOM_DIV.Viewer.viewport.goHome();
+            }
             break;
         case IGANSWER_FRAME_ACTIONDONE:
             if (data.RequestParams.RequestId == IGREQUEST_FRAME_SAVE) {
@@ -550,16 +578,23 @@ function IG_internalProcessServerAnswers(data, successCallback, errorCallback) {
 function IG_ProcessAnswersCallback(result, successCallback, errorCallback) {
     waitingForReply = false;
     if (result) {
-        if ((result.Status == "Disconnected") || (result.Status == "Error")) {
-            if (errorCallback)
-                errorCallback("Error", CONNECTION_ERROR);
-            else {
-                IG_internalReconnectUser(successCallback, function (data, reason) {
-                    IG_internalAlertClient(GENERIC_ERROR, true);
-                });
-            }
+        if (result.Status == "DisconnectedBySSO") {
+            IG_internalAlertClient(SSO_ERROR, true);
             return;
-        }        
+        }
+        else {
+            if ((result.Status == "Disconnected") || (result.Status == "Error")) {
+                var errMsg = result.Message ? GENERIC_ERROR + ". Error description: " + result.Message : GENERIC_ERROR;
+                if (errorCallback)
+                    errorCallback("Error", errMsg);
+                else {
+                    IG_internalReconnectUser(successCallback, function (data, reason) {
+                            IG_internalAlertClient(errMsg, true);
+                        });
+                }
+                return;
+            }
+        }   
     }
     if (result.AnswerId) {
         if ((result.AnswerId >= 3000) &&
@@ -606,4 +641,25 @@ function IG_internalConnectFbGuest(jsonData, successCallback, errorCallback) {
             IG_internalAPI("ConnectFbGuest", jsonData, successCallback, errorCallback);
         }, errorCallback
     );
-}
+    } 
+    function IG_internalConnectTwGuest(jsonData, successCallback, errorCallback) {
+        if (jsonData == null)
+            jsonData = {};
+        if (jsonData.UserName == null) {
+            IG_internalAlertClient('Please specify a valid user name', true);
+            return;
+        }
+        if (jsonData.UserEmail == null) {
+            IG_internalAlertClient('Please specify a valid user email or id', true);
+            return;
+        }
+        IG_internalAPI("InitConnection", null,
+        function (data) {
+            var divWorkspace = IGWS_WORKSPACE_DIV;
+            divWorkspace.setAttribute("UserName", jsonData.UserName);
+            divWorkspace.setAttribute("UserEmail", jsonData.UserEmail);
+            jsonData.Password = Sha256.hash(jsonData.UserName + data.Realm + data.PublicKey + jsonData.UserEmail.split('@')[0], false);
+            IG_internalAPI("ConnectTwitterGuest", jsonData, successCallback, errorCallback);
+        }, errorCallback
+    );
+    }

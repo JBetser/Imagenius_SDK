@@ -177,6 +177,7 @@ protected:
 	void Ghost (const IGLibrary::IGFrame *src);
 	void CopyInfo(const CxImage &src);
 	bool Transfer(CxImage &from, bool bTransferFrames /*=true*/);
+	bool Resample (long newx, long newy);
 	HRESULT Resample (long newx, long newy, IGFRAMEPROPERTY_STRETCHING_ENUM stretchMode);
 	HRESULT InternalSave (const TCHAR* filename, DWORD imagetype, bool bCloseAfterSave, bool bAsync = true);
 

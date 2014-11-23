@@ -358,19 +358,25 @@ interface IIGWorkspace : IDispatch{
 	[id(23), helpstring("Get the active frame guid")] 
 	HRESULT  GetActiveFrameId ([in,out]BSTR *p_bstrIds);
 
-	[id(24), helpstring("Get the frame names separated by a coma")] 
+	[id(24), helpstring("Get the active frame last request guid")] 
+	HRESULT  GetActiveFrameReqGuid ([in,out]BSTR *p_bstrReqGuid);
+
+	[id(25), helpstring("Get the frame names separated by a coma")] 
 	HRESULT  GetFrameNames ([in,out]BSTR *p_bstrNames);
 
-	[id(25), helpstring("Get the frame number of layers separated by a coma")] 
+	[id(26), helpstring("Get the last frame request guids separated by a coma")] 
+	HRESULT  GetFrameReqGuids ([in,out]BSTR *p_bstrReqGuids);
+
+	[id(27), helpstring("Get the frame number of layers separated by a coma")] 
 	HRESULT  GetFrameNbLayers ([in,out]BSTR *p_bstrNbLayers);
 
-	[id(26), helpstring("Get each layer visibility separated by an underscore for each frame separated by a coma")] 
+	[id(28), helpstring("Get each layer visibility separated by an underscore for each frame separated by a coma")] 
 	HRESULT  GetFrameLayerVisibility ([in,out]BSTR *p_bstrLayerVisibility);
 
-	[id(27), helpstring("Get the frame properties separated by a coma")] 
+	[id(29), helpstring("Get the frame properties separated by a coma")] 
 	HRESULT  GetFrameProperties ([in,out]BSTR *p_bstrFrameProperties);
 
-	[id(28), helpstring("Get the frame history step ids separated by a coma")] 
+	[id(30), helpstring("Get the frame history step ids separated by a coma")] 
 	HRESULT  GetFrameStepIds ([in,out]BSTR *p_bstrFrameStepIds);
 };
 [

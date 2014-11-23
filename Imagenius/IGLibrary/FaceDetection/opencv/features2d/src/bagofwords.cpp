@@ -41,12 +41,10 @@
 
 #include "precomp.hpp"
 
-using namespace std;
-
 namespace cv
 {
 
-BOWTrainer::BOWTrainer()
+BOWTrainer::BOWTrainer() : size(0)
 {}
 
 BOWTrainer::~BOWTrainer()
@@ -69,12 +67,12 @@ void BOWTrainer::add( const Mat& _descriptors )
     descriptors.push_back(_descriptors);
 }
 
-const vector<Mat>& BOWTrainer::getDescriptors() const
+const std::vector<Mat>& BOWTrainer::getDescriptors() const
 {
     return descriptors;
 }
 
-int BOWTrainer::descripotorsCount() const
+int BOWTrainer::descriptorsCount() const
 {
     return descriptors.empty() ? 0 : size;
 }
@@ -110,10 +108,10 @@ Mat BOWKMeansTrainer::cluster() const
 BOWKMeansTrainer::~BOWKMeansTrainer()
 {}
 
-Mat BOWKMeansTrainer::cluster( const Mat& descriptors ) const
+Mat BOWKMeansTrainer::cluster( const Mat& _descriptors ) const
 {
     Mat labels, vocabulary;
-    kmeans( descriptors, clusterCount, labels, termcrit, attempts, flags, vocabulary );
+    kmeans( _descriptors, clusterCount, labels, termcrit, attempts, flags, vocabulary );
     return vocabulary;
 }
 
@@ -123,6 +121,10 @@ BOWImgDescriptorExtractor::BOWImgDescriptorExtractor( const Ptr<DescriptorExtrac
     dextractor(_dextractor), dmatcher(_dmatcher)
 {}
 
+BOWImgDescriptorExtractor::BOWImgDescriptorExtractor( const Ptr<DescriptorMatcher>& _dmatcher ) :
+    dmatcher(_dmatcher)
+{}
+
 BOWImgDescriptorExtractor::~BOWImgDescriptorExtractor()
 {}
 
@@ -130,7 +132,7 @@ void BOWImgDescriptorExtractor::setVocabulary( const Mat& _vocabulary )
 {
     dmatcher->clear();
     vocabulary = _vocabulary;
-    dmatcher->add( vector<Mat>(1, vocabulary) );
+    dmatcher->add( std::vector<Mat>(1, vocabulary) );
 }
 
 const Mat& BOWImgDescriptorExtractor::getVocabulary() const
@@ -138,23 +140,45 @@ const Mat& BOWImgDescriptorExtractor::getVocabulary() const
     return vocabulary;
 }
 
-void BOWImgDescriptorExtractor::compute( const Mat& image, vector<KeyPoint>& keypoints, Mat& imgDescriptor,
-                                         vector<vector<int> >* pointIdxsOfClusters, Mat* _descriptors )
+void BOWImgDescriptorExtractor::compute( InputArray image, std::vector<KeyPoint>& keypoints, OutputArray imgDescriptor,
+                                         std::vector<std::vector<int> >* pointIdxsOfClusters, Mat* descriptors )
 {
     imgDescriptor.release();
 
     if( keypoints.empty() )
         return;
 
+    // Compute descriptors for the image.
+    Mat _descriptors;
+    dextractor->compute( image, keypoints, _descriptors );
+
+    compute( _descriptors, imgDescriptor, pointIdxsOfClusters );
+
+    // Add the descriptors of image keypoints
+    if (descriptors) {
+        *descriptors = _descriptors.clone();
+    }
+}
+
+int BOWImgDescriptorExtractor::descriptorSize() const
+{
+    return vocabulary.empty() ? 0 : vocabulary.rows;
+}
+
+int BOWImgDescriptorExtractor::descriptorType() const
+{
+    return CV_32FC1;
+}
+
+void BOWImgDescriptorExtractor::compute( InputArray keypointDescriptors, OutputArray _imgDescriptor, std::vector<std::vector<int> >* pointIdxsOfClusters )
+{
+    CV_Assert( !vocabulary.empty() );
+
     int clusterCount = descriptorSize(); // = vocabulary.rows
 
-    // Compute descriptors for the image.
-    Mat descriptors = _descriptors ? *_descriptors : Mat();
-    dextractor->compute( image, keypoints, descriptors );
-
     // Match keypoint descriptors to cluster center (to vocabulary)
-    vector<DMatch> matches;
-    dmatcher->match( descriptors, matches );
+    std::vector<DMatch> matches;
+    dmatcher->match( keypointDescriptors, matches );
 
     // Compute image descriptor
     if( pointIdxsOfClusters )
@@ -163,8 +187,12 @@ void BOWImgDescriptorExtractor::compute( const Mat& image, vector<KeyPoint>& key
         pointIdxsOfClusters->resize(clusterCount);
     }
 
-    imgDescriptor = Mat( 1, clusterCount, descriptorType(), Scalar::all(0.0) );
-    float *dptr = (float*)imgDescriptor.data;
+    _imgDescriptor.create(1, clusterCount, descriptorType());
+    _imgDescriptor.setTo(Scalar::all(0));
+
+    Mat imgDescriptor = _imgDescriptor.getMat();
+
+    float *dptr = imgDescriptor.ptr<float>();
     for( size_t i = 0; i < matches.size(); i++ )
     {
         int queryIdx = matches[i].queryIdx;
@@ -177,17 +205,7 @@ void BOWImgDescriptorExtractor::compute( const Mat& image, vector<KeyPoint>& key
     }
 
     // Normalize image descriptor.
-    imgDescriptor /= descriptors.rows;
-}
-
-int BOWImgDescriptorExtractor::descriptorSize() const
-{
-    return vocabulary.empty() ? 0 : vocabulary.rows;
-}
-
-int BOWImgDescriptorExtractor::descriptorType() const
-{
-    return CV_32FC1;
+    imgDescriptor /= keypointDescriptors.size().height;
 }
 
 }

@@ -117,7 +117,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>./;../IGLibrary/;../IGLibrary/FaceDetection;../IGLibrary/IGControls/;../IGLibrary/IGSmartProcessing/;format;communicable;../IGLibrary/CxImage600/CxImage/;toolbox/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PYTHON_SUPPORT;OPENCV_CAN_BREAK_BINARY_COMPATIBILITY;WIN32;_WINDOWS;_DEBUG;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <ExceptionHandling>Async</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -133,7 +133,7 @@
     </ResourceCompile>
     <Link>
       <RegisterOutput>false</RegisterOutput>
-      <AdditionalDependencies>$(SolutionDir)\$(Configuration)\cximage.lib;$(SolutionDir)\$(Configuration)\IGFaceDetectorIceClient.lib;rpcrt4.lib;$(SolutionDir)\$(Configuration)\tiff.lib;$(SolutionDir)\$(Configuration)\IGLibrary.lib;$(SolutionDir)\$(Configuration)\IGControls.lib;$(SolutionDir)\$(Configuration)\FaceDetection.lib;$(SolutionDir)\$(Configuration)\IGSmartProcessing.lib;msxml2.lib;comctl32.lib;Comdlg32.lib;shell32.lib;gdiplus.lib;Msimg32.lib;Ws2_32.lib;Iphlpapi.lib;comsvcs.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\$(Configuration)\cximage.lib;$(SolutionDir)\$(Configuration)\IGPython.lib;$(SolutionDir)\$(Configuration)\IGFaceDetectorIceClient.lib;$(SolutionDir)\$(Configuration)\IGSmartProcessingFaceDetector.lib;rpcrt4.lib;$(SolutionDir)\$(Configuration)\tiff.lib;$(SolutionDir)\$(Configuration)\IGLibrary.lib;$(SolutionDir)\$(Configuration)\IGControls.lib;$(SolutionDir)\$(Configuration)\FaceDetection.lib;$(SolutionDir)\$(Configuration)\IGSmartProcessing.lib;msxml2.lib;comctl32.lib;Comdlg32.lib;shell32.lib;gdiplus.lib;Msimg32.lib;Ws2_32.lib;Iphlpapi.lib;comsvcs.lib</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>.\IGPictureEditor.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -158,7 +158,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <AdditionalIncludeDirectories>./;../IGLibrary/;../IGLibrary/FaceDetection;../IGLibrary/IGControls/;../IGLibrary/IGSmartProcessing/;format;communicable;../IGLibrary/CxImage600/CxImage/;toolbox/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PYTHON_SUPPORT;OPENCV_CAN_BREAK_BINARY_COMPATIBILITY;WIN32;_WINDOWS;NDEBUG;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -172,7 +172,7 @@
     </ResourceCompile>
     <Link>
       <RegisterOutput>false</RegisterOutput>
-      <AdditionalDependencies>$(SolutionDir)\$(Configuration)\cximage.lib;$(SolutionDir)\$(Configuration)\IGFaceDetectorIceClient.lib;rpcrt4.lib;$(SolutionDir)\$(Configuration)\tiff.lib;$(SolutionDir)\$(Configuration)\IGLibrary.lib;$(SolutionDir)\$(Configuration)\IGControls.lib;$(SolutionDir)\$(Configuration)\FaceDetection.lib;$(SolutionDir)\$(Configuration)\IGSmartProcessing.lib;msxml2.lib;comctl32.lib;Comdlg32.lib;shell32.lib;gdiplus.lib;Msimg32.lib;Ws2_32.lib;Iphlpapi.lib;comsvcs.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\$(Configuration)\cximage.lib;$(SolutionDir)\$(Configuration)\IGPython.lib;$(SolutionDir)\$(Configuration)\IGFaceDetectorIceClient.lib;$(SolutionDir)\$(Configuration)\IGSmartProcessingFaceDetector.lib;rpcrt4.lib;$(SolutionDir)\$(Configuration)\tiff.lib;$(SolutionDir)\$(Configuration)\IGLibrary.lib;$(SolutionDir)\$(Configuration)\IGControls.lib;$(SolutionDir)\$(Configuration)\FaceDetection.lib;$(SolutionDir)\$(Configuration)\IGSmartProcessing.lib;msxml2.lib;comctl32.lib;Comdlg32.lib;shell32.lib;gdiplus.lib;Msimg32.lib;Ws2_32.lib;Iphlpapi.lib;comsvcs.lib</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>.\IGPictureEditor.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -199,11 +199,11 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>./;../IGLibrary/;../IGLibrary/FaceDetection;../IGLibrary/IGControls/;../IGLibrary/IGSmartProcessing/;format;communicable;../IGLibrary/CxImage600/CxImage/;toolbox/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_USRDLL;_CRT_SECURE_NO_WARNINGS;IGPICTUREEDITOR_SERVER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PYTHON_SUPPORT;WIN32;_WINDOWS;_DEBUG;_USRDLL;_CRT_SECURE_NO_WARNINGS;IGPICTUREEDITOR_SERVER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <ExceptionHandling>Async</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -215,16 +215,13 @@
     </ResourceCompile>
     <Link>
       <RegisterOutput>false</RegisterOutput>
-      <AdditionalDependencies>$(SolutionDir)\$(Configuration)\cximage.lib;rpcrt4.lib;$(SolutionDir)\$(Configuration)\IGLibrary.lib;$(SolutionDir)\$(Configuration)\IGControls.lib;$(SolutionDir)\$(Configuration)\IGSmartProcessing.lib;msxml2.lib;comctl32.lib;Comdlg32.lib;shell32.lib;gdiplus.lib;Msimg32.lib;Ws2_32.lib;Iphlpapi.lib;comsvcs.lib;dbghelp.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\$(Configuration)\cximage.lib;$(SolutionDir)\$(Configuration)\IGPython.lib;$(SolutionDir)\$(Configuration)\IGFaceDetectorIceClient.lib;$(SolutionDir)\$(Configuration)\IGSmartProcessingFaceDetector.lib;rpcrt4.lib;$(SolutionDir)\$(Configuration)\IGLibrary.lib;$(SolutionDir)\$(Configuration)\IGControls.lib;$(SolutionDir)\$(Configuration)\IGSmartProcessing.lib;msxml2.lib;comctl32.lib;Comdlg32.lib;shell32.lib;gdiplus.lib;Msimg32.lib;Ws2_32.lib;Iphlpapi.lib;comsvcs.lib;dbghelp.lib</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>.\IGPictureEditor.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
-    <PostBuildEvent>
-      <Command>DeployIGPictureEditor.cmd $(Configuration)</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ServerRelease|Win32'">
     <Midl>
@@ -243,9 +240,9 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <AdditionalIncludeDirectories>./;../IGLibrary/;../IGLibrary/FaceDetection;../IGLibrary/IGControls/;../IGLibrary/IGSmartProcessing/;format;communicable;../IGLibrary/CxImage600/CxImage/;toolbox/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_USRDLL;_CRT_SECURE_NO_WARNINGS;IGPICTUREEDITOR_SERVER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>PYTHON_SUPPORT;WIN32;_WINDOWS;NDEBUG;_USRDLL;_CRT_SECURE_NO_WARNINGS;IGPICTUREEDITOR_SERVER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Async</ExceptionHandling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -257,7 +254,7 @@
     </ResourceCompile>
     <Link>
       <RegisterOutput>false</RegisterOutput>
-      <AdditionalDependencies>$(SolutionDir)\$(Configuration)\cximage.lib;$(SolutionDir)\$(Configuration)\IGFaceDetectorIceClient.lib;rpcrt4.lib;$(SolutionDir)\$(Configuration)\IGLibrary.lib;$(SolutionDir)\$(Configuration)\IGControls.lib;$(SolutionDir)\$(Configuration)\IGSmartProcessing.lib;msxml2.lib;comctl32.lib;Comdlg32.lib;shell32.lib;gdiplus.lib;Msimg32.lib;Ws2_32.lib;Iphlpapi.lib;comsvcs.lib;dbghelp.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\$(Configuration)\cximage.lib;$(SolutionDir)\$(Configuration)\IGPython.lib;$(SolutionDir)\$(Configuration)\IGFaceDetectorIceClient.lib;$(SolutionDir)\$(Configuration)\IGSmartProcessingFaceDetector.lib;rpcrt4.lib;$(SolutionDir)\$(Configuration)\IGLibrary.lib;$(SolutionDir)\$(Configuration)\IGControls.lib;$(SolutionDir)\$(Configuration)\IGSmartProcessing.lib;msxml2.lib;comctl32.lib;Comdlg32.lib;shell32.lib;gdiplus.lib;Msimg32.lib;Ws2_32.lib;Iphlpapi.lib;comsvcs.lib;dbghelp.lib</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>.\IGPictureEditor.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -270,11 +267,12 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
     <Link>
       <RegisterOutput>false</RegisterOutput>
-      <AdditionalDependencies>$(SolutionDir)\$(Configuration)\cximage.lib;$(SolutionDir)\$(Configuration)\IGFaceDetectorIceClient.lib;rpcrt4.lib;$(SolutionDir)\$(Configuration)\tiff.lib;$(SolutionDir)\$(Configuration)\IGLibrary.lib;$(SolutionDir)\$(Configuration)\IGControls.lib;$(SolutionDir)\$(Configuration)\FaceDetection.lib;msxml2.lib;comctl32.lib;Comdlg32.lib;shell32.lib;gdiplus.lib;Msimg32.lib;Ws2_32.lib;Iphlpapi.lib;comsvcs.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\$(Configuration)\cximage.lib;$(SolutionDir)\$(Configuration)\IGPython.lib;$(SolutionDir)\$(Configuration)\IGFaceDetectorIceClient.lib;$(SolutionDir)\$(Configuration)\IGSmartProcessingFaceDetector.lib;rpcrt4.lib;$(SolutionDir)\$(Configuration)\tiff.lib;$(SolutionDir)\$(Configuration)\IGLibrary.lib;$(SolutionDir)\$(Configuration)\IGControls.lib;$(SolutionDir)\$(Configuration)\FaceDetection.lib;msxml2.lib;comctl32.lib;Comdlg32.lib;shell32.lib;gdiplus.lib;Msimg32.lib;Ws2_32.lib;Iphlpapi.lib;comsvcs.lib</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>./;../IGLibrary/;../IGLibrary/FaceDetection;../IGLibrary/IGControls/;../IGLibrary/IGSmartProcessing/;format;communicable;../IGLibrary/CxImage600/CxImage/;toolbox/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PYTHON_SUPPORT;OPENCV_CAN_BREAK_BINARY_COMPATIBILITY;</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -293,6 +291,7 @@
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='ServerRelease|Win32'">false</CompileAsManaged>
     </ClCompile>
     <ClCompile Include="IGAnswer.cpp" />
+    <ClCompile Include="IGAutoKill.cpp" />
     <ClCompile Include="IGDockPanel.cpp" />
     <ClCompile Include="IGFrameControl.cpp" />
     <ClCompile Include="IGFramePropertyManager.cpp" />
@@ -465,6 +464,7 @@
     <Midl Include="IGPictureEditor.idl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="IGAutoKill.h" />
     <ClInclude Include="IGFramePropertyManager.h" />
     <ClInclude Include="IGPropertyManager.h" />
     <ClInclude Include="_IIGDockPanelEvents_CP.h" />

@@ -2,6 +2,7 @@
 #include "ximage.h"
 #include "IGSplashWindow.h"
 #include "IGLayer.h"
+#include "IGSmartLayer.h"
 #include "IGFrame.h"
 #include "IGThread.h"
 #include "IGIPFilter.h"
@@ -10,6 +11,14 @@
 #include "IGProperties.h"
 
 using namespace IGLibrary;
+
+bool IGLibrary::IndexFaces (IGSmartLayer& layer){
+	return layer.IndexFaces();
+}
+
+bool IGLibrary::IndexIris (IGSmartLayer& layer){
+	return layer.IndexIris();
+}
 
 bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 {
@@ -132,6 +141,13 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 			if (!m_pFrame->GetRequestProperty(IGIPFILTER_PARAM_STRENGTH, nStrength) || (nStrength == -1))
 				return false;
 			return pLayer->Saturate (nStrength);
+		}
+	case IGIPFILTER_VIBRANCE:
+		{
+			int nStrength = -1;
+			if (!m_pFrame->GetRequestProperty(IGIPFILTER_PARAM_STRENGTH, nStrength) || (nStrength == -1))
+				return false;
+			return pLayer->Vibrance ((long)((float)nStrength * 2.55f));
 		}
 	case IGIPFILTER_MORPHING:
 		{
@@ -287,6 +303,13 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 		return pLayer->Dither();
 	case IGIPFILTER_CLAY:
 		return pLayer->Clay();
+	case IGIPFILTER_PYTHON:
+		{
+			wstring wsPythonScript;
+			if (!m_pFrame->GetRequestProperty(IGIPFILTER_PARAM_SCRIPT, wsPythonScript))
+				return false;
+			return pLayer->ExecutePythonScript (wsPythonScript);
+		}
 	case IGIPFILTER_FILTER1:
 		{
 			CxImage *layer1 (*pLayer);
@@ -321,14 +344,14 @@ bool IGIPFilter::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 			return true;
 		}
 
-	case IGIPFILTER_FILTER2:
-		return pLayer->Filter2();
+	case IGIPFILTER_PAPER:
+		return pLayer->Paper();
 
-	case IGIPFILTER_FILTER3:
-		return pLayer->Filter3();		
+	case IGIPFILTER_HALOSEPIA:
+		return pLayer->Sepia();		
 
-	case IGIPFILTER_FILTER4:
-		return pLayer->Filter4();
+	case IGIPFILTER_BW:
+		return pLayer->BlackAndWhite();
 	}
 
 	return false;
@@ -385,9 +408,8 @@ bool IGIPIndex::OnImageProcessing (CxImage& image, IGImageProcMessage& message)
 		}
 	case IGIPINDEX_FACE:
 		return pLayer->IndexFaces();
-	case IGIPINDEX_IRIS:	// added by TQ
-		return pLayer->IndexFacenIris();
-
+	case IGIPINDEX_IRIS:
+		return pLayer->IndexIris();
 	}
 
 	return false;

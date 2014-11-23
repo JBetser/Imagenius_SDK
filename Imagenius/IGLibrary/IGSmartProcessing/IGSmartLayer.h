@@ -2,7 +2,7 @@
 #include "IGLPE.h"
 #include "IGSmartPixel.h"
 #include "IGFaceEffect.h"
-//#include "ximage.h"
+#include "ximage.h"
 #include <vector>
 #include <list>
 #include <map>
@@ -32,6 +32,16 @@ namespace IGLibrary
 		}
 	private:
 		float *m_pCoeffYonX;
+	};
+
+	struct IGSTRUCTELEM_BOX {
+		IGSTRUCTELEM_BOX(void *pBox): m_prcBox(static_cast<RECT*>(pBox)){};
+		bool operator()(int nX, int nY) {
+			POINT pt = { nX, nY };
+			return ::PtInRect (m_prcBox, pt) == TRUE;
+		}
+	private:
+		RECT *m_prcBox;
 	};
 
 	class IGSmartLayer : public CxImage
@@ -75,23 +85,21 @@ namespace IGLibrary
 		bool FilterSmallRegions(std::vector <IGRegion*> vRegions);
 		void FilterMorphoBackgroundRegions();
 		bool ProcessFaceEffect (IGIPFaceEffectMessage *pEffectMessage);
-		bool Filter2();
-		bool Filter3();
-		bool Filter4();
+		bool Paper();
+		bool Sepia();
+		bool BlackAndWhite();
 		
 		// indexers
 		virtual bool IndexLPE (IGMarker **ppMarkers, int& nNbMarkers, bool bShowMarkerMode = false);
 		bool IndexFaces (int nDescriptorIdx = -1);
-		bool IndexFacenIris (int nDescriptorIdx = -1); // added by TQ
-		//bool detectIris(const CxImage& faceImg, RECT eye1, RECT eye2 ); // added by TQ
-		//cvPoint getIrisCoor(Mat inputEyeImg); // added by TQ
-
+		bool IndexIris (int nDescriptorIdx = -1);
 		bool IndexSkinBinary();
 		int DetectFaces();	
 		IGFaceDescriptor* GetFaceDescriptor();
 		void SetFaceDescriptor (const std::wstring& wsDescriptor);
 
 		bool Resample();
+		bool Resample(int nWidth, int nHeight);
 		virtual bool AutoRotate();
 		bool SelectionEyesMouth (BYTE level = 255);
 

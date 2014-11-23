@@ -5,12 +5,15 @@
 #include "IGException.h"
 #include "IGSplashWindow.h"
 #include "IGFaceDescriptor.h"
-#include "IGIrisDetection.h"
 #include "IGFrame.h"
+#include "IGLayer.h"
+#include "IGIPFilter.h"
+#include "IGIrisDetection.h"
 #include "FaceDetector.h"
 #include "ximaDZ.h"
 #include <algorithm>
 #include <map>
+#include <ShlObj.h>
 
 using namespace std;
 using namespace IGLibrary;
@@ -325,6 +328,11 @@ bool IGSmartLayer::Resample()
 	return true;
 }
 
+bool IGSmartLayer::Resample(int nWidth, int nHeight)
+{
+	return CxImage::Resample (nWidth, nHeight);
+}
+
 void IGSmartLayer::rotatePt (int nRot, int nPtCtrX, int nPtCtrY, int nPtX, int nPtY, int& nRotatedX, int& nRotatedY)
 {
 	// change of vectorial space, set the origin to the center
@@ -410,7 +418,7 @@ bool IGSmartLayer::IndexFaces (int nDescriptorIdx)
 		for (int x = 0; x < (int)pLayer->GetWidth(); x++){
 			for (int y = 0; y < (int)pLayer->GetHeight(); y++){
 				int rx, ry;
-				rotatePt (-(*it).getRotation(), m_pFaceDescriptor->GetWidth() / 2, m_pFaceDescriptor->GetHeight() / 2, (int)((float)x / fScaleWidth), (int)((float)y / fScaleHeight), rx, ry);
+				m_pFaceDescriptor->GetFaceScaledPt(*it, x, y, rx, ry);
 				if (ellipseFunc (rx - nCenterX, ry - nCenterY, nRayVert)){
 					if (rx >= 0 && rx < (int)m_pFaceDescriptor->GetWidth() && ry >= 0 && ry < (int)m_pFaceDescriptor->GetHeight()){
 						pLayer->SetPixelColor (x, y, grey255);
@@ -423,10 +431,6 @@ bool IGSmartLayer::IndexFaces (int nDescriptorIdx)
 			}
 		}
 		lLayerFaces.push_back (pLayer);
-		rcFace.left = rcCircleFace.left - abs (rcCircleFace.right) / 2;
-		rcFace.top = rcCircleFace.top - abs (rcCircleFace.bottom) / 2;
-		rcFace.right = rcCircleFace.left + abs (rcCircleFace.right) / 2;
-		rcFace.bottom = rcCircleFace.top + abs (rcCircleFace.bottom) / 2;
 	}	
 	ProgressStepIt();
 	// construct the face mask, i.e. the head circles. It is the opposite of the background
@@ -505,32 +509,22 @@ bool IGSmartLayer::IndexFaces (int nDescriptorIdx)
 		RECT rcFace = (*it).getFaceCoords();
 		RECT rcEyeLeft = (*it).getEyeLeftCoords();
 		RECT rcEyeRight = (*it).getEyeRightCoords();
-		int nRayVert = (3 * (max (rcEyeLeft.top, rcEyeRight.top) - rcFace.top)) / 4;
-		int nFaceX = (rcFace.right + rcFace.left) / 2;
-		int nFaceY = (rcFace.bottom + rcFace.top) / 2;
-		float fEllipticCoeff = 3.0f;
-		IGSTRUCTELEM_ELLIPSE ellipseFunc (&fEllipticCoeff);	
-		for (int x = 0; x < (int)pLayer->GetWidth(); x++){
-			for (int y = 0; y < (int)pLayer->GetHeight(); y++){
-				int rx, ry;
-				rotatePt (-(*it).getRotation(), m_pFaceDescriptor->GetWidth() / 2, m_pFaceDescriptor->GetHeight() / 2, (int)((float)x / fScaleWidth), (int)((float)y / fScaleHeight), rx, ry);
-				if (ellipseFunc (rx - nFaceX, ry - nFaceY, nRayVert)){
-					if (rx >= 0 && rx < (int)m_pFaceDescriptor->GetWidth() && ry >= 0 && ry < (int)m_pFaceDescriptor->GetHeight())
-						pLayer->SetPixelColor (x, y, grey255);
-				}
-			}
-		}
-		nRayVert = (3 * (max (rcEyeLeft.top, rcEyeRight.top) - rcFace.top)) / 4;
 		RECT rcEyes;
 		rcEyes.left = (rcEyeLeft.left + rcEyeLeft.right) / 2;
 		rcEyes.right = (rcEyeRight.left + rcEyeRight.right) / 2;
 		rcEyes.top = min (rcEyeLeft.top, rcEyeRight.top);
 		rcEyes.bottom = max (rcEyeLeft.bottom, rcEyeRight.bottom);
-		for (int x = rcEyes.left; x < rcEyes.right; x++){
-			for (int y = rcEyes.top; y < rcEyes.bottom; y++){
+		int nRayVert = (3 * (max (rcEyeLeft.top, rcEyeRight.top) - rcFace.top)) / 4;
+		int nFaceX = (rcFace.right + rcFace.left) / 2;
+		int nFaceY = (rcFace.bottom + rcFace.top) / 2;
+		float fEllipticCoeff = 3.0f;
+		IGSTRUCTELEM_ELLIPSE ellipseFunc (&fEllipticCoeff);	
+		IGSTRUCTELEM_BOX boxFunc (&rcEyes);			
+		for (int x = 0; x < (int)pLayer->GetWidth(); x++){
+			for (int y = 0; y < (int)pLayer->GetHeight(); y++){
 				int rx, ry;
-				rotatePt (-(*it).getRotation(), m_pFaceDescriptor->GetWidth() / 2, m_pFaceDescriptor->GetHeight() / 2, (int)((float)x / fScaleWidth), (int)((float)y / fScaleHeight), rx, ry);
-				if (rx >= 0 && rx < (int)m_pFaceDescriptor->GetWidth() && ry >= 0 && ry < (int)m_pFaceDescriptor->GetHeight())
+				m_pFaceDescriptor->GetFaceScaledPt(*it, x, y, rx, ry);
+				if (ellipseFunc (rx - nFaceX, ry - nFaceY, nRayVert) || boxFunc (rx, ry))
 					pLayer->SetPixelColor (x, y, grey255);
 			}
 		}
@@ -550,8 +544,7 @@ bool IGSmartLayer::IndexFaces (int nDescriptorIdx)
 	return bRes;
 }
 
-// added by TQ
-bool IGSmartLayer::IndexFacenIris(int nDescriptorIdx ) // added by TQ
+bool IGSmartLayer::IndexIris(int nDescriptorIdx )
 {
 	// creation of skin layer
 	ProgressSetRange(10);
@@ -574,6 +567,7 @@ bool IGSmartLayer::IndexFacenIris(int nDescriptorIdx ) // added by TQ
 		lFaces.push_back (m_pFaceDescriptor->GetFace(nDescriptorIdx));
 	ProgressStepIt();
 	// creation of background layer around the faces
+	/*
 	std::list <RECT> lCircleFaces;
 	for (std::list <Face>::iterator it = lFaces.begin(); it != lFaces.end(); ++it){
 		RECT rcFace = (*it).getFaceCoords();
@@ -621,7 +615,7 @@ bool IGSmartLayer::IndexFacenIris(int nDescriptorIdx ) // added by TQ
 		for (int x = 0; x < (int)pLayer->GetWidth(); x++){
 			for (int y = 0; y < (int)pLayer->GetHeight(); y++){
 				int rx, ry;
-				rotatePt (-(*it).getRotation(), m_pFaceDescriptor->GetWidth() / 2, m_pFaceDescriptor->GetHeight() / 2, (int)((float)x / fScaleWidth), (int)((float)y / fScaleHeight), rx, ry);
+				m_pFaceDescriptor->GetFaceUnscaledPt(*it, x, y, rx, ry);				
 				if (ellipseFunc (rx - nCenterX, ry - nCenterY, nRayVert)){
 					if (rx >= 0 && rx < (int)m_pFaceDescriptor->GetWidth() && ry >= 0 && ry < (int)m_pFaceDescriptor->GetHeight()){
 						pLayer->SetPixelColor (x, y, grey255);
@@ -650,7 +644,6 @@ bool IGSmartLayer::IndexFacenIris(int nDescriptorIdx ) // added by TQ
 	IGLibrary::IGMarker** tMarkers = new IGLibrary::IGMarker* [nNbMarkers];
 	tMarkers [0] = new IGMarker (IGMARKER_BACKGROUND, layerBackground);	
 	// create face markers
-	std::list <IGSmartLayer *>::iterator itFace = lLayerFaces.begin();
 	// pre-segmentation processing
 	RECT rcNo = {-1,-1,-1,-1};
 	std::list <Face>::iterator itFaceDetect = lFaces.begin();
@@ -711,6 +704,7 @@ bool IGSmartLayer::IndexFacenIris(int nDescriptorIdx ) // added by TQ
 	}
 	ProgressStepIt();
 	int nIdxFace = 1;
+	std::list <IGSmartLayer *>::iterator itFace = lLayerFaces.begin();
 	for (std::list <Face>::iterator it = lFaces.begin(); it != lFaces.end(); ++it){ // TQ, Draw markers on eye coordinates
 		CxImage *pLayer = tMarkers[nIdxFace]->GetLayer();
 		RECT rcFace = (*it).getFaceCoords();	// TQ, Draw markers on left eye coordinates
@@ -724,7 +718,7 @@ bool IGSmartLayer::IndexFacenIris(int nDescriptorIdx ) // added by TQ
 		for (int x = 0; x < (int)pLayer->GetWidth(); x++){
 			for (int y = 0; y < (int)pLayer->GetHeight(); y++){
 				int rx, ry;
-				rotatePt (-(*it).getRotation(), m_pFaceDescriptor->GetWidth() / 2, m_pFaceDescriptor->GetHeight() / 2, (int)((float)x / fScaleWidth), (int)((float)y / fScaleHeight), rx, ry);
+				m_pFaceDescriptor->GetFaceUnscaledPt(*it, x, y, rx, ry);				
 				if (ellipseFunc (rx - nFaceX, ry - nFaceY, nRayVert)){
 					if (rx >= 0 && rx < (int)m_pFaceDescriptor->GetWidth() && ry >= 0 && ry < (int)m_pFaceDescriptor->GetHeight())
 						pLayer->SetPixelColor (x, y, grey255);
@@ -740,7 +734,7 @@ bool IGSmartLayer::IndexFacenIris(int nDescriptorIdx ) // added by TQ
 		for (int x = rcEyes.left; x < rcEyes.right; x++){
 			for (int y = rcEyes.top; y < rcEyes.bottom; y++){
 				int rx, ry;
-				rotatePt (-(*it).getRotation(), m_pFaceDescriptor->GetWidth() / 2, m_pFaceDescriptor->GetHeight() / 2, (int)((float)x / fScaleWidth), (int)((float)y / fScaleHeight), rx, ry);
+				m_pFaceDescriptor->GetFaceUnscaledPt(*it, x, y, rx, ry);				
 				if (rx >= 0 && rx < (int)m_pFaceDescriptor->GetWidth() && ry >= 0 && ry < (int)m_pFaceDescriptor->GetHeight())
 					pLayer->SetPixelColor (x, y, grey255);
 			}
@@ -748,36 +742,86 @@ bool IGSmartLayer::IndexFacenIris(int nDescriptorIdx ) // added by TQ
 		pLayer->SelectionAddColor (grey255);
 		nIdxFace++;
 		++itFace;
-	}
+	}*/
 	ProgressStepIt();
-	// added by TQ
+
 	// iris detection
 	for (std::list <Face>::iterator it = lFaces.begin(); it != lFaces.end(); ++it){
 
-		CxImage faceImg(*this);
-		RECT rcFace = (*it).getFaceCoords();	
-		RECT rcEyeLeft = (*it).getEyeLeftCoords();
-		RECT rcEyeRight = (*it).getEyeRightCoords();
-		Crop(rcFace, &faceImg);
+		RECT rcFace, rcEyeLeft, rcEyeRight;
+		
+		Face faceCpy (*it); 
+		faceCpy.setRotation (0);
+		m_pFaceDescriptor->GetFaceUnscaledRect(faceCpy, faceCpy.getFaceCoords(), rcFace);
+		m_pFaceDescriptor->GetFaceUnscaledRect(faceCpy, faceCpy.getEyeLeftCoords(), rcEyeLeft);
+		m_pFaceDescriptor->GetFaceUnscaledRect(faceCpy, faceCpy.getEyeRightCoords(), rcEyeRight);		
 
-		IGIrisDetection irisPt;
+		/*
+		m_pFaceDescriptor->GetFaceUnscaledRect(*it, (*it).getFaceCoords(), rcFace);
+		m_pFaceDescriptor->GetFaceUnscaledRect(*it, (*it).getEyeLeftCoords(), rcEyeLeft);
+		m_pFaceDescriptor->GetFaceUnscaledRect(*it, (*it).getEyeRightCoords(), rcEyeRight);*/
+		
+		IGLibrary::IGSmartLayer copyLayer (*this);
+		int nRot = (*it).getRotation();
+		float xTransform = cosf((float)nRot * PI / 180.0f);
+		float yTransform = sinf((float)-nRot * PI / 180.0f);
+		copyLayer.RotateAndResize (xTransform, yTransform, 1.0f, true);
+
+		int nTop = GetHeight() - rcFace.top;
+		rcFace.top = GetHeight() - rcFace.bottom;
+		rcFace.bottom = nTop;
+
+		int nFaceHeight = rcFace.bottom - rcFace.top;
+		int nOffsetHeight = GetHeight() - rcFace.bottom;
+
+		rcEyeLeft.top -= nOffsetHeight;
+		rcEyeLeft.bottom -= nOffsetHeight;
+		nTop = nFaceHeight - rcEyeLeft.top;
+		rcEyeLeft.top = nFaceHeight - rcEyeLeft.bottom;
+		rcEyeLeft.bottom = nTop;
+		rcEyeLeft.left -= rcFace.left;
+		rcEyeLeft.right -= rcFace.left;
+
+		rcEyeRight.top -= nOffsetHeight;
+		rcEyeRight.bottom -= nOffsetHeight;
+		nTop = nFaceHeight - rcEyeRight.top;
+		rcEyeRight.top = nFaceHeight - rcEyeRight.bottom;
+		rcEyeRight.bottom = nTop;
+		rcEyeRight.left -= rcFace.left;
+		rcEyeRight.right -= rcFace.left;
+
+		CxImage faceImg;
+		copyLayer.Crop(rcFace, &faceImg);
+
+
 		POINT ptEye1, ptEye2;
-		irisPt.detect_iris(faceImg, rcEyeLeft, rcEyeRight,ptEye1, ptEye2 );
+		int nRay1 = 0, nRay2 = 0;
 		// Change Eye color
-		if (irisPt.detect_iris(faceImg, rcEyeLeft, rcEyeRight, ptEye1, ptEye2) == true)
+		detectIris(faceImg, rcEyeLeft, rcEyeRight, ptEye1, nRay1, ptEye2, nRay2);
+
+		if (nRay1 > 0 && nRay2 > 0)
 		{
+			ptEye1.x += rcFace.left;
+			ptEye1.y = nFaceHeight - ptEye1.y + nOffsetHeight;
+			ptEye2.x += rcFace.left;
+			ptEye2.y = nFaceHeight - ptEye2.y + nOffsetHeight;
+						
+			RECT rTransformBox = info.rSelectionBox;
+			long xpivot = (head.biWidth - 1) / 2;
+			long ypivot = (head.biHeight - 1) / 2;	
+			ptEye1.x = xpivot + (int)(((float)(ptEye1.x - xpivot) * xTransform - (float)(ptEye1.y - ypivot) * yTransform));
+			ptEye1.y = ypivot + (int)(((float)(ptEye1.x - xpivot) * yTransform + (float)(ptEye1.y - ypivot) * xTransform));
+			ptEye2.x = xpivot + (int)(((float)(ptEye2.x - xpivot) * xTransform - (float)(ptEye2.y - ypivot) * yTransform));
+			ptEye2.y = ypivot + (int)(((float)(ptEye2.x - xpivot) * yTransform + (float)(ptEye2.y - ypivot) * xTransform));
+			
 			RECT coor1, coor2;
-			coor1.top = ptEye1.y - 1; coor1.bottom = ptEye1.y +1; coor1.left = ptEye1.x - 1; coor1.right = ptEye1.x + 1;
-			coor2.top = ptEye2.y - 1; coor2.bottom = ptEye2.y +1; coor2.left = ptEye2.x - 1; coor2.right = ptEye2.x + 1;
-			faceImg.ChangeEyeColor(coor1, coor2, (BYTE)40,  (BYTE)0, 1, 1); 
-
-			coor1.top = ptEye1.y - 2; coor1.bottom = ptEye1.y +2; coor1.left = ptEye1.x - 2; coor1.right = ptEye1.x + 2;
-			coor2.top = ptEye2.y - 2; coor2.bottom = ptEye2.y +2; coor2.left = ptEye2.x - 2; coor2.right = ptEye2.x + 2;
-			faceImg.ChangeEyeColor(coor1, coor2, (BYTE)80,  (BYTE)0, 1, 1); 
+			coor1.top = ptEye1.y - nRay1; coor1.bottom = ptEye1.y + nRay1; coor1.left = ptEye1.x - nRay1; coor1.right = ptEye1.x + nRay1;
+			coor2.top = ptEye2.y - nRay2; coor2.bottom = ptEye2.y + nRay2; coor2.left = ptEye2.x - nRay2; coor2.right = ptEye2.x + nRay2;
+			
+			ChangeEyeColor(coor1, coor2, (BYTE)0,  (BYTE)255, 100.0f); 
 		}
-
-		++itFace;
 	}
+	/*
 	// watershed segmentation
 	bool bRes = IndexLPE (tMarkers, nNbMarkers);
 	ProgressStepIt();
@@ -786,7 +830,8 @@ bool IGSmartLayer::IndexFacenIris(int nDescriptorIdx ) // added by TQ
 		delete tMarkers [nIdxMarker];
 	}
 	delete [] tMarkers;
-	return bRes;
+	return bRes;*/
+	return true;
 }
 
 bool IGSmartLayer::ProcessFaceEffect(IGIPFaceEffectMessage *pEffectMessage)
@@ -801,7 +846,7 @@ bool IGSmartLayer::ProcessFaceEffect(IGIPFaceEffectMessage *pEffectMessage)
 
 	ProgressSetSubRange (1, 3);	// start sub step 2 / 3
 	ProgressSetRange(10);
-	if (!sampledLayer.IndexFaces())
+	if (!pEffectMessage->m_funcIndex(sampledLayer))
 		return false;
 
 	// process background image processing
@@ -1498,7 +1543,7 @@ bool IGSmartLayer::ConstructSaddle()
 	else if (head.biBitCount != 8)
 		return false;
 	/*
-	//Selection du step de segmentation adapt?
+		//Selection du step de segmentation adapté
 	Segmentation3D NewSegModel=new Segmentation3D((Objet3D)mainform.CurScene.WFModel.Objets[0],mainform.CurSegOptions,mainform);
 	ArrayList CurSegmentationStep=(ArrayList)mainform.SegmentationSteps[0];
 	Segmentation3D CurSeg=(Segmentation3D)CurSegmentationStep[0];
@@ -1604,7 +1649,7 @@ bool IGSmartLayer::ConstructSaddle()
 	CurVert.Label=FirstVoisin.Label;
 	}
 
-	//Renum?rotation des r?gions
+		//Renumérotation des régions
 	LabelIndices.Clear();
 	WorkingRegList.Clear();
 	foreach(SegVertex Vert in NewSegModel.VertexList)
@@ -1884,11 +1929,11 @@ bool IGSmartLayer::FilterFaceWithEyes (const list <pair <BYTE, RECT>>& lpairPara
 				float fRatioTop = ((float)(*itRect).second.bottom - (float)fMinY) / ((float)fMaxY - (float)fMinY);
 				float fRatioBottom = ((*itRect).second.top - (float)fMinY) / ((float)fMaxY - (float)fMinY);
 				float fRatioAspect = ((float)((*itRect).second.bottom - (*itRect).second.top) / (float)(fMaxY - fMinY)) / ((float)((*itRect).second.right - (*itRect).second.left) / (float)(fMaxX - fMinX));
-				if ((abs (fCenterOffsetX) < 0.2f) && (fCenterOffsetY > 0.0f) && (fCenterOffsetY < 0.5f) && (fRatio > 0.03f) && (fRatioArea < 0.75f) && (fRatioAspect < 0.6f)
-					&& (fRatioTop < 0.9f) && (fRatioBottom > 0.1f)){
-						bFaceEyeDetected = true;
-						rectEyeDetected = (*itRect).second;
-						break;
+				if ((abs (fCenterOffsetX) < 0.2f) && (fCenterOffsetY > 0.0f) && (fCenterOffsetY < 0.5f) && (fRatio > 0.03f) && (fRatioArea < 0.75f) && (fRatioAspect < 0.6f) 
+							&& (fRatioTop < 0.9f) && (fRatioBottom > 0.1f)){
+					bFaceEyeDetected = true;
+					rectEyeDetected = (*itRect).second;
+					break;
 				}
 			}
 			if (bFaceEyeDetected){
@@ -2109,7 +2154,7 @@ bool IGSmartLayer::SelectionEyesMouth (BYTE level)
 
 
 
-bool IGSmartLayer::Filter2()
+bool IGSmartLayer::Paper()
 {
 	CxImage final(*this);
 	if (!final.Light ((long)(255*.1)))
@@ -2126,14 +2171,14 @@ bool IGSmartLayer::Filter2()
 	final.Mix (grayLayer);
 	
 	CxImage paper (*(CxImage*)mg_spPaper->GetLayer(0));
-	if (!paper.Resample (-1, GetHeight()))
+	if (!paper.Resample (*this))
 		return false;
 
 	final.AlphaSetMixingFunc (CXIMAGEMIXING_DARKENING);
 	final.Mix (paper);
 
 	CxImage halo (*(CxImage*)mg_spFilter2_halo->GetLayer(0));
-	if (!halo.Resample (-1, GetHeight()))
+	if (!halo.Resample (*this))
 		return false;
 
 	final.AlphaSetMixingFunc (CXIMAGEMIXING_ALPHA);
@@ -2143,13 +2188,13 @@ bool IGSmartLayer::Filter2()
 	return true;
 }
 
-bool IGSmartLayer::Filter3()
+bool IGSmartLayer::Sepia()
 {
 	CxImage final(*this);
 	final.Duotone(RGB(116, 28, 25), RGB(215, 173, 127));
 
 	CxImage brush (*(CxImage*)mg_spFilter2_halo->GetLayer(0));
-	if (!brush.Resample (-1, GetHeight()))
+	if (!brush.Resample (*this))
 		return false;
 
 	int nAlpha = (int) (255*.70);
@@ -2160,7 +2205,7 @@ bool IGSmartLayer::Filter3()
 	return true;
 }
 
-bool IGSmartLayer::Filter4()
+bool IGSmartLayer::BlackAndWhite()
 {
 	CxImage final(*this);
 	final.Duotone(RGB(60, 60, 60), RGB(163, 163, 163));

@@ -383,6 +383,9 @@ public:
 				GetFrame()->SetRequestProperty (IGIPFILTER_PARAM_DIRECTIONY, nDirectionY);
 			if (GetParameter (IGIPFILTER_PARAM_TOLERANCE, nTolerance))
 				GetFrame()->SetRequestProperty (IGIPFILTER_PARAM_TOLERANCE, nTolerance);
+			std::wstring wsScript;
+			if (GetParameter (IGIPFILTER_PARAM_SCRIPT, wsScript))
+				GetFrame()->SetRequestProperty (IGIPFILTER_PARAM_SCRIPT, wsScript);
 		}
 		// transfer the current texture to the frame
 		IGLibrary::IGSELECTTEXTURE_TYPE_ENUM eTexture = IGLibrary::IGSELECTTEXTURE_TYPE_ENUM_UNKNOWN;

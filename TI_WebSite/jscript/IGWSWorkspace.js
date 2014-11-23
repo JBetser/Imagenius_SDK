@@ -1558,8 +1558,14 @@ function IG_internalPopOutUpperLayer()
     tParams[2] = function (event) {   // MOUSE UP
         var divDeepZoomPanel = IGWS_DEEPZOOM_DIV;
         var isClick = (divDeepZoomPanel.getAttribute("ismousedown") == "1");
-        if (divDeepZoomPanel.getAttribute("isdragging") == "1")
-            isClick = false;
+        if (divDeepZoomPanel.getAttribute("isdragging") == "1") {
+            var pixel = divDeepZoomPanel.Utils.getMousePosition(event).minus
+                        (divDeepZoomPanel.Utils.getElementPosition(divDeepZoomPanel.Viewer.elmt));
+            var pixelStart = new Point(parseInt(divDeepZoomPanel.getAttribute("mousedownX")),
+                                           parseInt(divDeepZoomPanel.getAttribute("mousedownY")));
+            if (pixel.distanceTo(pixelStart) > 1)
+                isClick = false;
+        }
         divDeepZoomPanel.setAttribute("isdragging", "0");
         divDeepZoomPanel.setAttribute("ismousedown", "0");
         var curPt = IG_internalGetCurrentPoint(event);

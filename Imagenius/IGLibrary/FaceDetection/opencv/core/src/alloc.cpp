@@ -55,7 +55,9 @@ static void* OutOfMemoryError(size_t size)
 
 #if CV_USE_SYSTEM_MALLOC
 
+#if defined WIN32 || defined _WIN32
 void deleteThreadAllocData() {}
+#endif
 
 void* fastMalloc( size_t size )
 {
@@ -66,19 +68,19 @@ void* fastMalloc( size_t size )
     adata[-1] = udata;
     return adata;
 }
-    
+
 void fastFree(void* ptr)
 {
     if(ptr)
     {
         uchar* udata = ((uchar**)ptr)[-1];
         CV_DbgAssert(udata < (uchar*)ptr &&
-               ((uchar*)ptr - udata) <= (ptrdiff_t)(sizeof(void*)+CV_MALLOC_ALIGN)); 
+               ((uchar*)ptr - udata) <= (ptrdiff_t)(sizeof(void*)+CV_MALLOC_ALIGN));
         free(udata);
     }
 }
 
-#else
+#else //CV_USE_SYSTEM_MALLOC
 
 #if 0
 #define SANITY_CHECK(block) \
@@ -92,9 +94,20 @@ void fastFree(void* ptr)
 #define STAT(stmt)
 
 #ifdef WIN32
+#if (_WIN32_WINNT >= 0x0602)
+#include <synchapi.h>
+#endif
+
 struct CriticalSection
 {
-    CriticalSection() { InitializeCriticalSection(&cs); }
+    CriticalSection()
+    {
+#if (_WIN32_WINNT >= 0x0600)
+        InitializeCriticalSectionEx(&cs, 1000, 0);
+#else
+        InitializeCriticalSection(&cs);
+#endif
+    }
     ~CriticalSection() { DeleteCriticalSection(&cs); }
     void lock() { EnterCriticalSection(&cs); }
     void unlock() { LeaveCriticalSection(&cs); }
@@ -113,7 +126,10 @@ void SystemFree(void* ptr, size_t)
 {
     free(ptr);
 }
-#else
+#else //WIN32
+
+#include <sys/mman.h>
+
 struct CriticalSection
 {
     CriticalSection() { pthread_mutex_init(&mutex, 0); }
@@ -139,7 +155,7 @@ void SystemFree(void* ptr, size_t size)
 {
     munmap(ptr, size);
 }
-#endif
+#endif //WIN32
 
 struct AutoLock
 {
@@ -385,8 +401,8 @@ struct ThreadData
 
 #ifdef WIN32
 #ifdef WINCE
-#	define TLS_OUT_OF_INDEXES ((DWORD)0xFFFFFFFF)
-#endif
+#   define TLS_OUT_OF_INDEXES ((DWORD)0xFFFFFFFF)
+#endif //WINCE
 
     static DWORD tlsKey;
     static ThreadData* get()
@@ -402,7 +418,7 @@ struct ThreadData
         }
         return data;
     }
-#else
+#else //WIN32
     static void deleteData(void* data)
     {
         delete (ThreadData*)data;
@@ -422,7 +438,7 @@ struct ThreadData
         }
         return data;
     }
-#endif
+#endif //WIN32
 };
 
 #ifdef WIN32
@@ -434,9 +450,9 @@ void deleteThreadAllocData()
         delete (ThreadData*)TlsGetValue( ThreadData::tlsKey );
 }
 
-#else
+#else //WIN32
 pthread_key_t ThreadData::tlsKey = 0;
-#endif
+#endif //WIN32
 
 #if 0
 static void checkList(ThreadData* tls, int idx)
@@ -532,7 +548,7 @@ void* fastMalloc( size_t size )
             freePtr = block;
             if( !data )
             {
-                block = gcPtr; 
+                block = gcPtr;
                 for( int k = 0; k < 2; k++ )
                 {
                     SANITY_CHECK(block);
@@ -617,7 +633,7 @@ void fastFree( void* ptr )
                 Block*& startPtr = tls->bins[idx][START];
                 Block*& freePtr = tls->bins[idx][FREE];
                 Block*& gcPtr = tls->bins[idx][GC];
-                
+
                 if( block == block->next )
                 {
                     CV_DbgAssert( startPtr == block && freePtr == block && gcPtr == block );
@@ -674,13 +690,8 @@ void fastFree( void* ptr )
     }
 }
 
-#endif
+#endif //CV_USE_SYSTEM_MALLOC
 
-}
-
-CV_IMPL void cvSetMemoryManager( CvAllocFunc, CvFreeFunc, void * )
-{
-    CV_Error( -1, "Custom memory allocator is not supported" );
 }
 
 CV_IMPL void* cvAlloc( size_t size )

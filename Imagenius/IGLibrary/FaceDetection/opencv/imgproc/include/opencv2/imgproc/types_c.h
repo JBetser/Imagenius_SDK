@@ -44,7 +44,6 @@
 #define __OPENCV_IMGPROC_TYPES_C_H__
 
 #include "opencv2/core/core_c.h"
-#include "opencv2/imgproc/types_c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -75,13 +74,6 @@ enum
 enum
 {
     CV_GAUSSIAN_5x5 = 7
-};
-
-/* Inpainting algorithms */
-enum
-{
-    CV_INPAINT_NS      =0,
-    CV_INPAINT_TELEA   =1
 };
 
 /* Special filters */
@@ -190,46 +182,160 @@ enum
     CV_BayerGB2BGR_VNG =63,
     CV_BayerRG2BGR_VNG =64,
     CV_BayerGR2BGR_VNG =65,
-    
+
     CV_BayerBG2RGB_VNG =CV_BayerRG2BGR_VNG,
     CV_BayerGB2RGB_VNG =CV_BayerGR2BGR_VNG,
     CV_BayerRG2RGB_VNG =CV_BayerBG2BGR_VNG,
     CV_BayerGR2RGB_VNG =CV_BayerGB2BGR_VNG,
-    
+
     CV_BGR2HSV_FULL = 66,
     CV_RGB2HSV_FULL = 67,
     CV_BGR2HLS_FULL = 68,
     CV_RGB2HLS_FULL = 69,
-    
+
     CV_HSV2BGR_FULL = 70,
     CV_HSV2RGB_FULL = 71,
     CV_HLS2BGR_FULL = 72,
     CV_HLS2RGB_FULL = 73,
-    
+
     CV_LBGR2Lab     = 74,
     CV_LRGB2Lab     = 75,
     CV_LBGR2Luv     = 76,
     CV_LRGB2Luv     = 77,
-    
+
     CV_Lab2LBGR     = 78,
     CV_Lab2LRGB     = 79,
     CV_Luv2LBGR     = 80,
     CV_Luv2LRGB     = 81,
-    
+
     CV_BGR2YUV      = 82,
     CV_RGB2YUV      = 83,
     CV_YUV2BGR      = 84,
     CV_YUV2RGB      = 85,
-    
+
     CV_BayerBG2GRAY = 86,
     CV_BayerGB2GRAY = 87,
     CV_BayerRG2GRAY = 88,
     CV_BayerGR2GRAY = 89,
 
-    CV_YUV420i2RGB  = 90,
-    CV_YUV420i2BGR  = 91,
-    
-    CV_COLORCVT_MAX  =100
+    //YUV 4:2:0 formats family
+    CV_YUV2RGB_NV12 = 90,
+    CV_YUV2BGR_NV12 = 91,
+    CV_YUV2RGB_NV21 = 92,
+    CV_YUV2BGR_NV21 = 93,
+    CV_YUV420sp2RGB = CV_YUV2RGB_NV21,
+    CV_YUV420sp2BGR = CV_YUV2BGR_NV21,
+
+    CV_YUV2RGBA_NV12 = 94,
+    CV_YUV2BGRA_NV12 = 95,
+    CV_YUV2RGBA_NV21 = 96,
+    CV_YUV2BGRA_NV21 = 97,
+    CV_YUV420sp2RGBA = CV_YUV2RGBA_NV21,
+    CV_YUV420sp2BGRA = CV_YUV2BGRA_NV21,
+
+    CV_YUV2RGB_YV12 = 98,
+    CV_YUV2BGR_YV12 = 99,
+    CV_YUV2RGB_IYUV = 100,
+    CV_YUV2BGR_IYUV = 101,
+    CV_YUV2RGB_I420 = CV_YUV2RGB_IYUV,
+    CV_YUV2BGR_I420 = CV_YUV2BGR_IYUV,
+    CV_YUV420p2RGB = CV_YUV2RGB_YV12,
+    CV_YUV420p2BGR = CV_YUV2BGR_YV12,
+
+    CV_YUV2RGBA_YV12 = 102,
+    CV_YUV2BGRA_YV12 = 103,
+    CV_YUV2RGBA_IYUV = 104,
+    CV_YUV2BGRA_IYUV = 105,
+    CV_YUV2RGBA_I420 = CV_YUV2RGBA_IYUV,
+    CV_YUV2BGRA_I420 = CV_YUV2BGRA_IYUV,
+    CV_YUV420p2RGBA = CV_YUV2RGBA_YV12,
+    CV_YUV420p2BGRA = CV_YUV2BGRA_YV12,
+
+    CV_YUV2GRAY_420 = 106,
+    CV_YUV2GRAY_NV21 = CV_YUV2GRAY_420,
+    CV_YUV2GRAY_NV12 = CV_YUV2GRAY_420,
+    CV_YUV2GRAY_YV12 = CV_YUV2GRAY_420,
+    CV_YUV2GRAY_IYUV = CV_YUV2GRAY_420,
+    CV_YUV2GRAY_I420 = CV_YUV2GRAY_420,
+    CV_YUV420sp2GRAY = CV_YUV2GRAY_420,
+    CV_YUV420p2GRAY = CV_YUV2GRAY_420,
+
+    //YUV 4:2:2 formats family
+    CV_YUV2RGB_UYVY = 107,
+    CV_YUV2BGR_UYVY = 108,
+    //CV_YUV2RGB_VYUY = 109,
+    //CV_YUV2BGR_VYUY = 110,
+    CV_YUV2RGB_Y422 = CV_YUV2RGB_UYVY,
+    CV_YUV2BGR_Y422 = CV_YUV2BGR_UYVY,
+    CV_YUV2RGB_UYNV = CV_YUV2RGB_UYVY,
+    CV_YUV2BGR_UYNV = CV_YUV2BGR_UYVY,
+
+    CV_YUV2RGBA_UYVY = 111,
+    CV_YUV2BGRA_UYVY = 112,
+    //CV_YUV2RGBA_VYUY = 113,
+    //CV_YUV2BGRA_VYUY = 114,
+    CV_YUV2RGBA_Y422 = CV_YUV2RGBA_UYVY,
+    CV_YUV2BGRA_Y422 = CV_YUV2BGRA_UYVY,
+    CV_YUV2RGBA_UYNV = CV_YUV2RGBA_UYVY,
+    CV_YUV2BGRA_UYNV = CV_YUV2BGRA_UYVY,
+
+    CV_YUV2RGB_YUY2 = 115,
+    CV_YUV2BGR_YUY2 = 116,
+    CV_YUV2RGB_YVYU = 117,
+    CV_YUV2BGR_YVYU = 118,
+    CV_YUV2RGB_YUYV = CV_YUV2RGB_YUY2,
+    CV_YUV2BGR_YUYV = CV_YUV2BGR_YUY2,
+    CV_YUV2RGB_YUNV = CV_YUV2RGB_YUY2,
+    CV_YUV2BGR_YUNV = CV_YUV2BGR_YUY2,
+
+    CV_YUV2RGBA_YUY2 = 119,
+    CV_YUV2BGRA_YUY2 = 120,
+    CV_YUV2RGBA_YVYU = 121,
+    CV_YUV2BGRA_YVYU = 122,
+    CV_YUV2RGBA_YUYV = CV_YUV2RGBA_YUY2,
+    CV_YUV2BGRA_YUYV = CV_YUV2BGRA_YUY2,
+    CV_YUV2RGBA_YUNV = CV_YUV2RGBA_YUY2,
+    CV_YUV2BGRA_YUNV = CV_YUV2BGRA_YUY2,
+
+    CV_YUV2GRAY_UYVY = 123,
+    CV_YUV2GRAY_YUY2 = 124,
+    //CV_YUV2GRAY_VYUY = CV_YUV2GRAY_UYVY,
+    CV_YUV2GRAY_Y422 = CV_YUV2GRAY_UYVY,
+    CV_YUV2GRAY_UYNV = CV_YUV2GRAY_UYVY,
+    CV_YUV2GRAY_YVYU = CV_YUV2GRAY_YUY2,
+    CV_YUV2GRAY_YUYV = CV_YUV2GRAY_YUY2,
+    CV_YUV2GRAY_YUNV = CV_YUV2GRAY_YUY2,
+
+    // alpha premultiplication
+    CV_RGBA2mRGBA = 125,
+    CV_mRGBA2RGBA = 126,
+
+    CV_RGB2YUV_I420 = 127,
+    CV_BGR2YUV_I420 = 128,
+    CV_RGB2YUV_IYUV = CV_RGB2YUV_I420,
+    CV_BGR2YUV_IYUV = CV_BGR2YUV_I420,
+
+    CV_RGBA2YUV_I420 = 129,
+    CV_BGRA2YUV_I420 = 130,
+    CV_RGBA2YUV_IYUV = CV_RGBA2YUV_I420,
+    CV_BGRA2YUV_IYUV = CV_BGRA2YUV_I420,
+    CV_RGB2YUV_YV12  = 131,
+    CV_BGR2YUV_YV12  = 132,
+    CV_RGBA2YUV_YV12 = 133,
+    CV_BGRA2YUV_YV12 = 134,
+
+    // Edge-Aware Demosaicing
+    CV_BayerBG2BGR_EA = 135,
+    CV_BayerGB2BGR_EA = 136,
+    CV_BayerRG2BGR_EA = 137,
+    CV_BayerGR2BGR_EA = 138,
+
+    CV_BayerBG2RGB_EA = CV_BayerRG2BGR_EA,
+    CV_BayerGB2RGB_EA = CV_BayerGR2BGR_EA,
+    CV_BayerRG2RGB_EA = CV_BayerBG2BGR_EA,
+    CV_BayerGR2RGB_EA = CV_BayerGB2BGR_EA,
+
+    CV_COLORCVT_MAX  = 139
 };
 
 
@@ -277,6 +383,24 @@ typedef struct CvMoments
     double  m00, m10, m01, m20, m11, m02, m30, m21, m12, m03; /* spatial moments */
     double  mu20, mu11, mu02, mu30, mu21, mu12, mu03; /* central moments */
     double  inv_sqrt_m00; /* m00 != 0 ? 1/sqrt(m00) : 0 */
+
+#ifdef __cplusplus
+    CvMoments(){}
+    CvMoments(const cv::Moments& m)
+    {
+        m00 = m.m00; m10 = m.m10; m01 = m.m01;
+        m20 = m.m20; m11 = m.m11; m02 = m.m02;
+        m30 = m.m30; m21 = m.m21; m12 = m.m12; m03 = m.m03;
+        mu20 = m.mu20; mu11 = m.mu11; mu02 = m.mu02;
+        mu30 = m.mu30; mu21 = m.mu21; mu12 = m.mu12; mu03 = m.mu03;
+        double am00 = std::abs(m.m00);
+        inv_sqrt_m00 = am00 > DBL_EPSILON ? 1./std::sqrt(am00) : 0;
+    }
+    operator cv::Moments() const
+    {
+        return cv::Moments(m00, m10, m01, m20, m11, m02, m30, m21, m12, m03);
+    }
+#endif
 }
 CvMoments;
 
@@ -306,7 +430,8 @@ enum
     CV_RETR_EXTERNAL=0,
     CV_RETR_LIST=1,
     CV_RETR_CCOMP=2,
-    CV_RETR_TREE=3
+    CV_RETR_TREE=3,
+    CV_RETR_FLOODFILL=4
 };
 
 /* Contour approximation methods */
@@ -342,79 +467,6 @@ CvChainPtReader;
      (deltas)[2] = -(step), (deltas)[3] = -(step) - (nch),  \
      (deltas)[4] = -(nch),  (deltas)[5] =  (step) - (nch),  \
      (deltas)[6] =  (step), (deltas)[7] =  (step) + (nch))
-
-
-/****************************************************************************************\
-*                              Planar subdivisions                                       *
-\****************************************************************************************/
-
-typedef size_t CvSubdiv2DEdge;
-
-#define CV_QUADEDGE2D_FIELDS()     \
-    int flags;                     \
-    struct CvSubdiv2DPoint* pt[4]; \
-    CvSubdiv2DEdge  next[4];
-
-#define CV_SUBDIV2D_POINT_FIELDS()\
-    int            flags;      \
-    CvSubdiv2DEdge first;      \
-    CvPoint2D32f   pt;         \
-    int id;
-
-#define CV_SUBDIV2D_VIRTUAL_POINT_FLAG (1 << 30)
-
-typedef struct CvQuadEdge2D
-{
-    CV_QUADEDGE2D_FIELDS()
-}
-CvQuadEdge2D;
-
-typedef struct CvSubdiv2DPoint
-{
-    CV_SUBDIV2D_POINT_FIELDS()
-}
-CvSubdiv2DPoint;
-
-#define CV_SUBDIV2D_FIELDS()    \
-    CV_GRAPH_FIELDS()           \
-    int  quad_edges;            \
-    int  is_geometry_valid;     \
-    CvSubdiv2DEdge recent_edge; \
-    CvPoint2D32f  topleft;      \
-    CvPoint2D32f  bottomright;
-
-typedef struct CvSubdiv2D
-{
-    CV_SUBDIV2D_FIELDS()
-}
-CvSubdiv2D;
-
-
-typedef enum CvSubdiv2DPointLocation
-{
-    CV_PTLOC_ERROR = -2,
-    CV_PTLOC_OUTSIDE_RECT = -1,
-    CV_PTLOC_INSIDE = 0,
-    CV_PTLOC_VERTEX = 1,
-    CV_PTLOC_ON_EDGE = 2
-}
-CvSubdiv2DPointLocation;
-
-typedef enum CvNextEdgeType
-{
-    CV_NEXT_AROUND_ORG   = 0x00,
-    CV_NEXT_AROUND_DST   = 0x22,
-    CV_PREV_AROUND_ORG   = 0x11,
-    CV_PREV_AROUND_DST   = 0x33,
-    CV_NEXT_AROUND_LEFT  = 0x13,
-    CV_NEXT_AROUND_RIGHT = 0x31,
-    CV_PREV_AROUND_LEFT  = 0x20,
-    CV_PREV_AROUND_RIGHT = 0x02
-}
-CvNextEdgeType;
-
-/* get the next edge with the same origin point (counterwise) */
-#define  CV_SUBDIV2D_NEXT_EDGE( edge )  (((CvQuadEdge2D*)((edge) & ~3))->next[(edge)&3])
 
 
 /* Contour approximation algorithms */
@@ -455,7 +507,10 @@ enum
     CV_COMP_CORREL        =0,
     CV_COMP_CHISQR        =1,
     CV_COMP_INTERSECT     =2,
-    CV_COMP_BHATTACHARYYA =3
+    CV_COMP_BHATTACHARYYA =3,
+    CV_COMP_HELLINGER     =CV_COMP_BHATTACHARYYA,
+    CV_COMP_CHISQR_ALT    =4,
+    CV_COMP_KL_DIV        =5
 };
 
 /* Mask size for distance transform */
@@ -464,6 +519,13 @@ enum
     CV_DIST_MASK_3   =3,
     CV_DIST_MASK_5   =5,
     CV_DIST_MASK_PRECISE =0
+};
+
+/* Content of output label array: connected components or pixels */
+enum
+{
+  CV_DIST_LABEL_CCOMP = 0,
+  CV_DIST_LABEL_PIXEL = 1
 };
 
 /* Distance types for Distance Transform and M-estimators */

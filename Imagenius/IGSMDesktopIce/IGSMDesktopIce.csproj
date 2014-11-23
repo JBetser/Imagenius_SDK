@@ -35,10 +35,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ice, Version=3.5.0.0, Culture=neutral, PublicKeyToken=cdd571ade22f2f16, processorArchitecture=MSIL" />
-    <Reference Include="IGSMLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\IGSMLib\bin\Debug\IGSMLib.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -65,20 +61,27 @@
     <None Include="app.config" />
     <None Include="config.grid" />
     <None Include="config_debug.grid" />
+    <None Include="IGSMDesktopIce.exe.debug.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IGSMLib\IGSMLib.csproj">
+      <Project>{D79EBEEB-1E58-408F-95E2-2AED552A238D}</Project>
+      <Name>IGSMLib</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties ZerocIce_ProjectVersion="1" ZerocIce_Enabled="True" />
+      <UserProperties ZerocIce_Enabled="True" ZerocIce_ProjectVersion="1" />
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(ProjectDir)config.grid" "$(TargetDir)config.grid"
-copy /Y "$(ProjectDir)configd.grid" "$(TargetDir)configd.grid"
+copy /Y "$(ProjectDir)config_debug.grid" "$(TargetDir)config_debug.grid"
 copy /Y "$(ProjectDir)igservercontroller.ice" "$(SolutionDir)IGSMDesktopIceClient/igservercontroller.ice"
 md "$(TargetDir)db"
 xcopy /Y /E "$(ProjectDir)db" "$(TargetDir)db"

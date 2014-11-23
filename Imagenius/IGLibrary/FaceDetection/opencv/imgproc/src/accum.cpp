@@ -41,6 +41,7 @@
 //M*/
 
 #include "precomp.hpp"
+#include "opencl_kernels_imgproc.hpp"
 
 namespace cv
 {
@@ -49,22 +50,23 @@ template<typename T, typename AT> void
 acc_( const T* src, AT* dst, const uchar* mask, int len, int cn )
 {
     int i = 0;
-    
+
     if( !mask )
     {
         len *= cn;
+        #if CV_ENABLE_UNROLLED
         for( ; i <= len - 4; i += 4 )
         {
             AT t0, t1;
             t0 = src[i] + dst[i];
             t1 = src[i+1] + dst[i+1];
             dst[i] = t0; dst[i+1] = t1;
-            
+
             t0 = src[i+2] + dst[i+2];
             t1 = src[i+3] + dst[i+3];
             dst[i+2] = t0; dst[i+3] = t1;
         }
-        
+        #endif
         for( ; i < len; i++ )
             dst[i] += src[i];
     }
@@ -85,7 +87,7 @@ acc_( const T* src, AT* dst, const uchar* mask, int len, int cn )
                 AT t0 = src[0] + dst[0];
                 AT t1 = src[1] + dst[1];
                 AT t2 = src[2] + dst[2];
-                
+
                 dst[0] = t0; dst[1] = t1; dst[2] = t2;
             }
         }
@@ -101,27 +103,28 @@ acc_( const T* src, AT* dst, const uchar* mask, int len, int cn )
     }
 }
 
-    
+
 template<typename T, typename AT> void
 accSqr_( const T* src, AT* dst, const uchar* mask, int len, int cn )
 {
     int i = 0;
-    
+
     if( !mask )
     {
         len *= cn;
+         #if CV_ENABLE_UNROLLED
         for( ; i <= len - 4; i += 4 )
         {
             AT t0, t1;
             t0 = (AT)src[i]*src[i] + dst[i];
             t1 = (AT)src[i+1]*src[i+1] + dst[i+1];
             dst[i] = t0; dst[i+1] = t1;
-            
+
             t0 = (AT)src[i+2]*src[i+2] + dst[i+2];
             t1 = (AT)src[i+3]*src[i+3] + dst[i+3];
             dst[i+2] = t0; dst[i+3] = t1;
         }
-        
+        #endif
         for( ; i < len; i++ )
             dst[i] += (AT)src[i]*src[i];
     }
@@ -142,7 +145,7 @@ accSqr_( const T* src, AT* dst, const uchar* mask, int len, int cn )
                 AT t0 = (AT)src[0]*src[0] + dst[0];
                 AT t1 = (AT)src[1]*src[1] + dst[1];
                 AT t2 = (AT)src[2]*src[2] + dst[2];
-                
+
                 dst[0] = t0; dst[1] = t1; dst[2] = t2;
             }
         }
@@ -157,28 +160,29 @@ accSqr_( const T* src, AT* dst, const uchar* mask, int len, int cn )
             }
     }
 }
-   
-    
+
+
 template<typename T, typename AT> void
 accProd_( const T* src1, const T* src2, AT* dst, const uchar* mask, int len, int cn )
 {
     int i = 0;
-    
+
     if( !mask )
     {
         len *= cn;
+        #if CV_ENABLE_UNROLLED
         for( ; i <= len - 4; i += 4 )
         {
             AT t0, t1;
             t0 = (AT)src1[i]*src2[i] + dst[i];
             t1 = (AT)src1[i+1]*src2[i+1] + dst[i+1];
             dst[i] = t0; dst[i+1] = t1;
-            
+
             t0 = (AT)src1[i+2]*src2[i+2] + dst[i+2];
             t1 = (AT)src1[i+3]*src2[i+3] + dst[i+3];
             dst[i+2] = t0; dst[i+3] = t1;
         }
-        
+        #endif
         for( ; i < len; i++ )
             dst[i] += (AT)src1[i]*src2[i];
     }
@@ -199,7 +203,7 @@ accProd_( const T* src1, const T* src2, AT* dst, const uchar* mask, int len, int
                 AT t0 = (AT)src1[0]*src2[0] + dst[0];
                 AT t1 = (AT)src1[1]*src2[1] + dst[1];
                 AT t2 = (AT)src1[2]*src2[2] + dst[2];
-                
+
                 dst[0] = t0; dst[1] = t1; dst[2] = t2;
             }
         }
@@ -215,28 +219,29 @@ accProd_( const T* src1, const T* src2, AT* dst, const uchar* mask, int len, int
     }
 }
 
-    
+
 template<typename T, typename AT> void
 accW_( const T* src, AT* dst, const uchar* mask, int len, int cn, double alpha )
 {
     AT a = (AT)alpha, b = 1 - a;
     int i = 0;
-    
+
     if( !mask )
     {
         len *= cn;
+        #if CV_ENABLE_UNROLLED
         for( ; i <= len - 4; i += 4 )
         {
             AT t0, t1;
             t0 = src[i]*a + dst[i]*b;
             t1 = src[i+1]*a + dst[i+1]*b;
             dst[i] = t0; dst[i+1] = t1;
-            
+
             t0 = src[i+2]*a + dst[i+2]*b;
             t1 = src[i+3]*a + dst[i+3]*b;
             dst[i+2] = t0; dst[i+3] = t1;
         }
-        
+        #endif
         for( ; i < len; i++ )
             dst[i] = src[i]*a + dst[i]*b;
     }
@@ -257,7 +262,7 @@ accW_( const T* src, AT* dst, const uchar* mask, int len, int cn, double alpha )
                 AT t0 = src[0]*a + dst[0]*b;
                 AT t1 = src[1]*a + dst[1]*b;
                 AT t2 = src[2]*a + dst[2]*b;
-                
+
                 dst[0] = t0; dst[1] = t1; dst[2] = t2;
             }
         }
@@ -268,7 +273,7 @@ accW_( const T* src, AT* dst, const uchar* mask, int len, int cn, double alpha )
             if( mask[i] )
             {
                 for( int k = 0; k < cn; k++ )
-                    dst[k] += src[k]*a + dst[k]*b;
+                    dst[k] = src[k]*a + dst[k]*b;
             }
     }
 }
@@ -299,8 +304,8 @@ DEF_ACC_FUNCS(16u64f, ushort, double)
 DEF_ACC_FUNCS(32f, float, float)
 DEF_ACC_FUNCS(32f64f, float, double)
 DEF_ACC_FUNCS(64f, double, double)
-    
-    
+
+
 typedef void (*AccFunc)(const uchar*, uchar*, const uchar*, int, int);
 typedef void (*AccProdFunc)(const uchar*, const uchar*, uchar*, const uchar*, int, int);
 typedef void (*AccWFunc)(const uchar*, uchar*, const uchar*, int, int, double);
@@ -346,97 +351,390 @@ inline int getAccTabIdx(int sdepth, int ddepth)
            sdepth == CV_32F && ddepth == CV_32F ? 4 :
            sdepth == CV_32F && ddepth == CV_64F ? 5 :
            sdepth == CV_64F && ddepth == CV_64F ? 6 : -1;
-}    
-    
 }
-    
+
+#ifdef HAVE_OPENCL
+
+enum
+{
+    ACCUMULATE = 0,
+    ACCUMULATE_SQUARE = 1,
+    ACCUMULATE_PRODUCT = 2,
+    ACCUMULATE_WEIGHTED = 3
+};
+
+static bool ocl_accumulate( InputArray _src, InputArray _src2, InputOutputArray _dst, double alpha,
+                            InputArray _mask, int op_type )
+{
+    CV_Assert(op_type == ACCUMULATE || op_type == ACCUMULATE_SQUARE ||
+              op_type == ACCUMULATE_PRODUCT || op_type == ACCUMULATE_WEIGHTED);
+
+    const ocl::Device & dev = ocl::Device::getDefault();
+    bool haveMask = !_mask.empty(), doubleSupport = dev.doubleFPConfig() > 0;
+    int stype = _src.type(), sdepth = CV_MAT_DEPTH(stype), cn = CV_MAT_CN(stype), ddepth = _dst.depth();
+    int kercn = haveMask ? cn : ocl::predictOptimalVectorWidthMax(_src, _src2, _dst), rowsPerWI = dev.isIntel() ? 4 : 1;
+
+    if (!doubleSupport && (sdepth == CV_64F || ddepth == CV_64F))
+        return false;
+
+    const char * const opMap[4] = { "ACCUMULATE", "ACCUMULATE_SQUARE", "ACCUMULATE_PRODUCT",
+                                   "ACCUMULATE_WEIGHTED" };
+
+    char cvt[40];
+    ocl::Kernel k("accumulate", ocl::imgproc::accumulate_oclsrc,
+                  format("-D %s%s -D srcT1=%s -D cn=%d -D dstT1=%s%s -D rowsPerWI=%d -D convertToDT=%s",
+                         opMap[op_type], haveMask ? " -D HAVE_MASK" : "",
+                         ocl::typeToStr(sdepth), kercn, ocl::typeToStr(ddepth),
+                         doubleSupport ? " -D DOUBLE_SUPPORT" : "", rowsPerWI,
+                         ocl::convertTypeStr(sdepth, ddepth, 1, cvt)));
+    if (k.empty())
+        return false;
+
+    UMat src = _src.getUMat(), src2 = _src2.getUMat(), dst = _dst.getUMat(), mask = _mask.getUMat();
+
+    ocl::KernelArg srcarg = ocl::KernelArg::ReadOnlyNoSize(src),
+            src2arg = ocl::KernelArg::ReadOnlyNoSize(src2),
+            dstarg = ocl::KernelArg::ReadWrite(dst, cn, kercn),
+            maskarg = ocl::KernelArg::ReadOnlyNoSize(mask);
+
+    int argidx = k.set(0, srcarg);
+    if (op_type == ACCUMULATE_PRODUCT)
+        argidx = k.set(argidx, src2arg);
+    argidx = k.set(argidx, dstarg);
+    if (op_type == ACCUMULATE_WEIGHTED)
+    {
+        if (ddepth == CV_32F)
+            argidx = k.set(argidx, (float)alpha);
+        else
+            argidx = k.set(argidx, alpha);
+    }
+    if (haveMask)
+        k.set(argidx, maskarg);
+
+    size_t globalsize[2] = { src.cols * cn / kercn, (src.rows + rowsPerWI - 1) / rowsPerWI };
+    return k.run(2, globalsize, NULL, false);
+}
+
+#endif
+
+}
+
 void cv::accumulate( InputArray _src, InputOutputArray _dst, InputArray _mask )
 {
+    int stype = _src.type(), sdepth = CV_MAT_DEPTH(stype), scn = CV_MAT_CN(stype);
+    int dtype = _dst.type(), ddepth = CV_MAT_DEPTH(dtype), dcn = CV_MAT_CN(dtype);
+
+    CV_Assert( _src.sameSize(_dst) && dcn == scn );
+    CV_Assert( _mask.empty() || (_src.sameSize(_mask) && _mask.type() == CV_8U) );
+
+    CV_OCL_RUN(_src.dims() <= 2 && _dst.isUMat(),
+               ocl_accumulate(_src, noArray(), _dst, 0.0, _mask, ACCUMULATE))
+
     Mat src = _src.getMat(), dst = _dst.getMat(), mask = _mask.getMat();
-    int sdepth = src.depth(), ddepth = dst.depth(), cn = src.channels();
-    
-    CV_Assert( dst.size == src.size && dst.channels() == cn );
-    CV_Assert( mask.empty() || (mask.size == src.size && mask.type() == CV_8U) );
-    
+
+#if defined HAVE_IPP
+    if (src.dims <= 2 || (src.isContinuous() && dst.isContinuous() && (mask.empty() || mask.isContinuous())))
+    {
+        typedef IppStatus (CV_STDCALL * ippiAdd)(const void * pSrc, int srcStep, Ipp32f * pSrcDst, int srcdstStep, IppiSize roiSize);
+        typedef IppStatus (CV_STDCALL * ippiAddMask)(const void * pSrc, int srcStep, const Ipp8u * pMask, int maskStep, Ipp32f * pSrcDst,
+                                                    int srcDstStep, IppiSize roiSize);
+        ippiAdd ippFunc = 0;
+        ippiAddMask ippFuncMask = 0;
+
+        if (mask.empty())
+        {
+            CV_SUPPRESS_DEPRECATED_START
+            ippFunc = sdepth == CV_8U && ddepth == CV_32F ? (ippiAdd)ippiAdd_8u32f_C1IR :
+                sdepth == CV_16U && ddepth == CV_32F ? (ippiAdd)ippiAdd_16u32f_C1IR :
+                sdepth == CV_32F && ddepth == CV_32F ? (ippiAdd)ippiAdd_32f_C1IR : 0;
+            CV_SUPPRESS_DEPRECATED_END
+        }
+        else if (scn == 1)
+        {
+            ippFuncMask = sdepth == CV_8U && ddepth == CV_32F ? (ippiAddMask)ippiAdd_8u32f_C1IMR :
+                sdepth == CV_16U && ddepth == CV_32F ? (ippiAddMask)ippiAdd_16u32f_C1IMR :
+                sdepth == CV_32F && ddepth == CV_32F ? (ippiAddMask)ippiAdd_32f_C1IMR : 0;
+        }
+
+        if (ippFunc || ippFuncMask)
+        {
+            IppStatus status = ippStsNoErr;
+
+            Size size = src.size();
+            int srcstep = (int)src.step, dststep = (int)dst.step, maskstep = (int)mask.step;
+            if (src.isContinuous() && dst.isContinuous() && mask.isContinuous())
+            {
+                srcstep = static_cast<int>(src.total() * src.elemSize());
+                dststep = static_cast<int>(dst.total() * dst.elemSize());
+                maskstep = static_cast<int>(mask.total() * mask.elemSize());
+                size.width = static_cast<int>(src.total());
+                size.height = 1;
+            }
+            size.width *= scn;
+
+            if (mask.empty())
+                status = ippFunc(src.ptr(), srcstep, dst.ptr<Ipp32f>(), dststep, ippiSize(size.width, size.height));
+            else
+                status = ippFuncMask(src.ptr(), srcstep, mask.ptr<Ipp8u>(), maskstep,
+                                     dst.ptr<Ipp32f>(), dststep, ippiSize(size.width, size.height));
+
+            if (status >= 0)
+                return;
+            setIppErrorStatus();
+        }
+    }
+#endif
+
     int fidx = getAccTabIdx(sdepth, ddepth);
     AccFunc func = fidx >= 0 ? accTab[fidx] : 0;
     CV_Assert( func != 0 );
-    
+
     const Mat* arrays[] = {&src, &dst, &mask, 0};
     uchar* ptrs[3];
     NAryMatIterator it(arrays, ptrs);
     int len = (int)it.size;
-    
-    for( size_t i = 0; i < it.nplanes; i++, ++it )
-        func(ptrs[0], ptrs[1], ptrs[2], len, cn);
-}
 
+    for( size_t i = 0; i < it.nplanes; i++, ++it )
+        func(ptrs[0], ptrs[1], ptrs[2], len, scn);
+}
 
 void cv::accumulateSquare( InputArray _src, InputOutputArray _dst, InputArray _mask )
 {
+    int stype = _src.type(), sdepth = CV_MAT_DEPTH(stype), scn = CV_MAT_CN(stype);
+    int dtype = _dst.type(), ddepth = CV_MAT_DEPTH(dtype), dcn = CV_MAT_CN(dtype);
+
+    CV_Assert( _src.sameSize(_dst) && dcn == scn );
+    CV_Assert( _mask.empty() || (_src.sameSize(_mask) && _mask.type() == CV_8U) );
+
+    CV_OCL_RUN(_src.dims() <= 2 && _dst.isUMat(),
+               ocl_accumulate(_src, noArray(), _dst, 0.0, _mask, ACCUMULATE_SQUARE))
+
     Mat src = _src.getMat(), dst = _dst.getMat(), mask = _mask.getMat();
-    int sdepth = src.depth(), ddepth = dst.depth(), cn = src.channels();
-    
-    CV_Assert( dst.size == src.size && dst.channels() == cn );
-    CV_Assert( mask.empty() || (mask.size == src.size && mask.type() == CV_8U) );
-    
+
+#if defined(HAVE_IPP)
+    if (src.dims <= 2 || (src.isContinuous() && dst.isContinuous() && (mask.empty() || mask.isContinuous())))
+    {
+        typedef IppStatus (CV_STDCALL * ippiAddSquare)(const void * pSrc, int srcStep, Ipp32f * pSrcDst, int srcdstStep, IppiSize roiSize);
+        typedef IppStatus (CV_STDCALL * ippiAddSquareMask)(const void * pSrc, int srcStep, const Ipp8u * pMask, int maskStep, Ipp32f * pSrcDst,
+                                                           int srcDstStep, IppiSize roiSize);
+        ippiAddSquare ippFunc = 0;
+        ippiAddSquareMask ippFuncMask = 0;
+
+        if (mask.empty())
+        {
+            ippFunc = sdepth == CV_8U && ddepth == CV_32F ? (ippiAddSquare)ippiAddSquare_8u32f_C1IR :
+                sdepth == CV_16U && ddepth == CV_32F ? (ippiAddSquare)ippiAddSquare_16u32f_C1IR :
+                sdepth == CV_32F && ddepth == CV_32F ? (ippiAddSquare)ippiAddSquare_32f_C1IR : 0;
+        }
+        else if (scn == 1)
+        {
+            ippFuncMask = sdepth == CV_8U && ddepth == CV_32F ? (ippiAddSquareMask)ippiAddSquare_8u32f_C1IMR :
+                sdepth == CV_16U && ddepth == CV_32F ? (ippiAddSquareMask)ippiAddSquare_16u32f_C1IMR :
+                sdepth == CV_32F && ddepth == CV_32F ? (ippiAddSquareMask)ippiAddSquare_32f_C1IMR : 0;
+        }
+
+        if (ippFunc || ippFuncMask)
+        {
+            IppStatus status = ippStsNoErr;
+
+            Size size = src.size();
+            int srcstep = (int)src.step, dststep = (int)dst.step, maskstep = (int)mask.step;
+            if (src.isContinuous() && dst.isContinuous() && mask.isContinuous())
+            {
+                srcstep = static_cast<int>(src.total() * src.elemSize());
+                dststep = static_cast<int>(dst.total() * dst.elemSize());
+                maskstep = static_cast<int>(mask.total() * mask.elemSize());
+                size.width = static_cast<int>(src.total());
+                size.height = 1;
+            }
+            size.width *= scn;
+
+            if (mask.empty())
+                status = ippFunc(src.ptr(), srcstep, dst.ptr<Ipp32f>(), dststep, ippiSize(size.width, size.height));
+            else
+                status = ippFuncMask(src.ptr(), srcstep, mask.ptr<Ipp8u>(), maskstep,
+                                     dst.ptr<Ipp32f>(), dststep, ippiSize(size.width, size.height));
+
+            if (status >= 0)
+                return;
+            setIppErrorStatus();
+        }
+    }
+#endif
+
     int fidx = getAccTabIdx(sdepth, ddepth);
     AccFunc func = fidx >= 0 ? accSqrTab[fidx] : 0;
     CV_Assert( func != 0 );
-    
+
     const Mat* arrays[] = {&src, &dst, &mask, 0};
     uchar* ptrs[3];
     NAryMatIterator it(arrays, ptrs);
     int len = (int)it.size;
-    
+
     for( size_t i = 0; i < it.nplanes; i++, ++it )
-        func(ptrs[0], ptrs[1], ptrs[2], len, cn);
+        func(ptrs[0], ptrs[1], ptrs[2], len, scn);
 }
 
 void cv::accumulateProduct( InputArray _src1, InputArray _src2,
                             InputOutputArray _dst, InputArray _mask )
 {
+    int stype = _src1.type(), sdepth = CV_MAT_DEPTH(stype), scn = CV_MAT_CN(stype);
+    int dtype = _dst.type(), ddepth = CV_MAT_DEPTH(dtype), dcn = CV_MAT_CN(dtype);
+
+    CV_Assert( _src1.sameSize(_src2) && stype == _src2.type() );
+    CV_Assert( _src1.sameSize(_dst) && dcn == scn );
+    CV_Assert( _mask.empty() || (_src1.sameSize(_mask) && _mask.type() == CV_8U) );
+
+    CV_OCL_RUN(_src1.dims() <= 2 && _dst.isUMat(),
+               ocl_accumulate(_src1, _src2, _dst, 0.0, _mask, ACCUMULATE_PRODUCT))
+
     Mat src1 = _src1.getMat(), src2 = _src2.getMat(), dst = _dst.getMat(), mask = _mask.getMat();
-    int sdepth = src1.depth(), ddepth = dst.depth(), cn = src1.channels();
-    
-    CV_Assert( src2.size && src1.size && src2.type() == src1.type() );
-    CV_Assert( dst.size == src1.size && dst.channels() == cn );
-    CV_Assert( mask.empty() || (mask.size == src1.size && mask.type() == CV_8U) );
-    
+
+#if defined(HAVE_IPP)
+    if (src1.dims <= 2 || (src1.isContinuous() && src2.isContinuous() && dst.isContinuous()))
+    {
+        typedef IppStatus (CV_STDCALL * ippiAddProduct)(const void * pSrc1, int src1Step, const void * pSrc2,
+                                                        int src2Step, Ipp32f * pSrcDst, int srcDstStep, IppiSize roiSize);
+        typedef IppStatus (CV_STDCALL * ippiAddProductMask)(const void * pSrc1, int src1Step, const void * pSrc2, int src2Step,
+                                                            const Ipp8u * pMask, int maskStep, Ipp32f * pSrcDst, int srcDstStep, IppiSize roiSize);
+        ippiAddProduct ippFunc = 0;
+        ippiAddProductMask ippFuncMask = 0;
+
+        if (mask.empty())
+        {
+            ippFunc = sdepth == CV_8U && ddepth == CV_32F ? (ippiAddProduct)ippiAddProduct_8u32f_C1IR :
+                sdepth == CV_16U && ddepth == CV_32F ? (ippiAddProduct)ippiAddProduct_16u32f_C1IR :
+                sdepth == CV_32F && ddepth == CV_32F ? (ippiAddProduct)ippiAddProduct_32f_C1IR : 0;
+        }
+        else if (scn == 1)
+        {
+            ippFuncMask = sdepth == CV_8U && ddepth == CV_32F ? (ippiAddProductMask)ippiAddProduct_8u32f_C1IMR :
+                sdepth == CV_16U && ddepth == CV_32F ? (ippiAddProductMask)ippiAddProduct_16u32f_C1IMR :
+                sdepth == CV_32F && ddepth == CV_32F ? (ippiAddProductMask)ippiAddProduct_32f_C1IMR : 0;
+        }
+
+        if (ippFunc || ippFuncMask)
+        {
+            IppStatus status = ippStsNoErr;
+
+            Size size = src1.size();
+            int src1step = (int)src1.step, src2step = (int)src2.step, dststep = (int)dst.step, maskstep = (int)mask.step;
+            if (src1.isContinuous() && src2.isContinuous() && dst.isContinuous() && mask.isContinuous())
+            {
+                src1step = static_cast<int>(src1.total() * src1.elemSize());
+                src2step = static_cast<int>(src2.total() * src2.elemSize());
+                dststep = static_cast<int>(dst.total() * dst.elemSize());
+                maskstep = static_cast<int>(mask.total() * mask.elemSize());
+                size.width = static_cast<int>(src1.total());
+                size.height = 1;
+            }
+            size.width *= scn;
+
+            if (mask.empty())
+                status = ippFunc(src1.ptr(), src1step, src2.ptr(), src2step, dst.ptr<Ipp32f>(),
+                                 dststep, ippiSize(size.width, size.height));
+            else
+                status = ippFuncMask(src1.ptr(), src1step, src2.ptr(), src2step, mask.ptr<Ipp8u>(), maskstep,
+                                     dst.ptr<Ipp32f>(), dststep, ippiSize(size.width, size.height));
+
+            if (status >= 0)
+                return;
+            setIppErrorStatus();
+        }
+    }
+#endif
+
     int fidx = getAccTabIdx(sdepth, ddepth);
     AccProdFunc func = fidx >= 0 ? accProdTab[fidx] : 0;
     CV_Assert( func != 0 );
-    
+
     const Mat* arrays[] = {&src1, &src2, &dst, &mask, 0};
     uchar* ptrs[4];
     NAryMatIterator it(arrays, ptrs);
     int len = (int)it.size;
-    
+
     for( size_t i = 0; i < it.nplanes; i++, ++it )
-        func(ptrs[0], ptrs[1], ptrs[2], ptrs[3], len, cn);
+        func(ptrs[0], ptrs[1], ptrs[2], ptrs[3], len, scn);
 }
 
-
-void cv::accumulateWeighted( InputArray _src, CV_IN_OUT InputOutputArray _dst,
+void cv::accumulateWeighted( InputArray _src, InputOutputArray _dst,
                              double alpha, InputArray _mask )
 {
+    int stype = _src.type(), sdepth = CV_MAT_DEPTH(stype), scn = CV_MAT_CN(stype);
+    int dtype = _dst.type(), ddepth = CV_MAT_DEPTH(dtype), dcn = CV_MAT_CN(dtype);
+
+    CV_Assert( _src.sameSize(_dst) && dcn == scn );
+    CV_Assert( _mask.empty() || (_src.sameSize(_mask) && _mask.type() == CV_8U) );
+
+    CV_OCL_RUN(_src.dims() <= 2 && _dst.isUMat(),
+               ocl_accumulate(_src, noArray(), _dst, alpha, _mask, ACCUMULATE_WEIGHTED))
+
     Mat src = _src.getMat(), dst = _dst.getMat(), mask = _mask.getMat();
-    int sdepth = src.depth(), ddepth = dst.depth(), cn = src.channels();
-    
-    CV_Assert( dst.size == src.size && dst.channels() == cn );
-    CV_Assert( mask.empty() || (mask.size == src.size && mask.type() == CV_8U) );
-    
+
+#if defined(HAVE_IPP)
+    if (src.dims <= 2 || (src.isContinuous() && dst.isContinuous() && mask.isContinuous()))
+    {
+        typedef IppStatus (CV_STDCALL * ippiAddWeighted)(const void * pSrc, int srcStep, Ipp32f * pSrcDst, int srcdstStep,
+                                                         IppiSize roiSize, Ipp32f alpha);
+        typedef IppStatus (CV_STDCALL * ippiAddWeightedMask)(const void * pSrc, int srcStep, const Ipp8u * pMask,
+                                                             int maskStep, Ipp32f * pSrcDst,
+                                                             int srcDstStep, IppiSize roiSize, Ipp32f alpha);
+        ippiAddWeighted ippFunc = 0;
+        ippiAddWeightedMask ippFuncMask = 0;
+
+        if (mask.empty())
+        {
+            ippFunc = sdepth == CV_8U && ddepth == CV_32F ? (ippiAddWeighted)ippiAddWeighted_8u32f_C1IR :
+                sdepth == CV_16U && ddepth == CV_32F ? (ippiAddWeighted)ippiAddWeighted_16u32f_C1IR :
+                sdepth == CV_32F && ddepth == CV_32F ? (ippiAddWeighted)ippiAddWeighted_32f_C1IR : 0;
+        }
+        else if (scn == 1)
+        {
+            ippFuncMask = sdepth == CV_8U && ddepth == CV_32F ? (ippiAddWeightedMask)ippiAddWeighted_8u32f_C1IMR :
+                sdepth == CV_16U && ddepth == CV_32F ? (ippiAddWeightedMask)ippiAddWeighted_16u32f_C1IMR :
+                sdepth == CV_32F && ddepth == CV_32F ? (ippiAddWeightedMask)ippiAddWeighted_32f_C1IMR : 0;
+        }
+
+        if (ippFunc || ippFuncMask)
+        {
+            IppStatus status = ippStsNoErr;
+
+            Size size = src.size();
+            int srcstep = (int)src.step, dststep = (int)dst.step, maskstep = (int)mask.step;
+            if (src.isContinuous() && dst.isContinuous() && mask.isContinuous())
+            {
+                srcstep = static_cast<int>(src.total() * src.elemSize());
+                dststep = static_cast<int>(dst.total() * dst.elemSize());
+                maskstep = static_cast<int>(mask.total() * mask.elemSize());
+                size.width = static_cast<int>((int)src.total());
+                size.height = 1;
+            }
+            size.width *= scn;
+
+            if (mask.empty())
+                status = ippFunc(src.ptr(), srcstep, dst.ptr<Ipp32f>(), dststep, ippiSize(size.width, size.height), (Ipp32f)alpha);
+            else
+                status = ippFuncMask(src.ptr(), srcstep, mask.ptr<Ipp8u>(), maskstep,
+                                     dst.ptr<Ipp32f>(), dststep, ippiSize(size.width, size.height), (Ipp32f)alpha);
+
+            if (status >= 0)
+                return;
+            setIppErrorStatus();
+        }
+    }
+#endif
+
     int fidx = getAccTabIdx(sdepth, ddepth);
     AccWFunc func = fidx >= 0 ? accWTab[fidx] : 0;
     CV_Assert( func != 0 );
-    
+
     const Mat* arrays[] = {&src, &dst, &mask, 0};
     uchar* ptrs[3];
     NAryMatIterator it(arrays, ptrs);
     int len = (int)it.size;
-    
+
     for( size_t i = 0; i < it.nplanes; i++, ++it )
-        func(ptrs[0], ptrs[1], ptrs[2], len, cn, alpha);
+        func(ptrs[0], ptrs[1], ptrs[2], len, scn, alpha);
 }
 
 

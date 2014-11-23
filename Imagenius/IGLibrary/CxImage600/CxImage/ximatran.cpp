@@ -6,6 +6,11 @@
 #include "ximadef.h"
 #include "ximage.h"
 #include "ximath.h"
+#include "IGSmartLayer.h"
+#include "IGPython.h"
+
+using namespace std;
+using namespace IGLibrary;
 
 #if CXIMAGE_SUPPORT_BASICTRANSFORMATIONS
 bool CxImage::GrayScaleRed()
@@ -867,414 +872,16 @@ bool CxImage::Rotate180(CxImage* iDst)
 	return true;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-/**
- * Resizes the image. mode can be 0 for slow (bilinear) method ,
- * 1 for fast (nearest pixel) method, or 2 for accurate (bicubic spline interpolation) method.
- * The function is faster with 24 and 1 bpp images, slow for 4 bpp images and slowest for 8 bpp images.
- */
-bool CxImage::Resample(long newx, long newy, int mode, CxImage* iDst)
-{
-	if (newx==0 || newy==0) return false;
-
-	if (head.biWidth==newx && head.biHeight==newy){
-		if (iDst) iDst->Copy(*this);
-		return true;
-	}
-
-	float xScale, yScale, fX, fY;
-	if (newx == -1){
-		yScale = (float)head.biHeight / (float)newy;
-		xScale = yScale;
-		newx = (int)((float)head.biWidth / xScale);
-	}
-	else if (newy == -1){
-		xScale = (float)head.biWidth / (float)newx;
-		yScale = xScale;
-		newy = (int)((float)head.biHeight / yScale);
-	} 
-	else{
-		xScale = (float)head.biWidth  / (float)newx;
-		yScale = (float)head.biHeight / (float)newy;
-	}
-	CxImage newImage;
-	newImage.CopyInfo(*this);
-	newImage.Create(newx,newy,head.biBitCount,GetType());
-	newImage.SetPalette(GetPalette());
-	if (!newImage.IsValid()){
-		strcpy(info.tcLastError,newImage.GetLastError());
-		return false;
-	}
-
-	switch (mode) {
-	case 1: // nearest pixel
-	{ 
-		for(long y=0; y<newy; y++){
-			info.nProgress = (long)(100*y/newy);
-			if (info.nEscape) break;
-			fY = y * yScale;
-			for(long x=0; x<newx; x++){
-				fX = x * xScale;
-				newImage.SetPixelColor(x,y,GetPixelColor((long)fX,(long)fY));
-			}
-		}
-		break;
-	}
-	case 2: // bicubic interpolation by Blake L. Carlson <blake-carlson(at)uiowa(dot)edu
-	{
-		float f_x, f_y, a, b, rr, gg, bb, r1, r2;
-		int   i_x, i_y, xx, yy;
-		RGBQUAD rgb;
-		BYTE* iDst;
-		for(long y=0; y<newy; y++){
-			info.nProgress = (long)(100*y/newy);
-			if (info.nEscape) break;
-			f_y = (float) y * yScale - 0.5f;
-			i_y = (int) floor(f_y);
-			a   = f_y - (float)floor(f_y);
-			for(long x=0; x<newx; x++){
-				f_x = (float) x * xScale - 0.5f;
-				i_x = (int) floor(f_x);
-				b   = f_x - (float)floor(f_x);
-
-				rr = gg = bb = 0.0f;
-				for(int m=-1; m<3; m++) {
-					r1 = KernelBSpline((float) m - a);
-					yy = i_y+m;
-					if (yy<0) yy=0;
-					if (yy>=head.biHeight) yy = head.biHeight-1;
-					for(int n=-1; n<3; n++) {
-						r2 = r1 * KernelBSpline(b - (float)n);
-						xx = i_x+n;
-						if (xx<0) xx=0;
-						if (xx>=head.biWidth) xx=head.biWidth-1;
-
-						if (head.biClrUsed){
-							rgb = GetPixelColor(xx,yy);
-						} else {
-							iDst  = info.pImage + yy*info.dwEffWidth + xx*3;
-							rgb.rgbBlue = *iDst++;
-							rgb.rgbGreen= *iDst++;
-							rgb.rgbRed  = *iDst;
-						}
-
-						rr += rgb.rgbRed * r2;
-						gg += rgb.rgbGreen * r2;
-						bb += rgb.rgbBlue * r2;
-					}
-				}
-
-				if (head.biClrUsed)
-					newImage.SetPixelColor(x,y,RGB(rr,gg,bb));
-				else {
-					iDst = newImage.info.pImage + y*newImage.info.dwEffWidth + x*3;
-					*iDst++ = (BYTE)bb;
-					*iDst++ = (BYTE)gg;
-					*iDst   = (BYTE)rr;
-				}
-
-			}
-		}
-		break;
-	}
-	default: // bilinear interpolation
-		if (!(head.biWidth>newx && head.biHeight>newy && head.biBitCount==24)) {
-			// (c) 1999 Steve McMahon (steve@dogma.demon.co.uk)
-			long ifX, ifY, ifX1, ifY1, xmax, ymax;
-			float ir1, ir2, ig1, ig2, ib1, ib2, dx, dy;
-			BYTE r,g,b;
-			RGBQUAD rgb1, rgb2, rgb3, rgb4;
-			xmax = head.biWidth-1;
-			ymax = head.biHeight-1;
-			for(long y=0; y<newy; y++){
-				info.nProgress = (long)(100*y/newy);
-				if (info.nEscape) break;
-				fY = y * yScale;
-				ifY = (int)fY;
-				ifY1 = min(ymax, ifY+1);
-				dy = fY - ifY;
-				for(long x=0; x<newx; x++){
-					fX = x * xScale;
-					ifX = (int)fX;
-					ifX1 = min(xmax, ifX+1);
-					dx = fX - ifX;
-					// Interpolate using the four nearest pixels in the source
-					if (head.biClrUsed){
-						rgb1=GetPaletteColor(GetPixelIndex(ifX,ifY));
-						rgb2=GetPaletteColor(GetPixelIndex(ifX1,ifY));
-						rgb3=GetPaletteColor(GetPixelIndex(ifX,ifY1));
-						rgb4=GetPaletteColor(GetPixelIndex(ifX1,ifY1));
-					}
-					else {
-						BYTE* iDst;
-						iDst = info.pImage + ifY*info.dwEffWidth + ifX*3;
-						rgb1.rgbBlue = *iDst++;	rgb1.rgbGreen= *iDst++;	rgb1.rgbRed =*iDst;
-						iDst = info.pImage + ifY*info.dwEffWidth + ifX1*3;
-						rgb2.rgbBlue = *iDst++;	rgb2.rgbGreen= *iDst++;	rgb2.rgbRed =*iDst;
-						iDst = info.pImage + ifY1*info.dwEffWidth + ifX*3;
-						rgb3.rgbBlue = *iDst++;	rgb3.rgbGreen= *iDst++;	rgb3.rgbRed =*iDst;
-						iDst = info.pImage + ifY1*info.dwEffWidth + ifX1*3;
-						rgb4.rgbBlue = *iDst++;	rgb4.rgbGreen= *iDst++;	rgb4.rgbRed =*iDst;
-					}
-					// Interplate in x direction:
-					ir1 = rgb1.rgbRed   + (rgb3.rgbRed   - rgb1.rgbRed)   * dy;
-					ig1 = rgb1.rgbGreen + (rgb3.rgbGreen - rgb1.rgbGreen) * dy;
-					ib1 = rgb1.rgbBlue  + (rgb3.rgbBlue  - rgb1.rgbBlue)  * dy;
-					ir2 = rgb2.rgbRed   + (rgb4.rgbRed   - rgb2.rgbRed)   * dy;
-					ig2 = rgb2.rgbGreen + (rgb4.rgbGreen - rgb2.rgbGreen) * dy;
-					ib2 = rgb2.rgbBlue  + (rgb4.rgbBlue  - rgb2.rgbBlue)  * dy;
-					// Interpolate in y:
-					r = (BYTE)(ir1 + (ir2-ir1) * dx);
-					g = (BYTE)(ig1 + (ig2-ig1) * dx);
-					b = (BYTE)(ib1 + (ib2-ib1) * dx);
-					// Set output
-					newImage.SetPixelColor(x,y,RGB(r,g,b));
-				}
-			} 
-		} else {
-			//high resolution shrink, thanks to Henrik Stellmann <henrik.stellmann@volleynet.de>
-			const long ACCURACY = 1000;
-			long i,j; // index for faValue
-			long x,y; // coordinates in  source image
-			BYTE* pSource;
-			BYTE* pDest = newImage.info.pImage;
-			long* naAccu  = new long[3 * newx + 3];
-			long* naCarry = new long[3 * newx + 3];
-			long* naTemp;
-			long  nWeightX,nWeightY;
-			float fEndX;
-			long nScale = (long)(ACCURACY * xScale * yScale);
-
-			memset(naAccu,  0, sizeof(long) * 3 * newx);
-			memset(naCarry, 0, sizeof(long) * 3 * newx);
-
-			int u, v = 0; // coordinates in dest image
-			float fEndY = yScale - 1.0f;
-			for (y = 0; y < head.biHeight; y++){
-				info.nProgress = (long)(100*y/head.biHeight); //<Anatoly Ivasyuk>
-				if (info.nEscape) break;
-				pSource = info.pImage + y * info.dwEffWidth;
-				u = i = 0;
-				fEndX = xScale - 1.0f;
-				if ((float)y < fEndY) {       // complete source row goes into dest row
-					for (x = 0; x < head.biWidth; x++){
-						if ((float)x < fEndX){       // complete source pixel goes into dest pixel
-							for (j = 0; j < 3; j++)	naAccu[i + j] += (*pSource++) * ACCURACY;
-						} else {       // source pixel is splitted for 2 dest pixels
-							nWeightX = (long)(((float)x - fEndX) * ACCURACY);
-							for (j = 0; j < 3; j++){
-								naAccu[i] += (ACCURACY - nWeightX) * (*pSource);
-								naAccu[3 + i++] += nWeightX * (*pSource++);
-							}
-							fEndX += xScale;
-							u++;
-						}
-					}
-				} else {       // source row is splitted for 2 dest rows       
-					nWeightY = (long)(((float)y - fEndY) * ACCURACY);
-					for (x = 0; x < head.biWidth; x++){
-						if ((float)x < fEndX){       // complete source pixel goes into 2 pixel
-							for (j = 0; j < 3; j++){
-								naAccu[i + j] += ((ACCURACY - nWeightY) * (*pSource));
-								naCarry[i + j] += nWeightY * (*pSource++);
-							}
-						} else {       // source pixel is splitted for 4 dest pixels
-							nWeightX = (int)(((float)x - fEndX) * ACCURACY);
-							for (j = 0; j < 3; j++) {
-								naAccu[i] += ((ACCURACY - nWeightY) * (ACCURACY - nWeightX)) * (*pSource) / ACCURACY;
-								*pDest++ = (BYTE)(naAccu[i] / nScale);
-								naCarry[i] += (nWeightY * (ACCURACY - nWeightX) * (*pSource)) / ACCURACY;
-								naAccu[i + 3] += ((ACCURACY - nWeightY) * nWeightX * (*pSource)) / ACCURACY;
-								naCarry[i + 3] = (nWeightY * nWeightX * (*pSource)) / ACCURACY;
-								i++;
-								pSource++;
-							}
-							fEndX += xScale;
-							u++;
-						}
-					}
-					if (u < newx){ // possibly not completed due to rounding errors
-						for (j = 0; j < 3; j++) *pDest++ = (BYTE)(naAccu[i++] / nScale);
-					}
-					naTemp = naCarry;
-					naCarry = naAccu;
-					naAccu = naTemp;
-					memset(naCarry, 0, sizeof(int) * 3);    // need only to set first pixel zero
-					pDest = newImage.info.pImage + (++v * newImage.info.dwEffWidth);
-					fEndY += yScale;
-				}
-			}
-			if (v < newy){	// possibly not completed due to rounding errors
-				for (i = 0; i < 3 * newx; i++) *pDest++ = (BYTE)(naAccu[i] / nScale);
-			}
-			delete [] naAccu;
-			delete [] naCarry;
-		}
-	}
-
-#if CXIMAGE_SUPPORT_ALPHA
-	if (AlphaIsValid()){
-		newImage.AlphaCreate();
-
-		switch (mode) {
-		case 1: // nearest pixel
-			for(long y=0; y<newy; y++){
-				fY = y * yScale;
-				for(long x=0; x<newx; x++){
-					fX = x * xScale;
-					newImage.AlphaSet(x,y,AlphaGet((long)fX,(long)fY));
-				}
-			}
-			break;
-		default:
-			// bilinear interpolation
-			if (!(head.biWidth>newx && head.biHeight>newy && head.biBitCount==24)) {
-				// (c) 1999 Steve McMahon (steve@dogma.demon.co.uk)
-				long ifX, ifY, ifX1, ifY1, xmax, ymax;
-				float ia1, ia2, dx, dy;
-				BYTE aDst;
-				BYTE a1, a2, a3, a4;
-				xmax = head.biWidth-1;
-				ymax = head.biHeight-1;
-				for(long y=0; y<newy; y++){
-					info.nProgress = (long)(100*y/newy);
-					if (info.nEscape) break;
-					fY = y * yScale;
-					ifY = (int)fY;
-					ifY1 = min(ymax, ifY+1);
-					dy = fY - ifY;
-					for(long x=0; x<newx; x++){
-						fX = x * xScale;
-						ifX = (int)fX;
-						ifX1 = min(xmax, ifX+1);
-						dx = fX - ifX;
-						// Interpolate using the four nearest pixels in the source
-						BYTE* iDst;
-						iDst = pAlpha + ifY*head.biWidth + ifX;
-						a1 = *iDst++;
-						iDst = pAlpha + ifY*head.biWidth + ifX1;
-						a2 = *iDst++;
-						iDst = pAlpha + ifY1*head.biWidth + ifX;
-						a3 = *iDst++;
-						iDst = pAlpha + ifY1*head.biWidth + ifX1;
-						a4 = *iDst++;
-						// Interplate in x direction:
-						ia1 = a1   + (a3   - a1)   * dy;
-						ia2 = a2   + (a4   - a2)   * dy;
-						// Interpolate in y:
-						aDst = (BYTE)(ia1 + (ia2-ia1) * dx);
-						// Set output
-						newImage.AlphaSet(x,y,aDst);
-					}
-				} 
-			} else {
-				//high resolution shrink, thanks to Henrik Stellmann <henrik.stellmann@volleynet.de>
-				const long ACCURACY = 1000;
-				long i; // index for faValue
-				long x,y; // coordinates in  source image
-				BYTE* pSource;
-				BYTE* pDest = newImage.pAlpha;
-				long* naAccu  = new long[newx];
-				long* naCarry = new long[newx];
-				long* naTemp;
-				long  nWeightX,nWeightY;
-				float fEndX;
-				long nScale = (long)(ACCURACY * xScale * yScale);
-
-				memset(naAccu,  0, sizeof(long) * newx);
-				memset(naCarry, 0, sizeof(long) * newx);
-
-				int u, v = 0; // coordinates in dest image
-				float fEndY = yScale - 1.0f;
-				for (y = 0; y < head.biHeight; y++){
-					info.nProgress = (long)(100*y/head.biHeight); //<Anatoly Ivasyuk>
-					if (info.nEscape) break;
-					pSource = pAlpha + y * head.biWidth;
-					u = i = 0;
-					fEndX = xScale - 1.0f;
-					if ((float)y < fEndY) {       // complete source row goes into dest row
-						for (x = 0; x < head.biWidth; x++){
-							if ((float)x < fEndX){       // complete source pixel goes into dest pixel
-								naAccu[i] += (*pSource++) * ACCURACY;
-							} else {       // source pixel is splitted for 2 dest pixels
-								nWeightX = (long)(((float)x - fEndX) * ACCURACY);
-								naAccu[i] += (ACCURACY - nWeightX) * (*pSource);
-								naAccu[1 + i++] += nWeightX * (*pSource++);
-								fEndX += xScale;
-								u++;
-							}
-						}
-					} else {       // source row is splitted for 2 dest rows       
-						nWeightY = (long)(((float)y - fEndY) * ACCURACY);
-						for (x = 0; x < head.biWidth; x++){
-							if ((float)x < fEndX){       // complete source pixel goes into 2 pixel
-								naAccu[i] += ((ACCURACY - nWeightY) * (*pSource));
-								naCarry[i] += nWeightY * (*pSource++);
-							} else {       // source pixel is splitted for 4 dest pixels
-								nWeightX = (int)(((float)x - fEndX) * ACCURACY);
-								naAccu[i] += ((ACCURACY - nWeightY) * (ACCURACY - nWeightX)) * (*pSource) / ACCURACY;
-								*pDest++ = (BYTE)(naAccu[i] / nScale);
-								naCarry[i] += (nWeightY * (ACCURACY - nWeightX) * (*pSource)) / ACCURACY;
-								naAccu[i + 1] += ((ACCURACY - nWeightY) * nWeightX * (*pSource)) / ACCURACY;
-								naCarry[i + 1] = (nWeightY * nWeightX * (*pSource)) / ACCURACY;
-								i++;
-								pSource++;
-								fEndX += xScale;
-								u++;
-							}
-						}
-						if (u < newx){ // possibly not completed due to rounding errors
-							*pDest++ = (BYTE)(naAccu[i++] / nScale);
-						}
-						naTemp = naCarry;
-						naCarry = naAccu;
-						naAccu = naTemp;
-						*naCarry = 0;    // need only to set first pixel zero
-						pDest = newImage.pAlpha + (++v * newImage.head.biWidth);
-						fEndY += yScale;
-					}
-				}
-				if (v < newy){	// possibly not completed due to rounding errors
-					for (i = 0; i < newx; i++) *pDest++ = (BYTE)(naAccu[i] / nScale);
-				}
-				delete [] naAccu;
-				delete [] naCarry;
-			}
-		break;
-		}
-	}
-#endif //CXIMAGE_SUPPORT_ALPHA
-
-#if CXIMAGE_SUPPORT_SELECTION
-	if (SelectionIsValid()){
-		newImage.SelectionCreate();
-		for(long y=0; y<newy; y++){
-			fY = y * yScale;
-			for(long x=0; x<newx; x++){
-				fX = x * xScale;
-				newImage.SelectionSet(x,y,SelectionGet((long)fX,(long)fY));
-			}
-		}
-	}
-#endif //CXIMAGE_SUPPORT_SELECTION
-
-	//select the destination
-	if (iDst) iDst->Transfer(newImage);
-	else Transfer(newImage);
-
-	return true;
-}
-
 bool CxImage::Resample(const CxImage& iSrc)
 {
 	long newx = iSrc.head.biWidth;
 	long newy = iSrc.head.biHeight;
 	if (newy > newx) {
-		if (!Resample (newx, -1))
+		if (!Resample (-1, newy))
 			return false;
 	}
 	else {
-		if (!Resample (-1, newy))
+		if (!Resample (newx, -1))
 			return false;
 	}
 	return Crop (0, 0, newx, newy);
@@ -1294,27 +901,37 @@ bool CxImage::Resample(const CxImage& iSrc)
  *
  * \author ***bd*** 2.2004
  */
-bool CxImage::Resample2(
+bool CxImage::Resample(
   long newx, long newy,
   InterpolationMethod const inMethod, 
   OverflowMethod const ofMethod, 
   CxImage* const iDst,
   bool const disableAveraging)
 {
-	_ASSERT (info.hProgress && L"Missing progress bar");	
+	if ((newx<=0 && newx!=-1) || (newy<=0 && newy!=-1) || !pDib) return false;
 
-	if (newx<=0 || newy<=0 || !pDib) return false;
-	
+	//calculate scale of new image (less than 1 for enlarge)
+	float xScale, yScale;
+	if (newx == -1){
+		yScale = (float)head.biHeight / (float)newy;
+		xScale = yScale;
+		newx = (int)((float)head.biWidth / xScale);
+	}
+	else if (newy == -1){
+		xScale = (float)head.biWidth / (float)newx;
+		yScale = xScale;
+		newy = (int)((float)head.biHeight / yScale);
+	} 
+	else{
+		xScale = (float)head.biWidth  / (float)newx;
+		yScale = (float)head.biHeight / (float)newy;
+	}
+
 	if (head.biWidth==newx && head.biHeight==newy) {
 		//image already correct size (just copy and return)
 		if (iDst) iDst->Copy(*this);
 		return true;
-	}//if
-
-	//calculate scale of new image (less than 1 for enlarge)
-	float xScale, yScale;
-	xScale = (float)head.biWidth  / (float)newx;    
-	yScale = (float)head.biHeight / (float)newy;
+	}
 	
 	//create temporary destination image
 	CxImage newImage;
@@ -2666,7 +2283,7 @@ bool CxImage::Thumbnail(long newx, long newy, RGBQUAD canvascolor, CxImage* iDst
         } else {
             fScale = (float) newx / head.biWidth;
         }
-        tmp.Resample((long) (fScale * head.biWidth), (long) (fScale * head.biHeight), 0);
+        tmp.Resample((long) (fScale * head.biWidth), (long) (fScale * head.biHeight));
     }
 
     // expand the frame
@@ -3178,6 +2795,200 @@ bool CxImage::QIShrink(long newx, long newy, CxImage* const iDst, bool bChangeBp
 		Transfer(newImage);
     return true;
 
+}
+
+
+bool CxImage::Cartoon(float fDiffusion)
+{
+	if (!pDib) 
+		return false;	
+	if (head.biClrUsed!=0)
+		return false;
+
+	IGSmartLayer sketchLayer;
+	sketchLayer.Copy (*this, true, true);
+	sketchLayer.Sketch();
+
+	if (!Quantize(16))
+		return false;
+
+	long xmin,xmax,ymin,ymax;
+	if (pSelection){
+		xmin = info.rSelectionBox.left; xmax = info.rSelectionBox.right;
+		ymin = info.rSelectionBox.bottom; ymax = info.rSelectionBox.top;
+	} else {
+		xmin = ymin = 0;
+		xmax = head.biWidth - 1; ymax=head.biHeight - 1;
+	}
+
+	for(long y=ymin; y<=ymax; y++){
+		BYTE *pSrc = sketchLayer.GetBits(y);
+		BYTE *pDst = GetBits(y);
+		info.nProgress = (long)(100*(y-ymin)/(ymax-ymin));
+		if (info.nEscape) break;
+		for(long x=xmin; x<=xmax; x++){
+#if CXIMAGE_SUPPORT_SELECTION
+			if (BlindSelectionIsInside(x,y))
+#endif //CXIMAGE_SUPPORT_SELECTION
+			{
+				*pDst++ = (BYTE)(((int)(*pDst) + (int)(*pSrc++)) >> 1);
+				*pDst++ = (BYTE)(((int)(*pDst) + (int)(*pSrc++)) >> 1);
+				*pDst++ = (BYTE)(((int)(*pDst) + (int)(*pSrc++)) >> 1);
+			}
+#if CXIMAGE_SUPPORT_SELECTION
+			else{
+				pDst+=3;
+				pSrc+=3;
+			}
+#endif //CXIMAGE_SUPPORT_SELECTION
+		}
+	}
+	return true;
+}
+
+bool CxImage::WaterPainting(float fDiffusion)
+{
+	if (!pDib) 
+		return false;	
+	if (head.biClrUsed!=0)
+		return false;
+
+	IGSmartLayer paintingLayer;
+	paintingLayer.Copy (*this, true, true);
+	paintingLayer.OilPainting();
+
+	if (!Sketch((int)fDiffusion))
+		return false;
+
+	long xmin,xmax,ymin,ymax;
+	if (pSelection){
+		xmin = info.rSelectionBox.left; xmax = info.rSelectionBox.right;
+		ymin = info.rSelectionBox.bottom; ymax = info.rSelectionBox.top;
+	} else {
+		xmin = ymin = 0;
+		xmax = head.biWidth - 1; ymax=head.biHeight - 1;
+	}
+
+	for(long y=ymin; y<=ymax; y++){
+		BYTE *pSrc = paintingLayer.GetBits(y);
+		BYTE *pDst = GetBits(y);
+		info.nProgress = (long)(100*(y-ymin)/(ymax-ymin));
+		if (info.nEscape) break;
+		for(long x=xmin; x<=xmax; x++){
+#if CXIMAGE_SUPPORT_SELECTION
+			if (BlindSelectionIsInside(x,y))
+#endif //CXIMAGE_SUPPORT_SELECTION
+			{
+				*pDst++ = (BYTE)(((int)(*pDst) + (int)(*pSrc++)) >> 1);
+				*pDst++ = (BYTE)(((int)(*pDst) + (int)(*pSrc++)) >> 1);
+				*pDst++ = (BYTE)(((int)(*pDst) + (int)(*pSrc++)) >> 1);
+			}
+#if CXIMAGE_SUPPORT_SELECTION
+			else{
+				pDst+=3;
+				pSrc+=3;
+			}
+#endif //CXIMAGE_SUPPORT_SELECTION
+		}
+	}
+	return true;
+}
+
+bool CxImage::Sketch(int nDiffusion)
+{
+	if (!Repair (0.25f, 3, 0))
+		return false;
+	if (!Repair (0.25f, 3, 0))
+		return false;
+	if (!GradientMorpho(4))
+		return false;
+	if (!UnsharpMask (5.0f, 0.5f, 0))
+		return false;
+	if (!UnsharpMask (5.0f, 0.5f, 0))
+		return false;
+	return Negative();	
+}
+
+
+bool CxImage::OilPainting(float fDiffusion)
+{
+	if (!GaussianBlur (fDiffusion))
+		return false;
+	IGSmartLayer tmpLayer;
+	tmpLayer.Copy (*this, true, true);
+	int nbRegions = 0;
+	if (tmpLayer.IndexLPE (NULL, nbRegions)){
+		for (int idxReg = 1; idxReg <= nbRegions; idxReg++)
+			tmpLayer.GetRegion(idxReg)->ApplyMedianColor();
+	}
+	long xmin,xmax,ymin,ymax;
+	if (pSelection){
+		xmin = info.rSelectionBox.left; xmax = info.rSelectionBox.right;
+		ymin = info.rSelectionBox.bottom; ymax = info.rSelectionBox.top;
+	} else {
+		xmin = ymin = 0;
+		xmax = head.biWidth - 1; ymax=head.biHeight - 1;
+	}
+	for(long y=ymin; y<=ymax; y++){
+		BYTE *pSrc = tmpLayer.GetBits(y);
+		BYTE *pDst = GetBits(y);
+		info.nProgress = (long)(100*(y-ymin)/(ymax-ymin));
+		if (info.nEscape) break;
+		for(long x=xmin; x<=xmax; x++){
+#if CXIMAGE_SUPPORT_SELECTION
+			if (BlindSelectionIsInside(x,y))
+#endif //CXIMAGE_SUPPORT_SELECTION
+			{
+				*pDst++ = *pSrc++;
+				*pDst++ = *pSrc++;
+				*pDst++ = *pSrc++;
+			}
+#if CXIMAGE_SUPPORT_SELECTION
+			else{
+				pDst+=3;
+				pSrc+=3;
+			}
+#endif //CXIMAGE_SUPPORT_SELECTION
+		}
+	}
+	return true;
+}
+
+bool CxImage::Clay()
+{
+	if (!Repair (0.25f, 3, 0))
+		return false;
+	if (!Dither())
+		return false;
+	COLORREF col = 1986710;
+	RGBQUAD rgbq;
+	rgbq.rgbRed = GetRValue (col);
+	rgbq.rgbBlue = GetBValue (col);
+	rgbq.rgbGreen = GetGValue (col);
+	rgbq.rgbReserved = 0x00;
+	rgbq = RGBtoHSL (rgbq);
+	return Colorize (rgbq.rgbRed, rgbq.rgbGreen, rgbq.rgbBlue, 1.0f);
+}
+
+bool CxImage::ExecutePythonScript (const wstring& wsPythonScript)
+{
+	/*
+	UUID uuid;
+	::UuidCreate (&uuid);
+	RPC_WSTR pwUuid;
+	::UuidToStringW (&uuid, &pwUuid);
+	wstring wsGuid ((wchar_t*)pwUuid);
+	::RpcStringFreeW (&pwUuid);*/
+	string sPictureDir (PYTHONSCRIPT_DIRECTORY);
+	//sPictureDir += wsGuid;
+	string sPicturePath (sPictureDir.c_str());
+	sPicturePath += "\\";
+	char tcScriptName [64];
+	::WideCharToMultiByte (CP_ACP, 0, wsPythonScript.c_str(), -1, tcScriptName, wsPythonScript.length() + 1, NULL, NULL);
+	sPicturePath += tcScriptName;
+	sPicturePath += ".py";
+
+	return execute_python_script (sPicturePath.c_str(), "run", 0, NULL) == 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

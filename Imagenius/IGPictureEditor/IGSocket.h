@@ -4,6 +4,7 @@
 #include "resource.h"       // main symbols
 
 #include <list>
+#include "IGAutoKill.h"
 #include "IGPictureEditor_i.h"
 
 #define IGSOCKET_MAXREQUESTLEN		32768
@@ -86,6 +87,7 @@ private:
 	bool						m_bIsConnected;
 	int							m_nTimeOutTicks;
 	int							m_nHearthbeatTicks;
+	IGAutoKill					m_autoKill;
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(IGSocket), CIGSocket)

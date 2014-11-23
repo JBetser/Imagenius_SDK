@@ -249,8 +249,10 @@ public:
 	IGRequestDelete (LPCWSTR pcwGuid, CComPtr <IXMLDOMNode> spRequestParams) : IGRequestImageProcessing (pcwGuid, spRequestParams)
 	{
 		IGLibrary::IGFrame *pFrame = GetFrame();
-		if (pFrame)
-			m_nFirstHistoryParam = pFrame->GetLayerPos(pFrame->GetWorkingLayer());
+		if (pFrame){
+			m_nLayerId = pFrame->GetLayerPos(pFrame->GetWorkingLayer());
+			m_nFirstHistoryParam = m_nLayerId;
+		}
 		ZeroMemory (&m_rcSubLayer, sizeof (RECT));
 		if (pFrame->GetWorkingLayer())
 			pFrame->GetWorkingLayer()->SelectionGetBox (m_rcSubLayer);

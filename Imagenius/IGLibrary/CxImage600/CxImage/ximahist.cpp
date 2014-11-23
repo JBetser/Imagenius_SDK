@@ -4,6 +4,7 @@
  */
 #include "stdafx.h"
 #include "ximage.h"
+#include "ximath.h"
 
 #if CXIMAGE_SUPPORT_DSP
 
@@ -644,6 +645,73 @@ bool CxImage::HistogramRoot()
 		}
 	}
  
+	return true;
+}
+
+bool CxImage::Vibrance(long strength)
+{
+	long xmin,xmax,ymin,ymax;
+	if (pSelection){
+		xmin = info.rSelectionBox.left; xmax = info.rSelectionBox.right;
+		ymin = info.rSelectionBox.bottom; ymax = info.rSelectionBox.top;
+	} else {
+		xmin = ymin = 0;
+		xmax = head.biWidth - 1; ymax=head.biHeight - 1;
+	}
+
+	if (xmin==xmax || ymin==ymax)
+		return false;
+
+	int size = (xmax - xmin + 1) * (ymax - ymin + 1);
+	int histDistrib[256];
+	::memset(histDistrib,0,256 * sizeof(int));
+	BYTE maxSat = 0;
+	for(long y=ymin; y<=ymax; y++){
+		info.nProgress = (long)(100*(y-ymin)/(ymax-ymin));
+		if (info.nEscape) break;
+		for(long x=xmin; x<=xmax; x++){
+#if CXIMAGE_SUPPORT_SELECTION
+			if (BlindSelectionIsInside(x,y))
+#endif //CXIMAGE_SUPPORT_SELECTION
+			{
+				BYTE curSat = RGBtoHSL(BlindGetPixelColor(x,y)).rgbGreen;
+				histDistrib[curSat]++;
+				if (curSat > maxSat)
+					maxSat = curSat;
+			}
+		}
+	}
+
+	BYTE ceilSat = (BYTE)min((int)maxSat + strength, 250);
+	BYTE cTable[256];
+	float fCurCum = 0.0f;
+	float fStdDev = 0.0f;
+	float fCumDistrib[256];
+	for (int i=0;i<256;i++)	{
+		cTable[i] = (BYTE)max(0,min((int)ceilSat,i + strength) - i);
+		fStdDev += pow((float)size / 2.0f - (float)histDistrib[i], 2.0f);
+		fCurCum += (float)histDistrib[i] / (float)size;		
+		fCumDistrib[i] = max(0.0f, fCurCum);
+	}
+	fStdDev = (sqrt(fStdDev) / (float)size) * 255.0f;
+	for (int i=0;i<256;i++)
+		cTable[i] = (BYTE)(fCumDistrib[i] * (float)cTable[i] * CxMath::NormalDistrib (127.0f, fStdDev, (float)i, false));
+	for(long y=ymin; y<=ymax; y++){
+		info.nProgress = (long)(100*(y-ymin)/(ymax-ymin));
+		if (info.nEscape) break;
+		for(long x=xmin; x<=xmax; x++){
+#if CXIMAGE_SUPPORT_SELECTION
+			if (BlindSelectionIsInside(x,y))
+#endif //CXIMAGE_SUPPORT_SELECTION
+			{
+				RGBQUAD c = RGBtoHSL(BlindGetPixelColor(x,y));
+				BYTE curSat = c.rgbGreen;
+				c.rgbGreen = (BYTE)min((int)ceilSat, (int)curSat + (int)cTable[curSat]);
+				c = HSLtoRGB(c);
+				BlindSetPixelColor(x,y,c);
+			}
+		}
+	}
 	return true;
 }
 ////////////////////////////////////////////////////////////////////////////////

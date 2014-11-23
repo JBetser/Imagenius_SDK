@@ -86,6 +86,7 @@ LRESULT CIGSocket::HookAppWndProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 				harakiri();
 				return false;
 			}
+			m_autoKill.Check();
 		}
 		break;
 	// Image processing result message
@@ -347,11 +348,10 @@ bool CIGSocket::processRequests()
 {
 	if (m_bIsConnected)
 	{
-		if (!IGRequest::ProcessRequests (m_lsRequests)){
-			IGLog log;
-			log.Add (L"IGSocket Error - A corrupted request has been received");
+		if (m_lsRequests.size() > 0)
+			m_autoKill.Snooze();
+		if (!IGRequest::ProcessRequests (m_lsRequests))
 			return false;
-		}
 		if (m_nHearthbeatTicks++ == IGSOCKET_HEARTHBEAT_NBTIMERTICKS)
 		{
 			m_nHearthbeatTicks = 0;
@@ -372,12 +372,5 @@ bool CIGSocket::processRequests()
 
 void CIGSocket::harakiri()
 {
-	try{
-		IGLog log;
-		log.Add (L"IGSocket Critical Error - leave the process.");
-	}
-	catch(...){}
-#ifndef DEBUG
-	exit(0);
-#endif
+	IGAutoKill::Kill();
 }

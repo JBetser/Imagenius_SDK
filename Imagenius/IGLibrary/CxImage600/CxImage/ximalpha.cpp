@@ -67,6 +67,9 @@ bool CxImage::AlphaPaletteIsEnabled()
  */
 void CxImage::AlphaClear()
 {
+	
+	
+
 	if (pAlpha)	memset(pAlpha,0,head.biWidth * head.biHeight);
 }
 

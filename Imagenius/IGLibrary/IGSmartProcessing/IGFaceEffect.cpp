@@ -395,7 +395,7 @@ IGFaceEffectCartoon::IGFaceEffectCartoon (IGSmartLayer& layer) : IGFaceEffect (l
 
 bool IGFaceEffectCartoon::InternalProcess()
 {
-	m_layer.SelectiveBlur(5.0f, 100);
+	m_layer.Cartoon();
 	return true;
 }
 
@@ -484,7 +484,7 @@ bool IGFaceEffectChangeEyeColor::InternalProcess()
 	m_layer.SelectionAddRect (rcEyeLeft);
 	m_layer.SelectionAddRect (rcEyeRight);
 	m_layer.SelectionRebuildBox();
-	m_layer.ChangeEyeColor (rcEyeLeft, rcEyeRight, rgbq.rgbRed, rgbq.rgbGreen, m_fStrength, m_bAuto);
+	m_layer.ChangeEyeColor (rcEyeLeft, rcEyeRight, rgbq.rgbRed, rgbq.rgbGreen, m_fStrength);
 	return true;
 }
 
@@ -531,7 +531,7 @@ bool IGFaceEffectMorphing::InternalProcess()
 bool IGFaceEffectMorphing::ugly (const RECT& rcEyeLeft, const RECT& rcEyeRight, const RECT& rcMouth)
 {
 	m_fCoeff2 = m_fCoeff1;			
-	if (m_fCoeff1 > 0.67f){
+	if (m_fCoeff1 > 0.66f){
 		m_fCoeff1 = 0.5f;
 		m_fCoeff2 = 0.5f;
 		crossEyed (rcEyeLeft, rcEyeRight);	
@@ -576,7 +576,7 @@ bool IGFaceEffectMorphing::ProcessBackground()
 {
 	if (m_nType == IGIPMORPHING_TYPE_SMILE){
 		RECT rcNo = {-1, -1, -1, -1};
-		if (m_fCoeff1 > 0.33f){
+		if (m_fCoeff1 > 0.55f){
 			if (m_fCoeff1 > 0.66f){
 				CxImage star1 (*(CxImage*)(mg_spStar1->GetLayer(0)));
 				applyTexture (star1, IGFACEEFFECT_NBSTARS1, 0.15f + (float)(rand() % 5) * 0.01f, true, true, true, false);
@@ -700,7 +700,7 @@ bool IGFaceEffectMorphing::sad (const RECT& rcEyeLeft, const RECT& rcEyeRight, c
 	m_layer.SelectionAddRect (rcUnderEyeLeft);
 	m_layer.SelectionAddRect (rcUnderEyeRight);
 	m_layer.SelectionRebuildBox();
-	if (m_fCoeff1 > 0.67f){		
+	if (m_fCoeff1 > 0.66f){		
 		CxImage tears3 (*(CxImage*)(mg_spTears3->GetLayer(0)));
 		applyTexture (tears3, IGFACEEFFECT_NBTEARS3, 0.075f);
 	}
@@ -739,7 +739,7 @@ bool IGFaceEffectMorphing::sad (const RECT& rcEyeLeft, const RECT& rcEyeRight, c
 			if (rand() % 2 == 0){
 				tears2.SetOffset (rcInsideEyeLeft.left, m_layer.GetHeight() - 1 - (rcInsideEyeLeft.top + rcInsideEyeLeft.bottom) / 2);
 				m_layer.Mix (tears2);	
-				if (m_fCoeff1 > 0.67f){
+				if (m_fCoeff1 > 0.66f){
 					tears2.SetOffset (rcInsideEyeRight.right, m_layer.GetHeight() - 1 - (rcInsideEyeRight.top + rcInsideEyeRight.bottom) / 2);
 					m_layer.Mix (tears2);
 				}
@@ -747,7 +747,7 @@ bool IGFaceEffectMorphing::sad (const RECT& rcEyeLeft, const RECT& rcEyeRight, c
 			else{
 				tears2.SetOffset (rcInsideEyeRight.left, m_layer.GetHeight() - 1 - (rcInsideEyeRight.top + rcInsideEyeRight.bottom) / 2);
 				m_layer.Mix (tears2);	
-				if (m_fCoeff1 > 0.67f){
+				if (m_fCoeff1 > 0.66f){
 					tears2.SetOffset (rcInsideEyeLeft.right, m_layer.GetHeight() - 1 - (rcInsideEyeLeft.top + rcInsideEyeLeft.bottom) / 2);
 					m_layer.Mix (tears2);
 				}
@@ -759,7 +759,7 @@ bool IGFaceEffectMorphing::sad (const RECT& rcEyeLeft, const RECT& rcEyeRight, c
 			if (rand() % 2 == 0){
 				tears2.SetOffset (rcInsideEyeLeft.right, m_layer.GetHeight() - 1 - (rcInsideEyeLeft.top + rcInsideEyeLeft.bottom) / 2);
 				m_layer.Mix (tears2);
-				if (m_fCoeff1 > 0.67f){
+				if (m_fCoeff1 > 0.66f){
 					tears2.SetOffset (rcInsideEyeRight.left, m_layer.GetHeight() - 1 - (rcInsideEyeRight.top + rcInsideEyeRight.bottom) / 2);
 					m_layer.Mix (tears2);
 				}
@@ -767,7 +767,7 @@ bool IGFaceEffectMorphing::sad (const RECT& rcEyeLeft, const RECT& rcEyeRight, c
 			else{
 				tears2.SetOffset (rcInsideEyeRight.right, m_layer.GetHeight() - 1 - (rcInsideEyeRight.top + rcInsideEyeRight.bottom) / 2);
 				m_layer.Mix (tears2);
-				if (m_fCoeff1 > 0.67f){
+				if (m_fCoeff1 > 0.66f){
 					tears2.SetOffset (rcInsideEyeLeft.left, m_layer.GetHeight() - 1 - (rcInsideEyeLeft.top + rcInsideEyeLeft.bottom) / 2);
 					m_layer.Mix (tears2);
 				}
@@ -948,7 +948,7 @@ bool IGFaceEffectPox::InternalProcess()
 		m_layer.SetEyeHueSat (colHSL.rgbRed, colHSL.rgbGreen, rcInsideEyeLeft, 0, true);
 		m_layer.SetEyeHueSat (colHSL.rgbRed, colHSL.rgbGreen, rcInsideEyeRight, 0, true);		
 	}
-	else if (m_fStrength < 0.67f){
+	else if (m_fStrength <= 0.66f){
 		if (!m_layer.Construct8())
 			return false;
 		if (!m_layer.ComputeGradient())
@@ -1009,7 +1009,7 @@ bool IGFaceEffectHooligan::InternalProcess()
 	m_layer.Morphing (rcMouth.right, rcMouth.bottom, 0.0f, (float)(rcMouth.top - rcMouth.bottom) * (0.5f + (float)(rand() % 50) / 100.0f), 0.0f, CXIMAGE_MORPHING_TYPE_WIDE, true);
 	m_layer.SelectionRebuildBox();	
 
-	if (m_fStrength > 0.67f){
+	if (m_fStrength > 0.66f){
 		CxImage blood4 (*(CxImage*)(mg_spBlood4->GetLayer(0)));
 		applyTexture (blood4, IGFACEEFFECT_NBBLOOD4, 0.03f, false);
 	}
@@ -1077,7 +1077,7 @@ bool IGFaceEffectHooligan::InternalProcess()
 			rcOverEyeRight.top = rcInsideEyeRight.bottom + (int)((float)nInsideEyeRightHeight * 0.5f);
 			m_layer.ScaleEyeValue (-0.4f, rcUnderEyeRight, true);
 			m_layer.ScaleEyeValue (-0.4f, rcOverEyeRight, true);
-			if (m_fStrength > 0.67f){
+			if (m_fStrength > 0.66f){
 				blood3.SetOffset ((rcInsideEyeRight.left + rcInsideEyeRight.right - blood3.GetWidth()) / 2, m_layer.GetHeight() - 1 - rcUnderEyeRight.top);
 				blood3.Rotate ((float)(rand() % 360), NULL, CxImage::IM_BILINEAR, CxImage::OM_BACKGROUND, NULL, true, true);
 				m_layer.Mix (blood3);	
@@ -1137,7 +1137,7 @@ bool IGFaceEffectHooligan::InternalProcess()
 			rcOverEyeLeft.top = rcInsideEyeLeft.bottom + (int)((float)nInsideEyeLeftHeight * 0.5f);
 			m_layer.ScaleEyeValue (-0.4f, rcUnderEyeLeft, true);
 			m_layer.ScaleEyeValue (-0.4f, rcOverEyeLeft, true);	
-			if (m_fStrength > 0.67f){
+			if (m_fStrength > 0.66f){
 				blood3.SetOffset ((rcInsideEyeLeft.left + rcInsideEyeLeft.right - blood3.GetWidth()) / 2, m_layer.GetHeight() - 1 - rcUnderEyeLeft.top);
 				blood3.Rotate ((float)(rand() % 360), NULL, CxImage::IM_BILINEAR, CxImage::OM_BACKGROUND, NULL, true, true);
 				m_layer.Mix (blood3);
@@ -1196,7 +1196,7 @@ bool IGFaceEffectHooligan::InternalProcess()
 		blood1.SetOffset (rcMouth.right, m_layer.GetHeight() - 1 - (rcMouth.top + rcMouth.bottom) / 2);
 		m_layer.Mix (blood1);
 	}		
-	if (m_fStrength > 0.67f){
+	if (m_fStrength > 0.66f){
 		blood3.SetOffset ((rcMouth.left + rcMouth.right - blood3.GetWidth()) / 2, m_layer.GetHeight() - 1 - rcMouth.top);
 		blood3.Rotate ((float)(rand() % 360), NULL, CxImage::IM_BILINEAR, CxImage::OM_BACKGROUND, NULL, true, true);
 		m_layer.Mix (blood3);

@@ -259,6 +259,11 @@ IGAnswerWorkspaceConnected::IGAnswerWorkspaceConnected (const IGCommunicationBas
 	CComBSTR spbstrFrameNames;
 	m_pWorkspace->GetFrameNames (&spbstrFrameNames);
 	m_wsFrameNames = spbstrFrameNames;
+	
+	// add the frame last request guids to connection parameters
+	CComBSTR spbstrReqGuids;
+	m_pWorkspace->GetFrameReqGuids (&spbstrReqGuids);
+	m_wsReqGuids = spbstrReqGuids;
 
 	// add the nb layers to connection parameters
 	CComBSTR spbstrFrameNbLayers;
@@ -279,6 +284,11 @@ IGAnswerWorkspaceConnected::IGAnswerWorkspaceConnected (const IGCommunicationBas
 	CComBSTR spbstrActiveFrameId;
 	m_pWorkspace->GetActiveFrameId (&spbstrActiveFrameId);
 	m_wsActiveFrameId = spbstrActiveFrameId;
+
+	// add the current selected frame request guid to connection parameters
+	CComBSTR spbstrActiveReqGuid;
+	m_pWorkspace->GetActiveFrameReqGuid (&spbstrActiveReqGuid);
+	m_wsActiveReqGuid = spbstrActiveReqGuid;
 	
 	// mini pictures
 	wstring wsOutputPath (L"igoutput");

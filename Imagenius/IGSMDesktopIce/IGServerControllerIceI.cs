@@ -28,7 +28,7 @@ namespace IGSMDesktopIce
             if (curReq.GetId() == IGRequest.IGREQUEST_WORKSPACE_DISCONNECT)
             {
                 IGAnswerDisconnected answer = new IGAnswerDisconnected(null);
-                answer.SetAttribute(IGRequest.IGREQUEST_USERLOGIN, curReq.GetAttributeValue(IGRequest.IGREQUEST_USERLOGIN));
+                answer.SetAttribute(IGRequest.IGREQUEST_USERLOGIN, curReq.GetParameterValue(IGRequest.IGREQUEST_USERLOGIN));
                 curReq.SetResult(answer.GetXml());
             }
             else if (!IGSMAnswer.IsSMError(curReq.GetId()))
@@ -74,6 +74,11 @@ namespace IGSMDesktopIce
         public override int getNbConnections(Ice.Current current)
         {
             return serverManager.GetNbConnections();
+        }
+
+        public override string getStatus(Ice.Current current)
+        {
+            return serverManager.GetStatus();
         }
     }
 }

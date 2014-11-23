@@ -87,7 +87,7 @@ bool IGLibPicture::createHBITMAP (int nWidth, int nHeight, IGSmartPtr <IGSplashW
 		spProgress->ProgressStepIt();
 		spProgress->ProgressSetStep (1);
 	}
-	m_spSizedImage->Resample2 (nItemWidth, nItemHeight);
+	m_spSizedImage->Resample (nItemWidth, nItemHeight);
 	return convertImageToBitmap ();
 }
 
@@ -105,7 +105,7 @@ bool IGLibPicture::createHBITMAP (HINSTANCE hInstance, LPCWSTR lpResName, int nW
 		return false;
 	if (!m_spSizedImage)
 		m_spSizedImage = new IGFrame (hRsrc, dwType, hInstance, hProgress, false);
-	m_spSizedImage->Resample2 (nWidth, nHeight);
+	m_spSizedImage->Resample (nWidth, nHeight);
 	return convertImageToBitmap ();
 }
 
