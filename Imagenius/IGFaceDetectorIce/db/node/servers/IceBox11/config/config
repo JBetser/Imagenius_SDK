@@ -1,0 +1,20 @@
+# Configuration file (03/29/13 13:04:02.716)
+
+# Server configuration
+Ice.Admin.ServerId=IceBox11
+Ice.ProgramName=IceBox11
+IceBox.Service.IGFaceDetectorIceBox11=IGFaceDetectorIceService:create --Ice.Config='D:\Shared\Sources\Imagenius\ImageniusSDK\Imagenius\IGFaceDetectorIce/db\node/servers/IceBox11/config/config_IGFaceDetectorIceBox11'
+IceBox.LoadOrder=IGFaceDetectorIceBox11
+# Server descriptor properties
+Ice.Admin.Endpoints=tcp -h 127.0.0.1
+Ice.ThreadPool.Client.Size=200
+Ice.ThreadPool.Client.SizeMax=200
+Ice.ThreadPool.Server.Size=200
+Ice.ThreadPool.Server.SizeMax=200
+IceBox.Trace.ServiceObserver=1
+IceBox.InstanceName=IceBox11
+IceBox.InheritProperties=1
+Ice.MessageSizeMax=102400
+Ice.StdErr=db\logs/IceBox11.out
+Ice.StdOut=db\logs/IceBox11.out
+Ice.Default.Locator=IGFaceDetectorIceGrid/Locator:default -p 4061

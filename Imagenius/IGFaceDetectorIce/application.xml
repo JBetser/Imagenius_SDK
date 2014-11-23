@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<icegrid>
+  <application name="IGFaceDetectorIceApp">
+    <node name="node1">
+      <icebox id="IceBox0" activation="on-demand" exe="icebox">
+        <description>The face detection IceBox server</description>
+        <properties>
+          <property name="Ice.Admin.Endpoints" value="tcp -h 127.0.0.1"/>
+          <property name="Ice.ThreadPool.Client.Size" value="200"/>
+          <property name="Ice.ThreadPool.Client.SizeMax" value="200"/>
+          <property name="Ice.ThreadPool.Server.Size" value="200"/>
+          <property name="Ice.ThreadPool.Server.SizeMax" value="200"/>
+          <property name="IceBox.Trace.ServiceObserver" value="1"/>
+          <property name="IceBox.InstanceName" value="${server}"/>
+          <property name="IceBox.InheritProperties" value="1"/>
+          <property name="Ice.MessageSizeMax" value="102400"/>
+        </properties>
+        <service name="IGFaceDetectorIceBox0" entry="IGFaceDetectorIceService:create">
+          <description>The face detection semaphore</description>
+          <properties>
+            <property name="IGFaceDetectorIce.Identity" value="ProxyIGFaceDetectorIceBox0"/>
+          </properties>
+          <adapter name="IGFaceDetectorIce-IGFaceDetectorIceBox0" endpoints="default" id="IGFaceDetectorIce-IGFaceDetectorIceBox0" server-lifetime="false">
+            <object identity="ProxyIGFaceDetectorIceBox0" type="::IGFaceDetector::IGFaceDetectorIce"/>
+          </adapter>
+        </service>
+        <env>LANG=en</env>
+      </icebox>
+
+      <icebox id="IceBox1" activation="on-demand" exe="icebox">
+        <description>The face detection IceBox server</description>
+        <properties>
+          <property name="Ice.Admin.Endpoints" value="tcp -h 127.0.0.1"/>
+          <property name="Ice.ThreadPool.Client.Size" value="200"/>
+          <property name="Ice.ThreadPool.Client.SizeMax" value="200"/>
+          <property name="Ice.ThreadPool.Server.Size" value="200"/>
+          <property name="Ice.ThreadPool.Server.SizeMax" value="200"/>
+          <property name="IceBox.Trace.ServiceObserver" value="1"/>
+          <property name="IceBox.InstanceName" value="${server}"/>
+          <property name="IceBox.InheritProperties" value="1"/>
+          <property name="Ice.MessageSizeMax" value="102400"/>
+        </properties>
+        <service name="IGFaceDetectorIceBox1" entry="IGFaceDetectorIceService:create">
+          <description>The face detection Box1</description>
+          <properties>
+            <property name="IGFaceDetectorIce.Identity" value="ProxyIGFaceDetectorIceBox1"/>
+          </properties>
+          <adapter name="IGFaceDetectorIce-IGFaceDetectorIceBox1" endpoints="default" id="IGFaceDetectorIce-IGFaceDetectorIceBox1" server-lifetime="false">
+            <object identity="ProxyIGFaceDetectorIceBox1" type="::IGFaceDetector::IGFaceDetectorIce"/>
+          </adapter>
+        </service>
+        <env>LANG=en</env>
+      </icebox>
+
+      <icebox id="IceBox2" activation="on-demand" exe="icebox">
+        <description>The face detection IceBox server</description>
+        <properties>
+          <property name="Ice.Admin.Endpoints" value="tcp -h 127.0.0.1"/>
+          <property name="Ice.ThreadPool.Client.Size" value="200"/>
+          <property name="Ice.ThreadPool.Client.SizeMax" value="200"/>
+          <property name="Ice.ThreadPool.Server.Size" value="200"/>
+          <property name="Ice.ThreadPool.Server.SizeMax" value="200"/>
+          <property name="IceBox.Trace.ServiceObserver" value="1"/>
+          <property name="IceBox.InstanceName" value="${server}"/>
+          <property name="IceBox.InheritProperties" value="1"/>
+          <property name="Ice.MessageSizeMax" value="102400"/>
+        </properties>
+        <service name="IGFaceDetectorIceBox2" entry="IGFaceDetectorIceService:create">
+          <description>The face detection Box2</description>
+          <properties>
+            <property name="IGFaceDetectorIce.Identity" value="ProxyIGFaceDetectorIceBox2"/>
+          </properties>
+          <adapter name="IGFaceDetectorIce-IGFaceDetectorIceBox2" endpoints="default" id="IGFaceDetectorIce-IGFaceDetectorIceBox2" server-lifetime="false">
+            <object identity="ProxyIGFaceDetectorIceBox2" type="::IGFaceDetector::IGFaceDetectorIce"/>
+          </adapter>
+        </service>
+        <env>LANG=en</env>
+      </icebox>
+
+      <icebox id="IceBox3" activation="on-demand" exe="icebox">
+        <description>The face detection IceBox server</description>
+        <properties>
+          <property name="Ice.Admin.Endpoints" value="tcp -h 127.0.0.1"/>
+          <property name="Ice.ThreadPool.Client.Size" value="200"/>
+          <property name="Ice.ThreadPool.Client.SizeMax" value="200"/>
+          <property name="Ice.ThreadPool.Server.Size" value="200"/>
+          <property name="Ice.ThreadPool.Server.SizeMax" value="200"/>
+          <property name="IceBox.Trace.ServiceObserver" value="1"/>
+          <property name="IceBox.InstanceName" value="${server}"/>
+          <property name="IceBox.InheritProperties" value="1"/>
+          <property name="Ice.MessageSizeMax" value="102400"/>
+        </properties>
+        <service name="IGFaceDetectorIceBox3" entry="IGFaceDetectorIceService:create">
+          <description>The face detection Box3</description>
+          <properties>
+            <property name="IGFaceDetectorIce.Identity" value="ProxyIGFaceDetectorIceBox3"/>
+          </properties>
+          <adapter name="IGFaceDetectorIce-IGFaceDetectorIceBox3" endpoints="default" id="IGFaceDetectorIce-IGFaceDetectorIceBox3" server-lifetime="false">
+            <object identity="ProxyIGFaceDetectorIceBox3" type="::IGFaceDetector::IGFaceDetectorIce"/>
+          </adapter>
+        </service>
+        <env>LANG=en</env>
+      </icebox>
+
+      <icebox id="IceBox4" activation="on-demand" exe="icebox">
+        <description>The face detection IceBox server</description>
+        <properties>
+          <property name="Ice.Admin.Endpoints" value="tcp -h 127.0.0.1"/>
+          <property name="Ice.ThreadPool.Client.Size" value="200"/>
+          <property name="Ice.ThreadPool.Client.SizeMax" value="200"/>
+          <property name="Ice.ThreadPool.Server.Size" value="200"/>
+          <property name="Ice.ThreadPool.Server.SizeMax" value="200"/>
+          <property name="IceBox.Trace.ServiceObserver" value="1"/>
+          <property name="IceBox.InstanceName" value="${server}"/>
+          <property name="IceBox.InheritProperties" value="1"/>
+          <property name="Ice.MessageSizeMax" value="102400"/>
+        </properties>
+        <service name="IGFaceDetectorIceBox4" entry="IGFaceDetectorIceService:create">
+          <description>The face detection Box4</description>
+          <properties>
+            <property name="IGFaceDetectorIce.Identity" value="ProxyIGFaceDetectorIceBox4"/>
+          </properties>
+          <adapter name="IGFaceDetectorIce-IGFaceDetectorIceBox4" endpoints="default" id="IGFaceDetectorIce-IGFaceDetectorIceBox4" server-lifetime="false">
+            <object identity="ProxyIGFaceDetectorIceBox4" type="::IGFaceDetector::IGFaceDetectorIce"/>
+          </adapter>
+        </service>
+        <env>LANG=en</env>
+      </icebox>
+
+      <icebox id="IceBox5" activation="on-demand" exe="icebox">
+        <description>The face detection IceBox server</description>
+        <properties>
+          <property name="Ice.Admin.Endpoints" value="tcp -h 127.0.0.1"/>
+          <property name="Ice.ThreadPool.Client.Size" value="200"/>
+          <property name="Ice.ThreadPool.Client.SizeMax" value="200"/>
+          <property name="Ice.ThreadPool.Server.Size" value="200"/>
+          <property name="Ice.ThreadPool.Server.SizeMax" value="200"/>
+          <property name="IceBox.Trace.ServiceObserver" value="1"/>
+          <property name="IceBox.InstanceName" value="${server}"/>
+          <property name="IceBox.InheritProperties" value="1"/>
+          <property name="Ice.MessageSizeMax" value="102400"/>
+        </properties>
+        <service name="IGFaceDetectorIceBox5" entry="IGFaceDetectorIceService:create">
+          <description>The face detection Box5</description>
+          <properties>
+            <property name="IGFaceDetectorIce.Identity" value="ProxyIGFaceDetectorIceBox5"/>
+          </properties>
+          <adapter name="IGFaceDetectorIce-IGFaceDetectorIceBox5" endpoints="default" id="IGFaceDetectorIce-IGFaceDetectorIceBox5" server-lifetime="false">
+            <object identity="ProxyIGFaceDetectorIceBox5" type="::IGFaceDetector::IGFaceDetectorIce"/>
+          </adapter>
+        </service>
+        <env>LANG=en</env>
+      </icebox>
+
+      <icebox id="IceBox6" activation="on-demand" exe="icebox">
+        <description>The face detection IceBox server</description>
+        <properties>
+          <property name="Ice.Admin.Endpoints" value="tcp -h 127.0.0.1"/>
+          <property name="Ice.ThreadPool.Client.Size" value="200"/>
+          <property name="Ice.ThreadPool.Client.SizeMax" value="200"/>
+          <property name="Ice.ThreadPool.Server.Size" value="200"/>
+          <property name="Ice.ThreadPool.Server.SizeMax" value="200"/>
+          <property name="IceBox.Trace.ServiceObserver" value="1"/>
+          <property name="IceBox.InstanceName" value="${server}"/>
+          <property name="IceBox.InheritProperties" value="1"/>
+          <property name="Ice.MessageSizeMax" value="102400"/>
+        </properties>
+        <service name="IGFaceDetectorIceBox6" entry="IGFaceDetectorIceService:create">
+          <description>The face detection Box6</description>
+          <properties>
+            <property name="IGFaceDetectorIce.Identity" value="ProxyIGFaceDetectorIceBox6"/>
+          </properties>
+          <adapter name="IGFaceDetectorIce-IGFaceDetectorIceBox6" endpoints="default" id="IGFaceDetectorIce-IGFaceDetectorIceBox6" server-lifetime="false">
+            <object identity="ProxyIGFaceDetectorIceBox6" type="::IGFaceDetector::IGFaceDetectorIce"/>
+          </adapter>
+        </service>
+        <env>LANG=en</env>
+      </icebox>
+
+      <icebox id="IceBox7" activation="on-demand" exe="icebox">
+        <description>The face detection IceBox server</description>
+        <properties>
+          <property name="Ice.Admin.Endpoints" value="tcp -h 127.0.0.1"/>
+          <property name="Ice.ThreadPool.Client.Size" value="200"/>
+          <property name="Ice.ThreadPool.Client.SizeMax" value="200"/>
+          <property name="Ice.ThreadPool.Server.Size" value="200"/>
+          <property name="Ice.ThreadPool.Server.SizeMax" value="200"/>
+          <property name="IceBox.Trace.ServiceObserver" value="1"/>
+          <property name="IceBox.InstanceName" value="${server}"/>
+          <property name="IceBox.InheritProperties" value="1"/>
+          <property name="Ice.MessageSizeMax" value="102400"/>
+        </properties>
+        <service name="IGFaceDetectorIceBox7" entry="IGFaceDetectorIceService:create">
+          <description>The face detection Box7</description>
+          <properties>
+            <property name="IGFaceDetectorIce.Identity" value="ProxyIGFaceDetectorIceBox7"/>
+          </properties>
+          <adapter name="IGFaceDetectorIce-IGFaceDetectorIceBox7" endpoints="default" id="IGFaceDetectorIce-IGFaceDetectorIceBox7" server-lifetime="false">
+            <object identity="ProxyIGFaceDetectorIceBox7" type="::IGFaceDetector::IGFaceDetectorIce"/>
+          </adapter>
+        </service>
+        <env>LANG=en</env>
+      </icebox>
+
+      <icebox id="IceBox8" activation="on-demand" exe="icebox">
+        <description>The face detection IceBox server</description>
+        <properties>
+          <property name="Ice.Admin.Endpoints" value="tcp -h 127.0.0.1"/>
+          <property name="Ice.ThreadPool.Client.Size" value="200"/>
+          <property name="Ice.ThreadPool.Client.SizeMax" value="200"/>
+          <property name="Ice.ThreadPool.Server.Size" value="200"/>
+          <property name="Ice.ThreadPool.Server.SizeMax" value="200"/>
+          <property name="IceBox.Trace.ServiceObserver" value="1"/>
+          <property name="IceBox.InstanceName" value="${server}"/>
+          <property name="IceBox.InheritProperties" value="1"/>
+          <property name="Ice.MessageSizeMax" value="102400"/>
+        </properties>
+        <service name="IGFaceDetectorIceBox8" entry="IGFaceDetectorIceService:create">
+          <description>The face detection Box8</description>
+          <properties>
+            <property name="IGFaceDetectorIce.Identity" value="ProxyIGFaceDetectorIceBox8"/>
+          </properties>
+          <adapter name="IGFaceDetectorIce-IGFaceDetectorIceBox8" endpoints="default" id="IGFaceDetectorIce-IGFaceDetectorIceBox8" server-lifetime="false">
+            <object identity="ProxyIGFaceDetectorIceBox8" type="::IGFaceDetector::IGFaceDetectorIce"/>
+          </adapter>
+        </service>
+        <env>LANG=en</env>
+      </icebox>
+
+      <icebox id="IceBox9" activation="on-demand" exe="icebox">
+        <description>The face detection IceBox server</description>
+        <properties>
+          <property name="Ice.Admin.Endpoints" value="tcp -h 127.0.0.1"/>
+          <property name="Ice.ThreadPool.Client.Size" value="200"/>
+          <property name="Ice.ThreadPool.Client.SizeMax" value="200"/>
+          <property name="Ice.ThreadPool.Server.Size" value="200"/>
+          <property name="Ice.ThreadPool.Server.SizeMax" value="200"/>
+          <property name="IceBox.Trace.ServiceObserver" value="1"/>
+          <property name="IceBox.InstanceName" value="${server}"/>
+          <property name="IceBox.InheritProperties" value="1"/>
+          <property name="Ice.MessageSizeMax" value="102400"/>
+        </properties>
+        <service name="IGFaceDetectorIceBox9" entry="IGFaceDetectorIceService:create">
+          <description>The face detection Box9</description>
+          <properties>
+            <property name="IGFaceDetectorIce.Identity" value="ProxyIGFaceDetectorIceBox9"/>
+          </properties>
+          <adapter name="IGFaceDetectorIce-IGFaceDetectorIceBox9" endpoints="default" id="IGFaceDetectorIce-IGFaceDetectorIceBox9" server-lifetime="false">
+            <object identity="ProxyIGFaceDetectorIceBox9" type="::IGFaceDetector::IGFaceDetectorIce"/>
+          </adapter>
+        </service>
+        <env>LANG=en</env>
+      </icebox>
+
+      <icebox id="IceBox10" activation="on-demand" exe="icebox">
+        <description>The face detection IceBox server</description>
+        <properties>
+          <property name="Ice.Admin.Endpoints" value="tcp -h 127.0.0.1"/>
+          <property name="Ice.ThreadPool.Client.Size" value="200"/>
+          <property name="Ice.ThreadPool.Client.SizeMax" value="200"/>
+          <property name="Ice.ThreadPool.Server.Size" value="200"/>
+          <property name="Ice.ThreadPool.Server.SizeMax" value="200"/>
+          <property name="IceBox.Trace.ServiceObserver" value="1"/>
+          <property name="IceBox.InstanceName" value="${server}"/>
+          <property name="IceBox.InheritProperties" value="1"/>
+          <property name="Ice.MessageSizeMax" value="102400"/>
+        </properties>
+        <service name="IGFaceDetectorIceBox10" entry="IGFaceDetectorIceService:create">
+          <description>The face detection Box10</description>
+          <properties>
+            <property name="IGFaceDetectorIce.Identity" value="ProxyIGFaceDetectorIceBox10"/>
+          </properties>
+          <adapter name="IGFaceDetectorIce-IGFaceDetectorIceBox10" endpoints="default" id="IGFaceDetectorIce-IGFaceDetectorIceBox10" server-lifetime="false">
+            <object identity="ProxyIGFaceDetectorIceBox10" type="::IGFaceDetector::IGFaceDetectorIce"/>
+          </adapter>
+        </service>
+        <env>LANG=en</env>
+      </icebox>
+
+      <icebox id="IceBox11" activation="on-demand" exe="icebox">
+        <description>The face detection IceBox server</description>
+        <properties>
+          <property name="Ice.Admin.Endpoints" value="tcp -h 127.0.0.1"/>
+          <property name="Ice.ThreadPool.Client.Size" value="200"/>
+          <property name="Ice.ThreadPool.Client.SizeMax" value="200"/>
+          <property name="Ice.ThreadPool.Server.Size" value="200"/>
+          <property name="Ice.ThreadPool.Server.SizeMax" value="200"/>
+          <property name="IceBox.Trace.ServiceObserver" value="1"/>
+          <property name="IceBox.InstanceName" value="${server}"/>
+          <property name="IceBox.InheritProperties" value="1"/>
+          <property name="Ice.MessageSizeMax" value="102400"/>
+        </properties>
+        <service name="IGFaceDetectorIceBox11" entry="IGFaceDetectorIceService:create">
+          <description>The face detection Box11</description>
+          <properties>
+            <property name="IGFaceDetectorIce.Identity" value="ProxyIGFaceDetectorIceBox11"/>
+          </properties>
+          <adapter name="IGFaceDetectorIce-IGFaceDetectorIceBox11" endpoints="default" id="IGFaceDetectorIce-IGFaceDetectorIceBox11" server-lifetime="false">
+            <object identity="ProxyIGFaceDetectorIceBox11" type="::IGFaceDetector::IGFaceDetectorIce"/>
+          </adapter>
+        </service>
+        <env>LANG=en</env>
+      </icebox>
+
+      <icebox id="IceBox12" activation="on-demand" exe="icebox">
+        <description>The face detection IceBox server</description>
+        <properties>
+          <property name="Ice.Admin.Endpoints" value="tcp -h 127.0.0.1"/>
+          <property name="Ice.ThreadPool.Client.Size" value="200"/>
+          <property name="Ice.ThreadPool.Client.SizeMax" value="200"/>
+          <property name="Ice.ThreadPool.Server.Size" value="200"/>
+          <property name="Ice.ThreadPool.Server.SizeMax" value="200"/>
+          <property name="IceBox.Trace.ServiceObserver" value="1"/>
+          <property name="IceBox.InstanceName" value="${server}"/>
+          <property name="IceBox.InheritProperties" value="1"/>
+          <property name="Ice.MessageSizeMax" value="102400"/>
+        </properties>
+        <service name="IGFaceDetectorIceBox12" entry="IGFaceDetectorIceService:create">
+          <description>The face detection Box12</description>
+          <properties>
+            <property name="IGFaceDetectorIce.Identity" value="ProxyIGFaceDetectorIceBox12"/>
+          </properties>
+          <adapter name="IGFaceDetectorIce-IGFaceDetectorIceBox12" endpoints="default" id="IGFaceDetectorIce-IGFaceDetectorIceBox12" server-lifetime="false">
+            <object identity="ProxyIGFaceDetectorIceBox12" type="::IGFaceDetector::IGFaceDetectorIce"/>
+          </adapter>
+        </service>
+        <env>LANG=en</env>
+      </icebox>
+    </node>
+  </application>
+</icegrid>

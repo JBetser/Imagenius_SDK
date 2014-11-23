@@ -1,0 +1,1 @@
+START "Imagenius server" "C:\Program Files (x86)\ZeroC\Ice-3.5.0\bin\icegridnode.exe" --Ice.Config=config_debug_reg.grid
