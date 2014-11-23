@@ -1,0 +1,2 @@
+r="<?xml version="1.0" encoding="utf-8"?><Request Type="100" Id="1004" Guid="Test1004_1"><Params UserLogin="1" Path="7.jpg"></Params></Request>"
+r="<?xml version="1.0" encoding="utf-8"?><Request Type="100" Id="1004" Guid="Test1004_2"><Params UserLogin="1" Path="7.jpg" AutoRotate="1"></Params></Request>"

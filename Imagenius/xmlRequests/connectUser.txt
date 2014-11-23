@@ -1,0 +1,6 @@
+r="<?xml version="1.0" encoding="utf-8"?><Request Type="100" Id="1000" Guid="Test1000"><Params UserLogin="1"></Params></Request>"
+r="<?xml version="1.0" encoding="utf-8"?><Request Type="100" Id="1000" Guid="Test1000_2"><Params UserLogin="2"></Params></Request>"
+
+ASYNC:
+ar="<?xml version="1.0" encoding="utf-8"?><Request Type="100" Id="1000" Guid="TestA1000"><Params UserLogin="1"></Params></Request>"
+ar="<?xml version="1.0" encoding="utf-8"?><Request Type="100" Id="1000" Guid="TestA1000_2"><Params UserLogin="2"></Params></Request>"
