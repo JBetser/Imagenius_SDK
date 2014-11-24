@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepZoomLibrary", "DeepZoomLibrary\DeepZoomLibrary.csproj", "{B90EACCC-FFE3-40C7-879B-01C612BCAF75}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IGDeepZoom", "DeepZoomGenerator\IGDeepZoom.csproj", "{ED81D1AF-D1E6-4255-AB8B-BBED28C32D8C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|.NET = Debug|.NET
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Release|.NET = Release|.NET
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B90EACCC-FFE3-40C7-879B-01C612BCAF75}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{B90EACCC-FFE3-40C7-879B-01C612BCAF75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B90EACCC-FFE3-40C7-879B-01C612BCAF75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B90EACCC-FFE3-40C7-879B-01C612BCAF75}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B90EACCC-FFE3-40C7-879B-01C612BCAF75}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B90EACCC-FFE3-40C7-879B-01C612BCAF75}.Release|.NET.ActiveCfg = Release|Any CPU
+		{B90EACCC-FFE3-40C7-879B-01C612BCAF75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B90EACCC-FFE3-40C7-879B-01C612BCAF75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B90EACCC-FFE3-40C7-879B-01C612BCAF75}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B90EACCC-FFE3-40C7-879B-01C612BCAF75}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{ED81D1AF-D1E6-4255-AB8B-BBED28C32D8C}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{ED81D1AF-D1E6-4255-AB8B-BBED28C32D8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED81D1AF-D1E6-4255-AB8B-BBED28C32D8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED81D1AF-D1E6-4255-AB8B-BBED28C32D8C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{ED81D1AF-D1E6-4255-AB8B-BBED28C32D8C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{ED81D1AF-D1E6-4255-AB8B-BBED28C32D8C}.Release|.NET.ActiveCfg = Release|Any CPU
+		{ED81D1AF-D1E6-4255-AB8B-BBED28C32D8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED81D1AF-D1E6-4255-AB8B-BBED28C32D8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED81D1AF-D1E6-4255-AB8B-BBED28C32D8C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{ED81D1AF-D1E6-4255-AB8B-BBED28C32D8C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

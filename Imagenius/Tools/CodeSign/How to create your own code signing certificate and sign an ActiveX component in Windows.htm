@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0049)http://www.top20toolbar.com/misc/codesigncert.htm -->
+<HTML><HEAD><TITLE>How to create your own code signing certificate and sign an ActiveX component in Windows</TITLE>
+<META content=en-gb http-equiv=Content-Language>
+<META content="text/html; charset=windows-1252" http-equiv=Content-Type>
+<META name=description 
+content="How to create free code signing certificate and sign an ActiveX CAB.">
+<META name=keywords 
+content="Free code signing certificate, free code signing, how to sign ActiveX, ActiveX CAB Signing">
+<META name=GENERATOR content="MSHTML 8.00.6001.18928"></HEAD>
+<BODY>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD>
+      <H1>How to create your own code signing certificate and sign an ActiveX 
+      component in Windows</H1>All feedback and comments should be directed to 
+      <A href="mailto:support@versinique.com">support@versinique.com</A> 
+      <H2>Problem Overview</H2>Users can not install an ActiveX component 
+      because it is not signed. They can not override the security settings of 
+      Internet Explorer to allow installation.
+      <P>Usual solution is to obtain a code signing certificate from a CA like 
+      Verisign or Thawte, but this is overkill for internal networks or small 
+      scale applications 
+      <H2>Solution Overview</H2>This article describes how to do the following: 
+      <UL>
+        <LI>Create Root CA certificate using OpenSSL 
+        <LI>Create Intermediate Certificate using OpenSSL 
+        <LI>Create Personal Code-Signing Certificate using OpenSSL 
+        <LI>Install Root certificate in Windows KeyStore using Internet Explorer 
+
+        <LI>Install Intermediate Certificate in Windows KeyStore using Internet 
+        Explorer 
+        <LI>Install Personal Certificate using Windows KeyStore using Internet 
+        Explorer 
+        <LI>Sign an ActiveX CAB file using Microsoft Signtool </LI></UL>
+      <H2>Limitations</H2>Once signed you can distribute the ActiveX component 
+      to any user, BUT the user must install the Root CA and Intermediate 
+      Certificates as well for installation to be allowed.
+      <P>If you want users to install an ActiveX component without the Root and 
+      Intermediate certificates then buy a code-signing certificate online from 
+      Thawte or Verisign. 
+      <H2>Step 1 : Download and Install OpenSSL</H2>
+      <UL>
+        <LI>Download OpenSSL distribution <A 
+        href="http://www.top20toolbar.com/scoorch/scoorch.aspx?searchq=win32 openssl shining light productions">[Click 
+        here to find]</A> 
+        <LI>Install the OpenSSL software to c:\openssl (or c:\program 
+        files\openssl if you like to keep installations consistent) </LI></UL>
+      <H2>Step 2 : Create Root CA Certificate</H2>
+      <UL>
+        <LI>Open a DOS Command Prompt 
+        <LI>Navigate to the OpenSSL Binaries directory type <BR><B>CD 
+        c:\openssl\bin</B> 
+        <LI>Create the private key. Type<BR><B>openssl genrsa -des3 -out ca.key 
+        4096</B> 
+        <LI>When prompted enter a *very* strong password 
+        <LI>And then verify the password 
+        <LI>Create the public key. Type <BR><B>openssl req -new -x509 -days 365 
+        -key ca.key -out ca.crt</B> 
+        <LI>When prompted enter the *very* strong password 
+        <LI>For Country Name enter the international standard two letter 
+        abbreviation (use GB, NOT UK if in the UK) 
+        <LI>For State enter the state name in full, or for UK the county name 
+        <LI>For Locality, enter where your company is registered, town or city 
+        <LI>For organisation name enter either the full company name e.g. 
+        Mycompany LTD 
+        <LI>For organisation unit enter Development or Support 
+        <LI>For common name use your domain name e.g mycompany.com 
+        <LI>For email address enter a valid address e.g. support@mycompany.com 
+        </LI></UL>
+      <H2>Step 3 : Create and Sign Intermediate Certificate</H2>
+      <UL>
+        <LI>Create the private key. Type <BR><B>openssl genrsa -des3 -out 
+        server.key 4096</B> 
+        <LI>When prompted enter a *very* strong password (can be the same as 
+        before) 
+        <LI>And then verify the password 
+        <LI>Create a certificate request for signing by the Root CA. Type 
+        <BR><B>openssl req -new -key server.key -out server.csr</B> 
+        <LI>Enter the *very* strong password 
+        <LI>Repeat the information entered above for the Root CA certificate, 
+        EXCEPT for the common name add "www." e.g. www.mycompany.com 
+        <LI>When prompted for Challenge Password press Enter to skip 
+        <LI>When prompted for Optional Company Name press Enter to skip 
+        <LI>Sign the request with the Root CA and make a public key. Type 
+        <BR><B>openssl x509 -req -days 365 -in server.csr -CA ca.crt -CAkey 
+        ca.key -set_serial 01 -out server.crt</B> 
+        <LI>When prompted enter the *very* strong password used to create the CA 
+        certificate </LI></UL>
+      <H2>Step 4 : Create a combined cert that simplifies SignTool</H2>
+      <UL>
+        <LI>Combine the two certificates into a single package. 
+        Type<BR><B>openssl pkcs12 -export -out exported.pfx -inkey server.key 
+        -in server.crt</B> 
+        <LI>When prompted enter the *very* strong password used to create the 
+        Intermediate certificate 
+        <LI>Repeat password for Export Password, and Export Password verify 
+      </LI></UL>
+      <H2>Step 5: Install Root CA certificate using Internet Explorer</H2>
+      <UL>
+        <LI>Launch Internet Explorer 
+        <LI>Select Tools-&gt;Internet Options from the menu bar 
+        <LI>Select Content Tab 
+        <LI>Click CERTIFICATES 
+        <LI>Select the Trusted Root Certification Authorities Tab 
+        <LI>Click IMPORT 
+        <LI>Click NEXT&gt; 
+        <LI>Click BROWSE to locate the required filename 
+        <LI>Browse to C:\openssl\bin and highlight ca.crt 
+        <LI>Click OPEN 
+        <LI>Click NEXT&gt; 
+        <LI>Ensure Place all certificates in the following store is selected 
+        <LI>Ensure Certificate store: = Trusted Root Certification Authorities 
+        <LI>Click NEXT&gt; 
+        <LI>Click FINISH 
+        <LI>Click YES to trust <YOURCOMPANYNAME>
+        <LI>Click OK </LI></UL>
+      <H2>Step 6: Install Intermediate certificate using Internet Explorer</H2>
+      <UL>
+        <LI>Change tabs to Intermediate Certification Authorities 
+        <LI>Click IMPORT 
+        <LI>Click NEXT&gt; 
+        <LI>Click BROWSE to locate the required filename 
+        <LI>Browse to C:\openssl\bin and highlight server.crt 
+        <LI>Click OPEN 
+        <LI>Click NEXT&gt; 
+        <LI>Ensure Place all certificates in the following store is selected 
+        <LI>Ensure Certificate store: = Intermediate Certification Authorities 
+        <LI>Click NEXT&gt; 
+        <LI>Click FINISH 
+        <LI>Click OK </LI></UL>
+      <H2>Step 7: Install Personal certificate using Internet Explorer</H2>
+      <UL>Note: This simplifies code signing with signtool for the developer, 
+        but end users do not need to do this 
+        <LI>Change tabs to Personal 
+        <LI>Click IMPORT 
+        <LI>Click NEXT&gt; 
+        <LI>Click BROWSE to locate the required filename 
+        <LI>Change the file extension type to Personal Information Exchange 
+        *.pfx, *.p12 
+        <LI>Browse to C:\openssl\bin and highlight exported.pfx 
+        <LI>Click OPEN 
+        <LI>Click NEXT&gt; 
+        <LI>Enter the *very* strong password entered when EXPORTING the key (in 
+        these instructions its the same password used to create the intermediate 
+        key) 
+        <LI>Ensure Place all certificates in the following store is selected 
+        <LI>Ensure Certificate store: = Personal 
+        <LI>Click NEXT&gt; 
+        <LI>Click FINISH 
+        <LI>Click OK </LI></UL>
+      <H2>Step 8 : Download and Install Microsoft Platform SDK</H2>
+      <UL>
+        <LI>Download SDK <A 
+        href="http://www.top20toolbar.com/scoorch/scoorch.aspx?searchq=Windows Server 2003 R2 SDK">[Click 
+        here to find]</A> 
+        <LI>To reduce the download size use the Web Install (download and run 
+        PSDK-x86.exe), Perform custom install and select only Microsoft Windows 
+        Core SDK. Remove AMD and Documentation sub-options 
+        <LI>Install the Microsoft Platform SDK tools into c:\program 
+        files\microsoft platform sdk </LI></UL>
+      <H2>Step 9 : Sign ActiveX CAB file (or exe etc)</H2>
+      <UL>
+        <LI>Open a DOS Command Prompt 
+        <LI>Change to the SDK binaries directory. Type <BR><B>CD c:\program 
+        files\microsoft platform sdk\bin</B> 
+        <LI>Launch the signing tool wizard. Type <BR><B>signtool signwizard</B> 
+        <LI>Click NEXT 
+        <LI>Browse and select the ActiveX component to sign 
+        <LI>Click NEXT 
+        <LI>Click TYPICAL 
+        <LI>Click NEXT 
+        <LI>Click SELECT FROM STORE 
+        <LI>Highlight the simplecodesign.com certificate 
+        <LI>Click OK 
+        <LI>Click NEXT 
+        <LI>Click NEXT 
+        <LI>Click NEXT 
+        <LI>Click FINISH 
+        <LI>Click OK </LI></UL>
+      <H2>Step 10 : User Installation Instructions</H2>
+      <UL>
+        <LI>As per steps 5 and 6 and then go to the web page where the Signed 
+        ActiveX CAB is used and installation will be allowed </LI></UL>
+      <H2>Step 11 : Don't want to create certificates? Or don't have time?</H2>
+      <UL>
+        <LI><A 
+        href="http://www.top20toolbar.com/misc/freecodesigncert.htm">Click 
+        here</A> for free code signing certificate and authentication chain, and 
+        simplified certificate installation
+        <H2></H2></LI></UL>
+      <H2>Step 12 : Still not found what you're looking for?</H2>Try our search 
+      engine integrator: <A 
+      href="http://www.top20toolbar.com/scoorch/Scoorch.aspx">Scoorch</A> and 
+      Accelerate your search experience! 
+      <H3>Acknowledgements</H3>It took several days to work through to this 
+      final simple solution because there was no end-to-end document available 
+      for creating the certificates and signing an ActiveX component. The 
+      following links proved useful in finding the solution:<BR><BR><A 
+      href="http://msdn.microsoft.com/library/default.asp?url=/workshop/components/activex/security.asp">Microsoft 
+      overview</A><BR><A 
+      href="http://www.verisign.com/support/code-signing-support/code-signing/identity-authentication.html">Verisign 
+      notes on signtool</A><BR><A 
+      href="http://www.dallaway.com/acad/webstart/">Dallaway on creating and 
+      signing Java Apps</A><BR><A 
+      href="http://mark.foster.cc/kb/openssl-keytool.html">Mark Foster on 
+      OpenSSL and KeyTool exchanges</A><BR><A 
+      href="http://www.tc.umn.edu/~brams006/selfsign.html">Self signed cert for 
+      Apache</A><BR><A 
+      href="http://browndrf.blogspot.com/2006/06/build-and-install-singed-midlet.html">Self 
+      signed cert for Mobile Phones</A><BR><A 
+      href="http://www.spv-developers.com/forum/showthread.php?t=42">More on 
+      self signing cert for Mobile Phones</A> </TD>
+    <TD vAlign=top>
+      <SCRIPT type=text/javascript><!--
+google_ad_client = "pub-0537947484629195";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text";
+google_ad_channel = "";
+google_color_border = "FFFFFF";
+google_color_bg = "FFFFFF";
+google_color_link = "0000FF";
+google_color_text = "000000";
+google_color_url = "008000";
+//--></SCRIPT>
+
+      <SCRIPT type=text/javascript 
+      src="How%20to%20create%20your%20own%20code%20signing%20certificate%20and%20sign%20an%20ActiveX%20component%20in%20Windows_fichiers/show_ads.js">
+</SCRIPT>
+    </TD></TR></TBODY></TABLE>
+<H3>Update history</H3>23 May 2007 - Added more detailed SDK instructions to 
+avoid downloading the whole SDK<BR>05 Feb 2007 - Added links to find the 
+Microsoft SDK and a simple OpenSSL install for download<BR></BODY></HTML>

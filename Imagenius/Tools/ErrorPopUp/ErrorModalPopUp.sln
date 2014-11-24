@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErrorPopup", "ErrorPopup\ErrorPopup.csproj", "{48D0A0EC-D966-41B3-9D4C-876D82CAACA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErrorPopup.Web", "ErrorPopup.Web\ErrorPopup.Web.csproj", "{7BA9D933-E266-4F6C-B0F6-1C7D1D143131}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{48D0A0EC-D966-41B3-9D4C-876D82CAACA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48D0A0EC-D966-41B3-9D4C-876D82CAACA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48D0A0EC-D966-41B3-9D4C-876D82CAACA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48D0A0EC-D966-41B3-9D4C-876D82CAACA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BA9D933-E266-4F6C-B0F6-1C7D1D143131}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BA9D933-E266-4F6C-B0F6-1C7D1D143131}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BA9D933-E266-4F6C-B0F6-1C7D1D143131}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BA9D933-E266-4F6C-B0F6-1C7D1D143131}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

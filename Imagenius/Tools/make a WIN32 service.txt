@@ -1,0 +1,18 @@
+C:\Users\Administrator>sc.exe create IGSMService binPath= "C:\Imagenius\IGSMService\IGSMService.exe" start= auto DisplayName= "Imagenius Service" type= own obj= Imagenius\Administrator password= 
+C:\Users\Administrator>sc.exe create IGSMService2 binPath= "C:\Imagenius\IGSMService2\IGSMService.exe" start= auto DisplayName= "Imagenius Service 2" type= own obj= Imagenius\Administrator password= 
+C:\Users\Administrator>sc.exe create IGSMService3 binPath= "C:\Imagenius\IGSMService3\IGSMService.exe" start= auto DisplayName= "Imagenius Service 3" type= own obj= Imagenius\Administrator password= 
+C:\Users\Administrator>sc.exe create IGSMService4 binPath= "C:\Imagenius\IGSMService4\IGSMService.exe" start= auto DisplayName= "Imagenius Service 4" type= own obj= Imagenius\Administrator password= 
+sc config IGSMService2 depend= IGSMService
+sc config IGSMService3 depend= IGSMService
+
+To avoid crash in the service:
+Run Registry Editor (Regedt32.exe).
+From the
+HKEY_LOCAL_MACHINE
+subtree, go to the following key:
+\System\CurrentControlSet\Control\Session Manager\SubSystems
+Select the Windows value xxxx,yyyy,zzzz
+For 64-bit operating systems, increase the yyyy value to "40960";
+Increase the zzzz value to "2048".
+
+set \System\CurrentControlSet\Control\Session Manager\Memory Management\SystemPages = 0xFFFFFFFF

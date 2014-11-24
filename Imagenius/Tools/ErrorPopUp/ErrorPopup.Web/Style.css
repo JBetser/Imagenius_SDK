@@ -1,0 +1,15 @@
+﻿.modalBackground {/* You can override this class */}
+.errorModalPopup {
+/* We are overriding the control css class */
+	background-color:#ffffdd;
+	background-image:url('bg.gif');
+    font-family:Traditional Arabic, New Roman, Tahoma;
+    font-size:large;
+    font-weight:bold;
+	direction:ltr;	
+}
+.errorModalPopup div {/* You can override this class */}
+.title {/* You can override this class */}
+.message {/* You can override this class */}
+.control {/* You can override this class */}
+.image {/* You can override this class */}

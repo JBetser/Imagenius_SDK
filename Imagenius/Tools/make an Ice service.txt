@@ -1,0 +1,2 @@
+iceserviceinstall.exe icegridnode --ImagePath="C:\Imagenius\IGServer\IGFaceDetector\icegridnode.exe" "C:\Imagenius\IGServer\IGFaceDetector\config.grid" --DisplayName="Imagenius Face Detector" --EventLog=IGSMService --Description="The Ice grid computing service of face detection for Imagenius"
+iceserviceinstall.exe icegridnode --ImagePath="C:\Imagenius\IGSMDesktop\icegridnode.exe" "C:\Imagenius\IGSMDesktop\config.grid" --DisplayName="Imagenius Server" --EventLog=IGSMService --Description="The Ice grid computing service of Imagenius server controller"

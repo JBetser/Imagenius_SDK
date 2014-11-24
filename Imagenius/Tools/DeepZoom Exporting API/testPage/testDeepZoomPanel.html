@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+
+<head>
+<title>Imagenius Deep Zoom</title>
+<style type="text/css">
+body {
+	margin: 0px;
+}
+#divDeepZoomPanel {
+	width: 400px;
+	height: 300px;
+	background-color: #DDDDDD;
+	color: Red;
+}
+</style>
+<script type="text/javascript" src="seadragon-min.js"></script>
+<script type="text/javascript">
+    function startSeadragon(){
+        viewer = new Seadragon.Viewer("divDeepZoomPanel");
+        viewer.openDzi("dz/DZ4798e4f2-3365-4123-96db-79eb76f22837.xml");         
+    }
+</script>
+</head>
+<body onload="startSeadragon();" style="margin: 0px;">
+<div id="divDeepZoomPanel">    
+</div>
+</body>
+</html>

@@ -1,0 +1,1 @@
+Code you put in this (App_Code) folder will only be picked up and compiled under ASP.NET 2.0. For ASP.NET 1.x, code files in this folder will remain as unserved content.

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="Madam">
+</Property><Property Name="Solution File" Value="G:\Shared\Projets\SRC Tools\Madam\src\Madam.sln">
+</Property><Property Name="Date" Value="mardi 29 septembre 2009">
+</Property><Property Name="Time" Value="20:56">
+</Property></Properties><Event ErrorLevel="0" Project="" Source="Madam.sln" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam.sln">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\Madam.csproj" Description="Project file successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\Madam.csproj">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\AssemblyInfo.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\BasicAuthenticationEventArgs.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\BasicAuthenticationEventArgs.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\BasicAuthenticationModule.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\BasicAuthenticationModule.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\BasicCredentials.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\BasicCredentials.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\BinHex.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\BinHex.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\ConfigurationSectionHelper.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\ConfigurationSectionHelper.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\DatabaseUserSecurityAuthority.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\DatabaseUserSecurityAuthority.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\DataExpressionEvaluator.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\DataExpressionEvaluator.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\Discriminator.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\Discriminator.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\DiscriminatorCollection.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\DiscriminatorCollection.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\FormsAuthenticationDispositionConfiguration.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\FormsAuthenticationDispositionConfiguration.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\FormsAuthenticationDispositionModule.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\FormsAuthenticationDispositionModule.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\FormsAuthenticationDispositionSectionHandler.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\FormsAuthenticationDispositionSectionHandler.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\FormsUserSecurityAuthority.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\FormsUserSecurityAuthority.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\IConfigurationCallback.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\IConfigurationCallback.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\IDiscriminator.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\IDiscriminator.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\InvariantString.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\InvariantString.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\IUserPasswordProvider.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\IUserPasswordProvider.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\IUserSecurityAuthority.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\IUserSecurityAuthority.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\Mask.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\Mask.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\NonDiscriminator.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\NonDiscriminator.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\PasswordFormat.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\PasswordFormat.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\PasswordFormatNotSupportedException.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\PasswordFormatNotSupportedException.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\RegexDiscriminator.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\RegexDiscriminator.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\ServiceProviderFactory.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\ServiceProviderFactory.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\SettingsHelper.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\SettingsHelper.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\UserSecurityAuthority.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\UserSecurityAuthority.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\UserSecurityAuthorityBase.cs" Description="File successfully backed up as G:\Shared\Projets\SRC Tools\Madam\src\Backup\Madam\UserSecurityAuthorityBase.cs">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\Madam.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="Madam" Source="Madam\Madam.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="Madam.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="Madam.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="Madam" Source="Madam\Madam.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event></UpgradeLog>

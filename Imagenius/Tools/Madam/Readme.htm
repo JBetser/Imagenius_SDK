@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>MADAM Readme</title>
+    <style type="text/css">
+    dt { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>
+        MADAM Readme</h1>
+    <p>This document contains information about how to get started with MADAM (Mixed Authentication and 
+        Disposition ASP.NET Module) and its demo web application.</p>
+    <h2>MADAM Visual Studio Project</h2>
+    <p>
+        The MADAM
+        library is in the <tt>Madam</tt> folder and is provided as a Visual Studio .NET 2003
+        C# Code Library project. How to open this project file depends on the version of
+        Microsoft Visual Studio you are using:</p>
+    <dl>
+        <dt>Visual Studio .NET 2003</dt><dd>Just open the solution file <tt>Madam.sln</tt>.</dd>
+        <dt>Visual Studio 2005</dt>
+        <dd>
+            Open the <tt>Madam.sln</tt> solution file in Visual Studio 2005. This will start
+            the <a href="http://msdn2.microsoft.com/en-us/library/60z6y467(VS.80).aspx">Visual Studio
+                Conversion Wizard</a> and which should convert the project without reporting
+            any issues. See also <a href="http://msdn2.microsoft.com/en-us/library/ms185327(VS.80).aspx">How to 
+            Upgrade Projects Created in Visual Studio .NET 2002 or 2003</a>.</dd></dl>
+    <h2>MADAM Demo Web</h2>
+    <p>
+        The <tt>Web</tt> folder contains a web application that demonstrates MADAM. There's
+        no project file provided for this web application so if you're using Visual Studio
+        .NET 2003 and want to work on this project from within Microsoft Visual Studio .NET,
+        you'll need to create one. 
+        Alternatively you can configure IIS to create an IIS
+        Application pointing to that folder and visit the demo directly through a browser.</p>
+    <p>
+        If you are using Visual Studio 2005 you can just open a File-System based Website
+        (from the main menu, click <strong>File</strong> then <strong>Open Web Site</strong>) and browse to
+        the <tt>Web</tt> folder.</p>
+    <p>
+        The web application's <tt>Web.config</tt> file contains different user security authority
+        implementation examples. The <tt>FormsUserSecurityAuthority</tt> is enabled by default, but
+        there are examples for the <tt>DatabaseUserSecurityAuthority</tt> and a custom 
+        <tt>MembershipUserSecurityAuthority</tt> (ASP.NET 2.0 only)
+        provided in the comments. To enable an alternate user security authority, comment
+        out the current one and uncomment the one to use, making any configuration changes
+        for the user security authority implementation as needed.</p>
+    <p>
+        <strong>IMPORTANT!</strong> To successfully test the Basic authentication with the
+        demo web site under IIS, you must ensure that the demo application is configured
+        for <em>Anonymous access only</em>. Any other authentication methods from IIS will
+        conflict with the operation of Basic authentication from MADAM.</p>
+</body>
+</html>
