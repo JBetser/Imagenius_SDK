@@ -75,7 +75,6 @@ build/
 *.lastbuildstate
 *.idb
 *.manifest
-*.InstallLog
 *.dll
 *.lib
 *.pdb
@@ -92,6 +91,7 @@ build/
 *.type
 *.gitignore
 *_i.h
+*.InstallLog
 
 # Visual C++ cache files
 ipch/
@@ -159,7 +159,9 @@ sql/
 Debug/
 ServerDebug/
 WebDebug/
+generated/
 *.Cache
+*.exp
 ClientBin/
 [Ss]tyle[Cc]op.*
 ~$*

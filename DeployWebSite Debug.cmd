@@ -1,5 +1,6 @@
 rd /S /Q WebDebug
 md WebDebug
+icacls WebDebug /grant Everyone:(OI)(CI)F
 xcopy /Y /E "./TI_WebSite" "./WebDebug"
 md "WebDebug/iginput"
 md "WebDebug/igoutput127.0.0.1"
