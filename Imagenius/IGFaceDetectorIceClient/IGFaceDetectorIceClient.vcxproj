@@ -102,7 +102,7 @@ copy config.client ..\IGFaceDetector\$(Configuration)</Command>
       </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>$(SolutionDir)/Tools/Slice/slice2cpp.exe $(SolutionDir)/IGFaceDetectorIce/IGFaceDetectorIce.ice --output-dir generated</Command>
+      <Command>md generated&amp;$(SolutionDir)/Tools/Slice/slice2cpp.exe $(SolutionDir)/IGFaceDetectorIce/IGFaceDetectorIce.ice --output-dir generated</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -148,7 +148,7 @@ copy config.client ..\IGFaceDetector\$(Configuration)</Command>
       </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>$(SolutionDir)/Tools/Slice/slice2cpp.exe $(SolutionDir)/IGFaceDetectorIce/IGFaceDetectorIce.ice --output-dir generated</Command>
+      <Command>md generated&amp;$(SolutionDir)/Tools/Slice/slice2cpp.exe $(SolutionDir)/IGFaceDetectorIce/IGFaceDetectorIce.ice --output-dir generated</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='SeverRelease|Win32'">
