@@ -1,2 +1,2 @@
 md Imagenius\IGSMLib\generated&Imagenius\Tools\Slice\slice2cs.exe Imagenius\IGSMLib\igservercontroller.ice --output-dir Imagenius\IGSMLib\generated
-MSBuild Imagenius\ImageniusSDK.sln /p:Configuration="Server Debug" /p:Platform="Any CPU" /p:WarningLevel=1 /m
+MSBuild Imagenius\ImageniusSDK.sln /p:Configuration="Server Debug" /p:Platform="Any CPU" /m
