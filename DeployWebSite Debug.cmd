@@ -1,5 +1,5 @@
-rd /S /Q WebDebug
-md WebDebug
+del /S /F /Q WebDebug\*.*
+md "WebDebug"
 icacls WebDebug /grant Everyone:(OI)(CI)F
 xcopy /Y /E "./TI_WebSite" "./WebDebug"
 md "WebDebug/iginput"

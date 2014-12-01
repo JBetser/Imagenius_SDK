@@ -112,7 +112,7 @@ bool IGFaceEffect::Create (IGIPFaceEffectMessage *pEffectMessage, IGSmartLayer& 
 	case IGIPFACE_EFFECT_RANDOM:
 		{
 			IGIPFaceEffectMessage *pEffMessCopy = new IGIPFaceEffectMessage (*pEffectMessage);
-			int nRndEffectId = (rand() % 7);
+			int nRndEffectId = (rand() % 5);
 			double dStrength = 0.5 + (double)(rand() % 2) * 0.25;
 			switch (nRndEffectId){
 			case 0:
@@ -137,16 +137,6 @@ bool IGFaceEffect::Create (IGIPFaceEffectMessage *pEffectMessage, IGSmartLayer& 
 				break;
 			case 4:
 				pEffMessCopy->m_eFaceEffectType = IGIPFACE_EFFECT_SURPRISED;
-				pEffMessCopy->m_dParam1 = dStrength * 100.0;
-				pEffMessCopy->m_dParam2 = dStrength * 100.0;
-				break;
-			case 5:
-				pEffMessCopy->m_eFaceEffectType = IGIPFACE_EFFECT_HOOLIGAN;
-				pEffMessCopy->m_dParam1 = dStrength * 100.0;
-				pEffMessCopy->m_dParam2 = dStrength * 100.0;
-				break;
-			case 6:
-				pEffMessCopy->m_eFaceEffectType = IGIPFACE_EFFECT_POX;
 				pEffMessCopy->m_dParam1 = dStrength * 100.0;
 				pEffMessCopy->m_dParam2 = dStrength * 100.0;
 				break;
