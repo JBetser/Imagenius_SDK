@@ -58,8 +58,7 @@ var MANAGERS_WIDTH = 150;
 var TOOLBOX_WIDTH = 60;
 
 var ACCESS_ERROR = 'You are currently running a demo version. Please create an account for free or login with facebook to use that feature';
-var GENERIC_ERROR = 'Connection failed. Please note that only one connection per computer is allowed. Or the servers are currently too busy. Please try again later';
-var SSO_ERROR = 'Connection failed. Please note that only one connection per computer is allowed. Please restart the app';
+var GENERIC_ERROR = 'The connection has been lost. Please note that idle sessions get disconnected after 5 minutes, and only one connection per computer is allowed. Please reconnect.';
 function IG_internalAPI(functionName, jsonData, successCallback, errorCallback) {
     if (jsonData == null)
         jsonData = {};
@@ -116,8 +115,9 @@ function IG_internalAPI(functionName, jsonData, successCallback, errorCallback) 
         case "ConnectUser":
         case "ConnectFbGuest":
         case "ConnectTwitterGuest":
-		case "ConnectBitlUser":            
-        case "DisconnectUser":
+		case "ConnectBitlUser":
+		case "DisconnectUser":
+		case "GetStatus":
             asmxName = "ImageniusPublicWS.asmx/";
             break;
         default:
@@ -458,19 +458,7 @@ function IG_internalOnUserConnected(data) {
             IG_internalUpdateWorkspaceProperties(data.WorkspaceProperties);
             IG_internalUpdateAllFrameProperties(data.FrameProperties);
             IG_internalSelectWorkspacePicture(data.PictureId + "/DZ" + data.RequestGuid, data.PictureName);
-            if (data.RequestParams.RequestId == IGREQUEST_FRAME_FILTER) {
-                $('#happy-sub').hide('slow').fadeOut('slow');
-                $('#angry-sub').hide('slow').fadeOut('slow');
-                $('#sad-sub').hide('slow').fadeOut('slow');
-                $('#ugly-sub').hide('slow').fadeOut('slow');
-                $('#hooligan-sub').hide('slow').fadeOut('slow');
-                $('#surprised-sub').hide('slow').fadeOut('slow');
-                $('#sick-sub').hide('slow').fadeOut('slow');
-                $('#sub-sidebar').hide('slow').fadeOut('slow');
-                $('#sidebar').hide('slow').fadeOut('slow');
-                $('#right-sidebar').show('slow').fadeIn('slow');
-            }
-            else if (data.RequestParams.RequestId == IGREQUEST_WORKSPACE_LOADIMAGE || data.RequestParams.RequestId == IGREQUEST_WORKSPACE_NEWIMAGE) {
+            if (data.RequestParams.RequestId == IGREQUEST_WORKSPACE_LOADIMAGE || data.RequestParams.RequestId == IGREQUEST_WORKSPACE_NEWIMAGE) {
                 IG_internalSelectWorkspacePicture(data.PictureId + "/DZ" + data.RequestGuid, data.PictureName);
             }
             else if (data.RequestParams.RequestId == IGREQUEST_FRAME_ADDLAYER ||
@@ -485,11 +473,7 @@ function IG_internalOnUserConnected(data) {
             }
             else {
                 IG_internalSelectWorkspacePicture(data.PictureId + "/DZ" + data.RequestGuid, data.PictureName);
-            }
-            $('#popupOK').hide();
-            $('#popupFAIL').hide();
-            $('#popupResult').hide();
-            $('#popupMenu').show();
+            }            
             if (divCurrentWorkspace.getAttribute("currentView") != "Workspace")
                 IG_internalShowWorkspace(null);
             IG_internalOnResize();            
@@ -519,7 +503,7 @@ function IG_internalOnUserConnected(data) {
             var errMsg = "Unknown answer: Answer Id " + data.AnswerId + " - Request Id " + data.RequestParams.RequestId;
             alert(errMsg);
             if (errorCallback)
-                errorCallback("Error", errMsg);
+                errorCallback("Error", GENERIC_ERROR);
             else
                 IG_internalAlertClient(GENERIC_ERROR, true);
             return;
@@ -536,7 +520,8 @@ function IG_internalProcessServerAnswers(data, successCallback, errorCallback) {
                 divCurrentWorkspace.style.display = "none";
                 IG_internalReconnectUser();
                 var errMsg = "Aie aie aie, something went wrong. Either there are too many faces in the photo (10 max), the image is too large or our servers are currently too busy. Please press F5 to refresh the page and try again with another picture. If this happens again, please notify the problem below and we will fix it very shortly.\nError code: " + data.AnswerId;
-                fbGetAlbums();
+                if (fbGetAlbums)
+                    fbGetAlbums();
                 if (errorCallback)
                     errorCallback("Error", errMsg);
                 else
@@ -545,7 +530,8 @@ function IG_internalProcessServerAnswers(data, successCallback, errorCallback) {
             default:
                 IG_internalReconnectUser();
                 var errMsg = "Aie aie aie, something went wrong. Please press F5 to refresh the page and restart. If this happens again, please notify the problem below and we will fix it very shortly.\nError code: " + data.AnswerId;
-                fbGetAlbums();
+                if (fbGetAlbums)
+                    fbGetAlbums();
                 if (errorCallback)
                     errorCallback("Error", errMsg);
                 else
@@ -578,19 +564,15 @@ function IG_internalProcessServerAnswers(data, successCallback, errorCallback) {
 function IG_ProcessAnswersCallback(result, successCallback, errorCallback) {
     waitingForReply = false;
     if (result) {
-        if (result.Status == "DisconnectedBySSO") {
-            IG_internalAlertClient(SSO_ERROR, true);
+        if (result.Status == "DisconnectedBySSO")
             return;
-        }
         else {
             if ((result.Status == "Disconnected") || (result.Status == "Error")) {
                 var errMsg = result.Message ? GENERIC_ERROR + ". Error description: " + result.Message : GENERIC_ERROR;
                 if (errorCallback)
                     errorCallback("Error", errMsg);
                 else {
-                    IG_internalReconnectUser(successCallback, function (data, reason) {
-                            IG_internalAlertClient(errMsg, true);
-                        });
+                    IG_internalAlertClient(errMsg, true);
                 }
                 return;
             }
@@ -606,8 +588,9 @@ function IG_ProcessAnswersCallback(result, successCallback, errorCallback) {
         }
         else {
             var errMsg = "Error reading answer: " + JSON.stringify(result);
+            alert(errMsg);
             if (errorCallback)
-                errorCallback("error", errMsg);
+                errorCallback("Error", GENERIC_ERROR);
             else
                 IG_internalAlertClient(GENERIC_ERROR, true);
         }

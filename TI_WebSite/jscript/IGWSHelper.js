@@ -12,6 +12,7 @@ var IGWS_RESULT_DISCONNECTED_MESSAGE = "You are not connected to server.";
 var IGWS_WORKSPACE_DIV = null;
 var IGWS_DEEPZOOM_DIV = null;
 var IGBM_APPID = "480781025322684";
+var IGBM_CHANNEL = '//bitlsoft.com/beetlemorph/channel.html'
 var IG_PIXEL_SELECTOR_PRECISION = 1000000;
 var IG_WEBSERVICE_URL = "http://localhost:8080/WebDebug/";
 
@@ -68,20 +69,26 @@ function IG_internalAbout() {
 }
 
 function IG_internalAlertClient(message, isError, title) {
+    if (!message || (message.indexOf("Internal") == 0)) {
+        alert(message);
+        return; // avoid showing off ugly error messages
+    }
     var IG_Modal_id = IG_internalGetElementById("IG_Modal");
     if (IG_Modal_id == null) {
         var modal = new IG_Modal();
         var idxParam = 0;
         var tParams = {};
-        tParams[idxParam++] = (title != null ? title : (isError ? "Error" : "Information"));
+        tParams[idxParam++] = (title != null ? title : (isError ? "Please reconnect" : "Information"));
         tParams[idxParam++] = function (result, tOptions) {
             if (result == IGMODALRETURN_REPORTPB)
                 IG_internalContactUs("I have found a bug");
+            else if (result == IGMODALRETURN_RECONNECT)
+                location.reload(false);
         };
         tParams[idxParam++] = null;
         tParams[idxParam++] = null;
         tParams[idxParam++] = 1;
-        tParams[idxParam++] = IGMODALTYPE_MESSAGE;
+        tParams[idxParam++] = isError ? IGMODALTYPE_ERROR : IGMODALTYPE_MESSAGE;
         tParams[idxParam++] = message;
         modal.popOut(tParams);
     }

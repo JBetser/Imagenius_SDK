@@ -13,10 +13,13 @@ var IGMODALTYPE_COLOR = 3;
 var IGMODALTYPE_TICKBOX = 4;
 var IGMODALTYPE_MESSAGE = 5;
 var IGMODALTYPE_IFRAME = 6;
+var IGMODALTYPE_ERROR = 7;
+var IGMODALTYPE_DIALOG = 8;
 
 var IGMODALRETURN_CANCEL = 0;
 var IGMODALRETURN_OK = 1;
 var IGMODALRETURN_REPORTPB = 2;
+var IGMODALRETURN_RECONNECT = 3;
 
 function IG_Modal() {  
     this.square = null; 
@@ -58,6 +61,7 @@ function IG_Modal() {
 
         var tableParams = document.createElement("table");
         var curIdx = idxParam;
+        this.dialogType = IGMODALTYPE_DIALOG;
         for (var idxParam = 0; idxParam < nbParams; idxParam++) {
             var nextField = null;
             var curType = tParams[curIdx++];
@@ -93,26 +97,30 @@ function IG_Modal() {
                     break;
 
                 case IGMODALTYPE_MESSAGE:
+                case IGMODALTYPE_ERROR:
                     nextField = document.createElement("a");
                     var nextFieldText = document.createTextNode(tParams[curIdx++]);
                     nextField.appendChild(nextFieldText);
+                    this.dialogType = curType;
                     break;
 
                 case IGMODALTYPE_IFRAME:
+                    dialogType = curType;
                     nextField = document.createElement("iframe");
                     var width = tParams[curIdx++];
                     var height = tParams[curIdx++];
                     this.square.setAttribute("style", "width: " + width + "px; height: " + height + "px");
                     nextField.setAttribute("style", "width: " + (width - 20) + "px; height: " + (height - 100) + "px");
                     nextField.setAttribute("src", tParams[curIdx++]);
-                    if (tParams[curIdx])
-                        break;
+                    this.dialogType = curType;
+                    break;
             }
             var nextRow = document.createElement("tr");
             var nextCol = document.createElement("th");
 
             if (curType != IGMODALTYPE_IFRAME &&
-                curType != IGMODALTYPE_MESSAGE) {
+                curType != IGMODALTYPE_MESSAGE &&
+                curType != IGMODALTYPE_ERROR) {
                 var nextLabel = document.createElement("a");
                 var nextLabelText = document.createTextNode(tParams[curIdx++]);
                 nextLabel.appendChild(nextLabelText);
@@ -125,6 +133,11 @@ function IG_Modal() {
             nextRow.appendChild(nextCol);
             tableParams.appendChild(nextRow);
         }
+        var critical = false;
+        if (this.title == "Error" || this.title == "error") {
+            this.dialogType = IGMODALTYPE_ERROR;
+            critical = true;
+        }
 
         var lastRow = document.createElement("tr");
         var lastRowCurCol = document.createElement("th");
@@ -134,12 +147,12 @@ function IG_Modal() {
             var modal = this.parentNode.parentNode.parentNode.parentNode.Code;
             modal.popIn();
             if (modal.callback)
-                modal.callback(IGMODALRETURN_OK, modal.tOptions, this.successCallback, this.errorCallback);
+                modal.callback(this.dialogType == IGMODALTYPE_MESSAGE ? IGMODALRETURN_OK : IGMODALRETURN_RECONNECT, modal.tOptions, this.successCallback, this.errorCallback);
         }
-        okBtn.innerHTML = (this.tOptions['OK'] != null ? this.tOptions['OK'] : (tParams[3] == IGMODALTYPE_IFRAME ? "Close" : "OK"));
+        okBtn.innerHTML = (this.tOptions['OK'] != null ? this.tOptions['OK'] : (this.dialogType == IGMODALTYPE_IFRAME ? "Close" : (this.dialogType == IGMODALTYPE_ERROR ? "Reconnect" : "OK")));
         lastRowCurCol.appendChild(okBtn);
 
-        if (this.title == "Error" || this.title == "error") {
+        if (critical) {
             var reportPbBtn = document.createElement("button");
             reportPbBtn.onclick = function () {
                 var modal = this.parentNode.parentNode.parentNode.parentNode.Code;
@@ -151,7 +164,7 @@ function IG_Modal() {
             lastRowCurCol.appendChild(reportPbBtn);
         }
 
-        if (tParams[3] != IGMODALTYPE_MESSAGE && tParams[3] != IGMODALTYPE_IFRAME) {
+        if (this.dialogType != IGMODALTYPE_MESSAGE && this.dialogType != IGMODALTYPE_IFRAME) {
             var cancelBtn = document.createElement("button");
             cancelBtn.onclick = function () {
                 var modal = this.parentNode.parentNode.parentNode.parentNode.Code;

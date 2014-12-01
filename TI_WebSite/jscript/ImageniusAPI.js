@@ -34,6 +34,7 @@ function Imagenius() {
     this.urlWSAccount = this.urlDomain + "IGWSAccount.asmx";
     this.urlWSWorkspace = this.urlDomain + "IGWSWorkspace.asmx";
     this.urlWSAuthenticate = this.urlDomain + "IGWSAuthenticate.asmx";
+    this.isDemo = false;
     this.init = function (divName, options) {
         IGWS_WORKSPACE_DIV = IG_internalGetElementById(divName);
         var hideWorkspace = (options == null ? false : options["Workspace"] == "hidden");
@@ -369,6 +370,7 @@ function Imagenius() {
     }
 
     this.initDemo = function (divName, options, successCallback, errorCallback) {
+        this.isDemo = true;
         this.init(divName, options);
         IG_internalConnectDemo(successCallback, errorCallback);
     }
@@ -380,7 +382,7 @@ function Imagenius() {
     this.connectBitlUser = function (userEmail, userPwd, successCallback, errorCallback) {
         IG_internalBitlUser(userEmail, userPwd, successCallback, errorCallback);
     }
-
+    
     this.api = function (functionName, jsonData, successCallback, errorCallback) {
         IG_publicAPI(functionName, jsonData, successCallback, errorCallback);
     }
@@ -402,6 +404,10 @@ function Imagenius() {
     }
 
     this.showPopupMessage = function (msg, error, title) {
+        if (error) {
+            if (!title)
+                title = "Error";
+        }
         IG_internalAlertClient(msg, error, title);
     }
 
