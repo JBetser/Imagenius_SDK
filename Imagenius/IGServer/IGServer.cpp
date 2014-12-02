@@ -113,8 +113,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		g_wsOutputDrive = wsCmdLine.substr (0, szOffset);
 		wsCmdLine = wsCmdLine.substr (szOffset + 1);
 		g_wsDoMount = wsCmdLine;
-		if (g_nPortInputId % 1000 > 1)
-			g_wsDoMount = L"No";
 
 		// synchronization event with server manager	
 		g_wsSynchroEventReady += wsPortInputId;
